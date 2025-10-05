@@ -1,0 +1,29 @@
+{% load static %}
+
+<header id="header" class="header sticky-top">
+
+  <div class="topbar d-flex align-items-center">
+    <div class="container d-flex justify-content-center justify-content-md-between">
+      <div class="contact-info d-flex align-items-center">
+        <i class="bi bi-envelope d-flex align-items-center">
+          <a href="mailto:{{ instance.email }}">{{ instance.email }}</a>
+        </i>
+        <i class="bi bi-phone d-flex align-items-center ms-4">
+          <span>{{ instance.phone }}</span>
+        </i>
+      </div>
+      <div class="social-links d-none d-md-flex align-items-center">
+        {% if instance.telegram %}
+          <a href="{{ instance.telegram }}" class="telegram"><i class="bi bi-telegram"></i></a>
+        {% endif %}
+        {% if instance.vk %}
+          <a href="{{ instance.vk }}" class="vk"><i class="bi bi-vk"></i></a>
+        {% endif %}
+        {% if instance.odnoklassniki %}
+          <a href="{{ instance.odnoklassniki }}" class="odnoklassniki"><i class="bi bi-people"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  </div><!-- End Top Bar -->
+
+</header>

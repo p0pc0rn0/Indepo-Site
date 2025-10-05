@@ -1,0 +1,12 @@
+{% load static %}
+<div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ instance.aos_delay }}">
+  <div class="service-item position-relative">
+    <div class="icon">
+      <i class="{{ instance.icon_class }}"></i>
+    </div>
+    <a href="{{ instance.link|default:'#' }}" class="stretched-link">
+      <h3>{{ instance.title }}</h3>
+    </a>
+    <p>{{ instance.description }}</p>
+  </div>
+</div>
