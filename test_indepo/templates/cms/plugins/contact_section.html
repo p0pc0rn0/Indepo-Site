@@ -1,0 +1,22 @@
+{% load static cms_tags %}
+<section id="testimonials" class="testimonials section dark-background w-full">
+  {% if instance.background %}
+    <img src="{{ instance.background.url }}" class="testimonials-bg" alt="">
+  {% endif %}
+
+  <div class="container max-w-full" data-aos="fade-up" data-aos-delay="100">
+    <div class="swiper init-swiper w-full">
+      <script type="application/json" class="swiper-config">
+        {{ instance.swiper_config|safe }}
+      </script>
+
+      <div class="swiper-wrapper">
+        {% for plugin in children %}
+          {% render_plugin plugin %}
+        {% endfor %}
+      </div>
+
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>

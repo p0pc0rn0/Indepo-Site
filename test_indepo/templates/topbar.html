@@ -1,0 +1,32 @@
+{% load static %}
+
+<header id="header" class="header sticky-top">
+
+  <div class="topbar d-flex align-items-center">
+    <div class="container d-flex justify-content-center justify-content-md-between">
+      <div class="contact-info d-flex align-items-center">
+        <i class="bi bi-envelope d-flex align-items-center">
+          <a href="mailto:{{ instance.email }}">{{ instance.email }}</a>
+        </i>
+        <i class="bi bi-phone d-flex align-items-center ms-4">
+          <span>{{ instance.phone }}</span>
+        </i>
+      </div>
+      <div class="social-links d-none d-md-flex align-items-center">
+        {% if instance.twitter %}
+          <a href="{{ instance.twitter }}" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        {% endif %}
+        {% if instance.facebook %}
+          <a href="{{ instance.facebook }}" class="facebook"><i class="bi bi-facebook"></i></a>
+        {% endif %}
+        {% if instance.instagram %}
+          <a href="{{ instance.instagram }}" class="instagram"><i class="bi bi-instagram"></i></a>
+        {% endif %}
+        {% if instance.linkedin %}
+          <a href="{{ instance.linkedin }}" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        {% endif %}
+      </div>
+    </div>
+  </div><!-- End Top Bar -->
+
+</header>

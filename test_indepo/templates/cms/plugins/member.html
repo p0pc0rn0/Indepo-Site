@@ -1,0 +1,18 @@
+<div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up">
+  <div class="team-member">
+    <div class="member-img">
+      {% if instance.photo %}
+        <img src="{{ instance.photo.url }}" class="img-fluid" alt="{{ instance.name }}">
+      {% endif %}
+      <div class="social">
+        {% if instance.telegram %}<a href="{{ instance.telegram }}"><i class="bi bi-telegram"></i></a>{% endif %}
+        {% if instance.vk %}<a href="{{ instance.vk }}"><i class="bi bi-vk"></i></a>{% endif %}
+        {% if instance.odnoklassniki %}<a href="{{ instance.odnoklassniki }}"><i class="bi bi-odnoklassniki"></i></a>{% endif %}
+      </div>
+    </div>
+    <div class="member-info">
+      <h4>{{ instance.name }}</h4>
+      <span>{{ instance.role }}</span>
+    </div>
+  </div>
+</div>
