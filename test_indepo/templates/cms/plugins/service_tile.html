@@ -1,0 +1,9 @@
+<div class="col-xl-3 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="{{ instance.aos_delay }}">
+  <div class="service-item position-relative">
+    <div class="icon"><i class="{{ instance.icon_class }} icon"></i></div>
+    <h4><a href="#" class="stretched-link">{{ instance.title }}</a></h4>
+    {% if instance.body %}
+      <p>{{ instance.body|safe }}</p>
+    {% endif %}
+  </div>
+</div>
