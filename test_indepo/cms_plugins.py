@@ -3,24 +3,36 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import gettext_lazy as _
 
 from .forms import (
+    AboutItemPluginForm,
+    AboutSectionPluginForm,
     ContactInfoPluginForm,
+    FaqItemPluginForm,
+    FaqSectionPluginForm,
     FeaturedServiceItemPluginForm,
     FeaturedServicesSectionPluginForm,
     FooterPluginForm,
+    HeroSectionPluginForm,
     ServiceItemPluginForm,
     ServicesSectionPluginForm,
+    ServiceTilePluginForm,
     TeamContainerPluginForm,
     TeamMemberPluginForm,
     TestimonialItemPluginForm,
     TestimonialsSectionPluginForm,
 )
 from .models import (
+    AboutItemPluginModel,
+    AboutSectionPluginModel,
     ContactInfoPluginModel,
+    FaqItemPluginModel,
+    FaqSectionPluginModel,
     FeaturedServiceItem,
     FeaturedServicesSection,
     FooterPluginModel,
+    HeroSectionPluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
+    ServiceTilePluginModel,
     TeamContainer,
     TeamMember,
     TestimonialItemPluginModel,
@@ -28,12 +40,100 @@ from .models import (
     TopBarPluginModel,
 )
 
+
+@plugin_pool.register_plugin
+class ServiceTilePlugin(CMSPluginBase):
+    model = ServiceTilePluginModel
+    name = _("Service Tile")
+    render_template = "cms/plugins/service_tile.html"
+    form = ServiceTilePluginForm
+    cache = False
+    module = _("Sections")
+
+
+@plugin_pool.register_plugin
+class AboutSectionPlugin(CMSPluginBase):
+    model = AboutSectionPluginModel
+    name = _("About Section")
+    render_template = "cms/plugins/about_section.html"
+    form = AboutSectionPluginForm
+    cache = False
+    allow_children = True
+    child_classes = ["AboutItemPlugin"]
+    module = _("Sections")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["children"] = list(instance.child_plugin_instances)
+        return context
+
+
+@plugin_pool.register_plugin
+class AboutItemPlugin(CMSPluginBase):
+    model = AboutItemPluginModel
+    name = _("About Item")
+    render_template = "cms/plugins/about_item.html"
+    form = AboutItemPluginForm
+    cache = False
+    require_parent = True
+    parent_classes = ["AboutSectionPlugin"]
+    module = _("Sections")
+
+
+@plugin_pool.register_plugin
+class FaqSectionPlugin(CMSPluginBase):
+    model = FaqSectionPluginModel
+    name = _("FAQ Section")
+    render_template = "cms/plugins/faq_section.html"
+    form = FaqSectionPluginForm
+    cache = False
+    allow_children = True
+    child_classes = ["FaqItemPlugin"]
+    module = _("Sections")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        children = list(instance.child_plugin_instances)
+        context["children"] = children
+        context["first_child_id"] = children[0].pk if children else None
+        return context
+
+
+@plugin_pool.register_plugin
+class FaqItemPlugin(CMSPluginBase):
+    model = FaqItemPluginModel
+    name = _("FAQ Item")
+    render_template = "cms/plugins/faq_item.html"
+    form = FaqItemPluginForm
+    cache = False
+    require_parent = True
+    parent_classes = ["FaqSectionPlugin"]
+    module = _("Sections")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["is_first"] = context.get("first_child_id") == instance.pk
+        return context
+
+
+@plugin_pool.register_plugin
+class HeroSectionPlugin(CMSPluginBase):
+    model = HeroSectionPluginModel
+    name = _("Hero Section")
+    render_template = "cms/plugins/hero_section.html"
+    form = HeroSectionPluginForm
+    cache = False
+    module = _("Sections")
+
+
 @plugin_pool.register_plugin
 class TopBarPlugin(CMSPluginBase):
     model = TopBarPluginModel
     name = _("Top Bar")
     render_template = "cms/plugins/topbar.html"
     cache = False
+    module = _("Header")
+
 
 @plugin_pool.register_plugin
 class ServicesSectionPlugin(CMSPluginBase):
@@ -48,9 +148,8 @@ class ServicesSectionPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
-        # передаём детей для рендера в шаблон
         context['instance'] = instance
-        context['children'] = instance.get_children()
+        context['children'] = list(instance.child_plugin_instances)
         return context
 
 @plugin_pool.register_plugin
@@ -78,7 +177,7 @@ class TestimonialsSectionPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
         context['instance'] = instance
-        context['children'] = instance.get_children()
+        context['children'] = list(instance.child_plugin_instances)
         return context
 
 @plugin_pool.register_plugin
@@ -102,6 +201,7 @@ class TeamContainerPlugin(CMSPluginBase):
     cache = False
     allow_children = True
     child_classes = ['TeamMemberPlugin']
+    module = _("Sections")
 
 
 @plugin_pool.register_plugin
@@ -113,6 +213,7 @@ class TeamMemberPlugin(CMSPluginBase):
     require_parent = True
     parent_classes = ['TeamContainerPlugin']
     form = TeamMemberPluginForm
+    module = _("Sections")
 
 @plugin_pool.register_plugin
 class ContactInfoPlugin(CMSPluginBase):
@@ -124,6 +225,7 @@ class ContactInfoPlugin(CMSPluginBase):
     cache = False
 
     def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
         context['instance'] = instance
         return context
 @plugin_pool.register_plugin
@@ -157,7 +259,7 @@ class FeaturedServicesSectionPlugin(CMSPluginBase):
 @plugin_pool.register_plugin
 class FeaturedServiceItemPlugin(CMSPluginBase):
     model = FeaturedServiceItem
-    name = _("Service Item")
+    name = _("Featured Service Item")
     render_template = "cms/plugins/service_item2.html"
     require_parent = True
     parent_classes = ["FeaturedServicesSectionPlugin"]

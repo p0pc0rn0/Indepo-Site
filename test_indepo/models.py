@@ -1,6 +1,7 @@
 from django.db import models
 from cms.models.pluginmodel import CMSPlugin
 from django.utils.translation import gettext_lazy as _
+from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from parler.models import TranslatableModelMixin, TranslatedFields
 
@@ -25,6 +26,109 @@ class TranslatableCMSPlugin(TranslatableModelMixin, CMSPlugin):
 
     class Meta:
         abstract = True
+
+
+class ServiceTilePluginModel(TranslatableCMSPlugin):
+    translations = TranslatedFields(
+        title=models.CharField(_("Title"), max_length=200),
+        body=HTMLField(_("Body"), blank=True, null=True),
+    )
+    icon_class = models.CharField(
+        _("Bootstrap icon class"), max_length=100, default="bi bi-calendar4-week"
+    )
+    aos_delay = models.PositiveIntegerField(_("AOS delay (ms)"), default=300)
+
+    def __str__(self):
+        return self.safe_translation_getter("title", any_language=True) or "Service Tile"
+
+
+class AboutSectionPluginModel(TranslatableCMSPlugin):
+    translations = TranslatedFields(
+        title=models.CharField(_("Section title"), max_length=200, default="About"),
+        subtitle_part1=models.CharField(_("Subtitle part 1"), max_length=200, default="Find Out More"),
+        subtitle_part2=models.CharField(_("Subtitle part 2"), max_length=200, default="About Us"),
+    )
+
+    def __str__(self):
+        return self.safe_translation_getter("title", any_language=True) or "About section"
+
+
+class AboutItemPluginModel(TranslatableCMSPlugin):
+    translations = TranslatedFields(
+        main_heading=models.CharField(_("Main heading"), max_length=300),
+        italic_text=HTMLField(_("Intro text"), blank=True, null=True),
+    )
+    image = FilerImageField(
+        verbose_name=_("Image"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    aos_delay_image = models.PositiveIntegerField(_("AOS delay for image (ms)"), default=100)
+    aos_delay_content = models.PositiveIntegerField(_("AOS delay for content (ms)"), default=200)
+
+    def __str__(self):
+        return self.safe_translation_getter("main_heading", any_language=True) or "About item"
+
+
+class FaqSectionPluginModel(TranslatableCMSPlugin):
+    translations = TranslatedFields(
+        title=models.CharField(_("Title"), max_length=200, default="Часто задаваемые вопросы"),
+        subtitle_part1=models.CharField(_("Subtitle part 1"), max_length=200, default="Имеются вопросы?"),
+        subtitle_part2=models.CharField(
+            _("Subtitle part 2"), max_length=200, default="Ознакомьтесь с нашими FAQ"
+        ),
+    )
+    aos_delay = models.PositiveIntegerField(_("AOS delay (ms)"), default=100)
+
+    def __str__(self):
+        return self.safe_translation_getter("title", any_language=True) or "FAQ section"
+
+
+class FaqItemPluginModel(TranslatableCMSPlugin):
+    translations = TranslatedFields(
+        question=models.CharField(_("Question"), max_length=200, default="Вопрос"),
+        answer=HTMLField(_("Answer"), blank=True, null=True),
+    )
+    is_active = models.BooleanField(_("Is active"), default=False)
+
+    def __str__(self):
+        return self.safe_translation_getter("question", any_language=True) or "FAQ item"
+
+
+class HeroSectionPluginModel(TranslatableCMSPlugin):
+    background_image = FilerImageField(
+        verbose_name=_("Background image"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    translations = TranslatedFields(
+        title_part1=models.CharField(_("Title part 1"), max_length=200, default="Приветствуем в"),
+        title_part2=models.CharField(_("Title part 2"), max_length=200, default='ФБГУ НИИ "Интеграл"'),
+        description=HTMLField(
+            _("Description"),
+            blank=True,
+            null=True,
+            default=(
+                "Ведомственная принадлежность: ФГБУ НИИ «Интеграл» находится в ведении Министерства цифрового "
+                "развития, связи и массовых коммуникаций Российской Федерации"
+            ),
+        ),
+        get_started_text=models.CharField(_("Primary button text"), max_length=100, default="Get Started"),
+        telegram_text=models.CharField(_("Secondary button text"), max_length=100, default="Телеграмм канал", blank=True),
+    )
+    get_started_url = models.CharField(_("Primary button URL"), max_length=200, default="#about", blank=True)
+    telegram_url = models.CharField(
+        _("Secondary button URL"), max_length=200, default="https://t.me/integral_security", blank=True
+    )
+    aos_animation = models.CharField(_("AOS animation"), max_length=50, default="zoom-out", blank=True)
+
+    def __str__(self):
+        title = self.safe_translation_getter("title_part2", any_language=True)
+        return f"Hero: {title}" if title else "Hero Section"
 
 
 class TopBarPluginModel(CMSPlugin):
