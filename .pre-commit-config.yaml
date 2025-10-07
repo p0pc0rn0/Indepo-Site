@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix", "--exit-non-zero-on-fix"]
+      - id: ruff-format
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        additional_dependencies: ["click<8.1.4"]
+  - repo: https://github.com/Riverside-Healthcare/djLint
+    rev: v1.34.2
+    hooks:
+      - id: djlint
+        files: "\.(html|jinja|jinja2|j2|djhtml)$"
+        args: ["--reformat"]

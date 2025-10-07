@@ -1,18 +1,31 @@
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import gettext_lazy as _
+
+from .forms import (
+    ContactInfoPluginForm,
+    FeaturedServiceItemPluginForm,
+    FeaturedServicesSectionPluginForm,
+    FooterPluginForm,
+    ServiceItemPluginForm,
+    ServicesSectionPluginForm,
+    TeamContainerPluginForm,
+    TeamMemberPluginForm,
+    TestimonialItemPluginForm,
+    TestimonialsSectionPluginForm,
+)
 from .models import (
-    TopBarPluginModel,
-    ServicesSectionPluginModel,
+    ContactInfoPluginModel,
+    FeaturedServiceItem,
+    FeaturedServicesSection,
+    FooterPluginModel,
     ServiceItemPluginModel,
-    TestimonialsSectionPluginModel,
-    TestimonialItemPluginModel,
+    ServicesSectionPluginModel,
     TeamContainer,
     TeamMember,
-    ContactInfoPluginModel,
-    FooterPluginModel,
-    FeaturedServicesSection,
-    FeaturedServiceItem
+    TestimonialItemPluginModel,
+    TestimonialsSectionPluginModel,
+    TopBarPluginModel,
 )
 
 @plugin_pool.register_plugin
@@ -27,6 +40,7 @@ class ServicesSectionPlugin(CMSPluginBase):
     model = ServicesSectionPluginModel
     name = _("Services Section")
     render_template = "cms/plugins/services_section.html"
+    form = ServicesSectionPluginForm
     cache = False
     allow_children = True
     child_classes = ['ServiceItemPlugin']
@@ -46,6 +60,7 @@ class ServiceItemPlugin(CMSPluginBase):
     render_template = "cms/plugins/service_item.html"
     require_parent = True
     parent_classes = ['ServicesSectionPlugin']
+    form = ServiceItemPluginForm
     cache = False
     module = _("Sections")
 
@@ -54,6 +69,7 @@ class TestimonialsSectionPlugin(CMSPluginBase):
     model = TestimonialsSectionPluginModel
     name = _("Testimonials Section")
     render_template = "cms/plugins/testimonials_section.html"
+    form = TestimonialsSectionPluginForm
     cache = False
     allow_children = True
     child_classes = ['TestimonialItemPlugin']
@@ -72,6 +88,7 @@ class TestimonialItemPlugin(CMSPluginBase):
     render_template = "cms/plugins/testimonial_item.html"
     require_parent = True
     parent_classes = ['TestimonialsSectionPlugin']
+    form = TestimonialItemPluginForm
     cache = False
     module = _("Sections")
 
@@ -81,6 +98,7 @@ class TeamContainerPlugin(CMSPluginBase):
     model = TeamContainer
     name = _("Team Section")
     render_template = "cms/plugins/team_section.html"
+    form = TeamContainerPluginForm
     cache = False
     allow_children = True
     child_classes = ['TeamMemberPlugin']
@@ -94,6 +112,7 @@ class TeamMemberPlugin(CMSPluginBase):
     cache = False
     require_parent = True
     parent_classes = ['TeamContainerPlugin']
+    form = TeamMemberPluginForm
 
 @plugin_pool.register_plugin
 class ContactInfoPlugin(CMSPluginBase):
@@ -101,6 +120,7 @@ class ContactInfoPlugin(CMSPluginBase):
     module = _("Sections")
     name = _("Contact Info")
     render_template = "cms/plugins/contact_info.html"
+    form = ContactInfoPluginForm
     cache = False
 
     def render(self, context, instance, placeholder):
@@ -111,6 +131,7 @@ class FooterPlugin(CMSPluginBase):
     model = FooterPluginModel
     name = _("Footer Section")
     render_template = "cms/plugins/footer.html"
+    form = FooterPluginForm
     cache = False
 
     def render(self, context, instance, placeholder):
@@ -125,6 +146,7 @@ class FeaturedServicesSectionPlugin(CMSPluginBase):
     render_template = "cms/plugins/featured_services_section.html"
     allow_children = True
     child_classes = ["FeaturedServicesItemPlugin"]  # если у тебя есть элементы
+    form = FeaturedServicesSectionPluginForm
     cache = False
 
     def render(self, context, instance, placeholder):
@@ -139,6 +161,7 @@ class FeaturedServiceItemPlugin(CMSPluginBase):
     render_template = "cms/plugins/service_item2.html"
     require_parent = True
     parent_classes = ["FeaturedServicesSectionPlugin"]
+    form = FeaturedServiceItemPluginForm
     cache = False
 
     def render(self, context, instance, placeholder):
