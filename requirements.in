@@ -1,7 +1,11 @@
-djangocms-versioning
-djangocms-alias
-djangocms-frontend>=2.0.0a1
-django-filer
-djangocms-text
+django>=5.2,<5.3
+django-cms>=5.0,<5.1
+django-environ>=0.11
+django-parler>=2.3,<2.4
+djangocms-versioning>=2.4,<2.5
+djangocms-alias>=3.0,<3.1
+djangocms-frontend>=2.2,<2.3
+django-filer>=3.3,<3.4
+djangocms-text-ckeditor>=5.1,<5.2
 django-fsm<3
-djangocms-simple-admin-style
+djangocms-simple-admin-style>=1.1,<1.2

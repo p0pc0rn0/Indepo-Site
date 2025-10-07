@@ -1,2 +1,85 @@
-{# Replace this with your base template #}
-{% extends "bootstrap5/base.html" %}
+{# Base layout for the site #}
+{% load cms_tags sekizai_tags static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% page_attribute "page_title" %}{% endblock %}</title>
+    <link href="{% static 'assets/img/favicon.png' %}" rel="icon" />
+    <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:wght@300;400;500;600;700;800&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
+    {% render_block "css" %}
+  </head>
+  <body class="{% block body_class %}{% endblock %}">
+    {% cms_toolbar %}
+    <header id="header" class="header sticky-top">
+      <div class="topbar d-flex align-items-center">
+        <div class="container">
+          {% placeholder "Top Bar" %}
+        </div>
+      </div>
+      <div class="branding d-flex align-items-center">
+        <div class="container position-relative d-flex align-items-center justify-content-between">
+          {% placeholder "Header" %}
+        </div>
+      </div>
+    </header>
+
+    {% block hero %}
+      <section id="hero" class="hero section light-background">
+        <div class="container">
+          {% placeholder "Hero" %}
+        </div>
+      </section>
+    {% endblock %}
+
+    <main class="main">
+      {% block content %}
+        {% placeholder "Content" %}
+      {% endblock %}
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="container">
+        {% block footer %}
+          {% placeholder "Footer" %}
+        {% endblock %}
+      </div>
+    </footer>
+
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+      <i class="bi bi-arrow-up-short"></i>
+    </a>
+    <div id="preloader">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+    <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/waypoints/noframework.waypoints.js' %}"></script>
+    <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+    <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+    <script src="{% static 'assets/js/main.js' %}"></script>
+    {% render_block "js" %}
+  </body>
+</html>

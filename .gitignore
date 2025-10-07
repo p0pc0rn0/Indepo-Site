@@ -1,1 +1,15 @@
 .idea/
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+*.log
+db.sqlite3
+staticfiles/
+media/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.tox/
