@@ -1,16 +1,173 @@
-{% load cms_tags %}
+{% load cms_tags sekizai_tags %}
 
-<section id="faq" class="faq section light-background">
+<section id="faq" class="faq section light-background" data-faq-accordion>
   <div class="container" data-aos="fade-up" data-aos-delay="{{ instance.aos_delay }}">
     <div class="section-title">
       <h2>{{ instance.title }}</h2>
       <p>{{ instance.subtitle_part1 }} <span>{{ instance.subtitle_part2 }}</span></p>
     </div>
 
-    <div class="faq-container">
+    <div class="faq-container" data-faq-list>
       {% for plugin in children %}
         {% render_plugin plugin %}
       {% endfor %}
     </div>
   </div>
 </section>
+
+{% addtoblock "css" %}
+<style>
+  [data-faq-accordion] .faq-item {
+    border-bottom: 1px solid rgba(108, 117, 125, 0.2);
+    padding: 1rem 0;
+  }
+  [data-faq-accordion] .faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  [data-faq-accordion] .faq-question:focus-visible {
+    outline: 2px solid rgba(13, 110, 253, 0.4);
+    outline-offset: 4px;
+  }
+  [data-faq-accordion] .faq-chevron {
+    transition: transform 0.3s ease;
+  }
+  [data-faq-accordion] .faq-item.faq-active .faq-chevron {
+    transform: rotate(180deg);
+  }
+  [data-faq-accordion] .faq-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  [data-faq-accordion] .faq-content-inner {
+    padding: 0.75rem 0;
+  }
+  [data-faq-accordion] .faq-content-inner > *:last-child {
+    margin-bottom: 0;
+  }
+</style>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+  (function () {
+    if (window.__FAQ_ACCORDION_INITIALISED__) {
+      return;
+    }
+    window.__FAQ_ACCORDION_INITIALISED__ = true;
+
+    var MAX_PANEL_HEIGHT = 320;
+
+    function measureContentHeight(content) {
+      if (!content) {
+        return 0;
+      }
+      var previousMax = content.style.maxHeight;
+      var previousOverflow = content.style.overflow;
+      content.style.maxHeight = 'none';
+      content.style.overflow = 'visible';
+      var height = content.scrollHeight;
+      content.style.maxHeight = previousMax;
+      content.style.overflow = previousOverflow;
+      return height;
+    }
+
+    function setExpanded(item, expanded) {
+      var toggle = item.querySelector('[data-faq-toggle]');
+      var content = item.querySelector('[data-faq-content]');
+      if (!toggle || !content) {
+        return;
+      }
+
+      toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+
+      if (expanded) {
+        item.classList.add('faq-active');
+
+        var fullHeight = measureContentHeight(content);
+        var targetHeight = Math.min(fullHeight, MAX_PANEL_HEIGHT);
+
+        content.style.overflowY = fullHeight > MAX_PANEL_HEIGHT ? 'auto' : 'hidden';
+        content.style.webkitOverflowScrolling = fullHeight > MAX_PANEL_HEIGHT ? 'touch' : '';
+
+        var startHeight = content.offsetHeight;
+        content.style.transition = 'none';
+        content.style.maxHeight = startHeight + 'px';
+        content.offsetHeight;
+        content.style.transition = '';
+
+        requestAnimationFrame(function () {
+          content.style.maxHeight = targetHeight + 'px';
+        });
+      } else {
+        item.classList.remove('faq-active');
+
+        content.style.overflowY = 'hidden';
+        content.style.webkitOverflowScrolling = '';
+
+        var currentHeight = content.scrollHeight;
+        content.style.transition = 'none';
+        content.style.maxHeight = currentHeight + 'px';
+        content.offsetHeight;
+        content.style.transition = '';
+
+        requestAnimationFrame(function () {
+          content.style.maxHeight = '0px';
+        });
+      }
+    }
+
+    function recalcOpenItems(accordion) {
+      var openItems = accordion.querySelectorAll('[data-faq-item].faq-active');
+      openItems.forEach(function (item) {
+        setExpanded(item, true);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var accordions = document.querySelectorAll('[data-faq-accordion]');
+
+      accordions.forEach(function (accordion) {
+        var items = accordion.querySelectorAll('[data-faq-item]');
+
+        items.forEach(function (item) {
+          var toggle = item.querySelector('[data-faq-toggle]');
+          if (!toggle) {
+            return;
+          }
+
+          setExpanded(item, false);
+
+          toggle.addEventListener('click', function () {
+            var isOpen = item.classList.contains('faq-active');
+
+            items.forEach(function (other) {
+              if (other !== item) {
+                setExpanded(other, false);
+              }
+            });
+
+            setExpanded(item, !isOpen);
+          });
+        });
+
+        window.addEventListener('resize', function () {
+          recalcOpenItems(accordion);
+        });
+      });
+    });
+  })();
+</script>
+{% endaddtoblock %}

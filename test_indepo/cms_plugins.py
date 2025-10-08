@@ -93,9 +93,7 @@ class FaqSectionPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
-        children = list(instance.child_plugin_instances)
-        context["children"] = children
-        context["first_child_id"] = children[0].pk if children else None
+        context["children"] = list(instance.child_plugin_instances)
         return context
 
 
@@ -111,9 +109,7 @@ class FaqItemPlugin(CMSPluginBase):
     module = _("Sections")
 
     def render(self, context, instance, placeholder):
-        context = super().render(context, instance, placeholder)
-        context["is_first"] = context.get("first_child_id") == instance.pk
-        return context
+        return super().render(context, instance, placeholder)
 
 
 @plugin_pool.register_plugin
