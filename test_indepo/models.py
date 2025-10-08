@@ -27,6 +27,16 @@ class TranslatableCMSPlugin(TranslatableModelMixin, CMSPlugin):
     class Meta:
         abstract = True
 
+    def copy_relations(self, oldinstance):
+        """
+        Ensure parler translations are copied when duplicating plugins
+        (e.g. при создании новой версии страницы).
+        """
+        for translation in oldinstance.translations.all():
+            translation.pk = None
+            translation.master = self
+            translation.save()
+
 
 class ServiceTilePluginModel(TranslatableCMSPlugin):
     translations = TranslatedFields(
