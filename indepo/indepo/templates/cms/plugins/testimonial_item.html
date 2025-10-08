@@ -1,0 +1,20 @@
+
+{% load static %}
+<div class="swiper-slide">
+  <div class="testimonial-item">
+    {% if instance.image %}
+      <img src="{% static instance.image %}" class="testimonial-img" alt="">
+    {% endif %}
+    <h3>{{ instance.author_name }}</h3>
+    {% if instance.author_role %}
+      <h4>{{ instance.author_role }}</h4>
+    {% endif %}
+
+    <p>
+      <i class="bi bi-quote quote-icon-left"></i>
+      <span>{{ instance.quote }}</span>
+      <i class="bi bi-quote quote-icon-right"></i>
+    </p>
+  </div>
+</div>
+

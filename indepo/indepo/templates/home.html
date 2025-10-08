@@ -1,0 +1,198 @@
+{% load cms_tags sekizai_tags %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ФГБУ НИИ «Интеграл»</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Ваш CSS остается без изменений */
+    .font-roboto { font-family: 'Roboto', sans-serif; }
+    .font-montserrat { font-family: 'Montserrat', sans-serif; }
+    .header-gradient { background: linear-gradient(135deg, #0057B7, #4A90E2); }
+    .header-parallax {
+      background-image: url('https://source.unsplash.com/random/1920x400/?technology');
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header-overlay {
+      background: rgba(0, 87, 183, 0.7);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .accordion-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    .accordion-item:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+    .accordion-button {
+      width: 100%;
+      text-align: left;
+      padding: 20px 24px;
+      background-color: #ffffff;
+      font-weight: 600;
+      color: #0057B7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .accordion-button:hover { background-color: #f0f9ff; }
+    .accordion-icon {
+      font-size: 1.5rem;
+      color: #4A90E2;
+      transition: transform 0.4s ease;
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      padding: 0 24px;
+      background-color: #f9fafb;
+      transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.5s ease;
+      opacity: 0;
+    }
+    .accordion-item.open .accordion-content {
+      padding: 20px 24px;
+      opacity: 1;
+    }
+    .accordion-item.open .accordion-icon { transform: rotate(45deg); }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .animate-fade-in { animation: fade-in 1.2s ease-out; }
+    @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .animate-slide-up { animation: slide-up 0.8s ease-out; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .nav-item:hover { animation: pulse 0.3s ease; }
+  </style>
+  {% render_block "css" %}  <!-- Для динамических стилей от плагинов CMS -->
+</head>
+<body class="bg-white font-roboto text-gray-800 animate-fade-in">
+  {% cms_toolbar %}  <!-- Панель редактирования CMS -->
+
+  <header class="header-parallax text-white py-12 relative">
+    <div class="header-overlay"></div>
+    <div class="container mx-auto px-4 relative z-10 flex items-center justify-center">
+      <i class="fas fa-microchip text-5xl mr-4 animate-pulse"></i>
+      <h1 class="text-4xl md:text-5xl font-montserrat font-bold animate-slide-up">ФГБУ НИИ «Интеграл»</h1>
+    </div>
+  </header>
+
+  <nav class="bg-blue-600 text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+      <ul class="flex flex-wrap gap-4 justify-center">
+        <li><a href="#ob-institute" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Об институте</a></li>
+        <li><a href="#registraciya-programm" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Регистрация программ</a></li>
+        <li><a href="#pravovoe-obespechenie" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Правовое обеспечение</a></li>
+        <li><a href="#obrazovanie" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Образование</a></li>
+        <li><a href="#phishing" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Передать сообщение о фишинге</a></li>
+        <li><a href="#myvmeste" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">#МЫВМЕСТЕ</a></li>
+        <li><a href="#konkurs" class="nav-item block px-6 py-3 bg-blue-700 rounded-lg hover:bg-blue-500 transition-all duration-300 transform shadow-md">Конкурс "Вместе против коррупции!"</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container mx-auto px-4 py-12">
+    <h2 class="text-3xl md:text-4xl font-montserrat font-bold text-blue-800 mb-10 text-center animate-slide-up">Об Институте</h2>
+    <div class="accordion max-w-4xl mx-auto">
+      <!-- Аккордеон 1: Общие сведения -->
+      <div class="accordion-item">
+        <button class="accordion-button">
+          <i class="fas fa-info-circle mr-2"></i> Общие сведения
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          {% placeholder "general_info" %}  <!-- Здесь будет редактируемый контент через CMS -->
+        </div>
+      </div>
+      <!-- Аккордеон 2: Направления деятельности -->
+      <div class="accordion-item">
+        <button class="accordion-button">
+          <i class="fas fa-directions mr-2"></i> Направления деятельности
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          {% placeholder "directions" %}  <!-- Редактируемый контент -->
+        </div>
+      </div>
+      <!-- Аккордеон 3: Юридический адрес и банковские реквизиты -->
+      <div class="accordion-item">
+        <button class="accordion-button">
+          <i class="fas fa-building mr-2"></i> Юридический адрес и банковские реквизиты
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          {% placeholder "legal_address" %}  <!-- Редактируемый контент -->
+        </div>
+      </div>
+      <!-- Аккордеон 4: Контакты -->
+      <div class="accordion-item">
+        <button class="accordion-button">
+          <i class="fas fa-envelope mr-2"></i> Контакты
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-content">
+          {% placeholder "contacts" %}  <!-- Редактируемый контент -->
+        </div>
+      </div>
+    </div>
+    {% placeholder "additional_content" %}  <!-- Опциональный плейсхолдер для дополнительного контента в main -->
+  </main>
+
+  <footer class="bg-gray-100 py-6 text-center text-gray-600 shadow-inner">
+    <div class="container mx-auto px-4">
+      <p class="animate-fade-in">ФГБУ НИИ «Интеграл» © 2011-2026</p>
+    </div>
+  </footer>
+
+  <script>
+    /* Ваш JS остается без изменений */
+    document.addEventListener('DOMContentLoaded', () => {
+      const accordionItems = document.querySelectorAll('.accordion-item');
+      accordionItems.forEach(item => {
+        const button = item.querySelector('.accordion-button');
+        button.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          accordionItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('open');
+              const otherContent = otherItem.querySelector('.accordion-content');
+              otherContent.style.maxHeight = null;
+              otherContent.style.opacity = 0;
+            }
+          });
+          item.classList.toggle('open', !isOpen);
+          const content = item.querySelector('.accordion-content');
+          if (!isOpen) {
+            content.style.maxHeight = content.scrollHeight + 'px';
+            content.style.opacity = 1;
+          } else {
+            content.style.maxHeight = null;
+            content.style.opacity = 0;
+          }
+        });
+      });
+    });
+  </script>
+  {% render_block "js" %}  <!-- Для динамических скриптов от плагинов CMS -->
+</body>
+</html>

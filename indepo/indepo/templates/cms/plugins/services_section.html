@@ -1,0 +1,19 @@
+
+{% load static cms_tags %}
+<section id="services" class="services section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>{{ instance.title }}</h2>
+    {% if instance.subtitle %}
+      <p><span>{{ instance.subtitle }}</span></p>
+    {% endif %}
+  </div><!-- End Section Title -->
+
+  <div class="container">
+    <div class="row gy-4">
+      {% for plugin in children %}
+        {% render_plugin plugin %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
