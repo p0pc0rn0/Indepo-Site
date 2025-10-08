@@ -1,9 +1,18 @@
 {% load cms_tags %}
 
-<div class="faq-item{% if instance.is_active or is_first %} faq-active{% endif %}">
-  <h3>{{ instance.question }}</h3>
-  <div class="faq-content">
-    {{ instance.answer|safe }}
+<div class="faq-item{% if instance.is_active %} faq-active{% endif %}" data-faq-item>
+  <button
+    type="button"
+    class="faq-question"
+    data-faq-toggle
+    aria-expanded="{{ instance.is_active|yesno:'true,false' }}"
+  >
+    <span>{{ instance.question }}</span>
+    <i class="faq-chevron bi bi-chevron-down"></i>
+  </button>
+  <div class="faq-content" data-faq-content>
+    <div class="faq-content-inner" data-faq-content-inner>
+      {{ instance.answer|safe }}
+    </div>
   </div>
-  <i class="faq-toggle bi bi-chevron-right"></i>
 </div>
