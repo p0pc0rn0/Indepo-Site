@@ -12,6 +12,7 @@ from .forms import (
     FeaturedServicesSectionPluginForm,
     FooterPluginForm,
     HeroSectionPluginForm,
+    HeaderPluginForm,
     ServiceItemPluginForm,
     ServicesSectionPluginForm,
     ServiceTilePluginForm,
@@ -30,6 +31,7 @@ from .models import (
     FeaturedServicesSection,
     FooterPluginModel,
     HeroSectionPluginModel,
+    HeaderPluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -127,6 +129,16 @@ class TopBarPlugin(CMSPluginBase):
     model = TopBarPluginModel
     name = _("Top Bar")
     render_template = "cms/plugins/topbar.html"
+    cache = False
+    module = _("Header")
+
+
+@plugin_pool.register_plugin
+class HeaderPlugin(CMSPluginBase):
+    model = HeaderPluginModel
+    name = _("Header")
+    render_template = "cms/plugins/header.html"
+    form = HeaderPluginForm
     cache = False
     module = _("Header")
 

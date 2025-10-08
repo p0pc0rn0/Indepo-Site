@@ -1,0 +1,185 @@
+{% load cms_tags menu_tags static sekizai_tags %}
+<header class="site-header" data-header-plugin>
+  <div class="container site-header__wrapper py-2">
+    <div class="site-header__current d-flex align-items-center gap-2">
+      {% if instance.show_avatar and instance.avatar %}
+        <span class="site-header__avatar">
+          <img src="{{ instance.avatar.url }}" alt="" />
+        </span>
+      {% endif %}
+      <span class="site-header__title">{{ request.current_page.get_title }}</span>
+    </div>
+    <nav class="site-header__nav" aria-label="Main navigation">
+      <div class="site-header__nav-inner">
+        <ul class="site-header__list" data-header-list>
+          {% show_menu 0 1 1 100 "menu/header_menu.html" %}
+        </ul>
+        <button class="site-header__toggle d-lg-none" type="button" data-header-toggle aria-expanded="false">
+          <span class="site-header__toggle-icon"></span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+{% addtoblock "css" %}
+<style>
+  [data-header-plugin] {
+    background: var(--bs-body-bg, #fff);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .site-header__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .site-header__current {
+    font-weight: 600;
+    color: var(--bs-body-color, #212529);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .site-header__nav {
+    /* margin-left: auto; */
+    /* padding-left: 2rem; */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    position: relative;
+  }
+  .site-header__nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    position: relative;
+  }
+  .site-header__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .site-header__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .site-header__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .site-header__link {
+    text-decoration: none;
+    color: var(--bs-body-color, #212529);
+    transition: color 0.2s ease;
+  }
+  .site-header__link:hover,
+  .site-header__link:focus-visible {
+    color: var(--bs-primary, #0d6efd);
+  }
+  .site-header__toggle {
+    border: none;
+    background: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .site-header__toggle-icon,
+  .site-header__toggle-icon::before,
+  .site-header__toggle-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--bs-body-color, #212529);
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  .site-header__toggle-icon::before,
+  .site-header__toggle-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .site-header__toggle-icon::before {
+    top: -6px;
+  }
+  .site-header__toggle-icon::after {
+    top: 6px;
+  }
+  @media (max-width: 991.98px) {
+    .site-header__list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.75rem);
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      background: var(--bs-body-bg, #fff);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      min-width: 200px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 1050;
+    }
+    .site-header__list[data-open="true"] {
+      display: flex;
+    }
+  }
+</style>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+  (function () {
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("[data-header-plugin]").forEach(function (header) {
+        var toggle = header.querySelector("[data-header-toggle]");
+        var list = header.querySelector("[data-header-list]");
+        if (!toggle || !list) return;
+
+        function closeMenu() {
+          toggle.setAttribute("aria-expanded", "false");
+          list.dataset.open = "false";
+        }
+
+        toggle.addEventListener("click", function (event) {
+          event.stopPropagation();
+          var expanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          list.dataset.open = String(!expanded);
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!header.contains(event.target)) {
+            closeMenu();
+          }
+        });
+
+        window.addEventListener("resize", function () {
+          if (window.innerWidth >= 992) {
+            closeMenu();
+          }
+        });
+      });
+    });
+  })();
+</script>
+{% endaddtoblock %}

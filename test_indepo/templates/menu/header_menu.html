@@ -1,0 +1,8 @@
+{% load menu_tags %}
+{% for child in children %}
+  {% if not child.selected and child.get_absolute_url %}
+    <li>
+      <a class="site-header__link" href="{{ child.get_absolute_url }}">{{ child.get_menu_title }}</a>
+    </li>
+  {% endif %}
+{% endfor %}

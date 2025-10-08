@@ -277,3 +277,17 @@ class FeaturedServiceItem(TranslatableCMSPlugin):
 
     def __str__(self):
         return self.safe_translation_getter("title", any_language=True) or "Service Item"
+
+
+class HeaderPluginModel(CMSPlugin):
+    show_avatar = models.BooleanField(default=True, verbose_name=_("Show avatar"))
+    avatar = FilerImageField(
+        verbose_name=_("Avatar"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    def __str__(self):
+        return "Header navigation"

@@ -1,3 +1,4 @@
+from django import forms
 from parler.forms import TranslatableModelForm
 
 from .models import (
@@ -10,6 +11,7 @@ from .models import (
     FeaturedServicesSection,
     FooterPluginModel,
     HeroSectionPluginModel,
+    HeaderPluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -113,4 +115,10 @@ class FeaturedServicesSectionPluginForm(TranslatableModelForm):
 class FeaturedServiceItemPluginForm(TranslatableModelForm):
     class Meta:
         model = FeaturedServiceItem
+        fields = "__all__"
+
+
+class HeaderPluginForm(forms.ModelForm):
+    class Meta:
+        model = HeaderPluginModel
         fields = "__all__"
