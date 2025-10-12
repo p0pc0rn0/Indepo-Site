@@ -127,3 +127,5 @@ webencodings==0.5.1
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+psycopg2
+gunicorn==22.0.0
