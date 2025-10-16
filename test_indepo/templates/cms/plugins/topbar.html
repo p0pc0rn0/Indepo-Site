@@ -1,3 +1,5 @@
+{% load sekizai_tags %}
+
 <div class="contact-info d-flex align-items-center">
   <i class="bi bi-envelope d-flex align-items-center">
     <a href="mailto:{{ instance.email }}">{{ instance.email }}</a>
@@ -8,12 +10,69 @@
 </div>
 <div class="social-links d-none d-md-flex align-items-center">
   {% if instance.telegram %}
-    <a href="{{ instance.telegram }}" class="telegram"><i class="bi bi-telegram"></i></a>
+    <a href="{{ instance.telegram }}" class="social-link social-link--tg" target="_blank" rel="noopener">
+      <i class="bi bi-telegram"></i><span class="visually-hidden">Telegram</span>
+    </a>
   {% endif %}
   {% if instance.vk %}
-    <a href="{{ instance.vk }}" class="vk"><i class="bi bi-vk"></i></a>
+    <a href="{{ instance.vk }}" class="social-link social-link--vk" target="_blank" rel="noopener">
+      <span aria-hidden="true">VK</span><span class="visually-hidden">ВКонтакте</span>
+    </a>
   {% endif %}
   {% if instance.odnoklassniki %}
-    <a href="{{ instance.odnoklassniki }}" class="odnoklassniki"><i class="bi bi-people"></i></a>
+    <a href="{{ instance.odnoklassniki }}" class="social-link social-link--ok" target="_blank" rel="noopener">
+      <span aria-hidden="true">OK</span><span class="visually-hidden">Одноклассники</span>
+    </a>
   {% endif %}
 </div>
+
+{% addtoblock "css" %}
+<style>
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .social-link:hover,
+  .social-link:focus-visible {
+    color: #fff;
+  }
+  .social-link--tg {
+    background: #229ed9;
+    color: #fff;
+  }
+  .social-link--tg:hover,
+  .social-link--tg:focus-visible {
+    background: #1a8bc2;
+  }
+  .social-link--vk {
+    background: #4c75a3;
+    color: #fff;
+  }
+  .social-link--vk:hover,
+  .social-link--vk:focus-visible {
+    background: #3b5e82;
+  }
+  .social-link--ok {
+    background: #f58220;
+    color: #fff;
+  }
+  .social-link--ok:hover,
+  .social-link--ok:focus-visible {
+    background: #d86c12;
+  }
+  .social-link .bi {
+    font-size: 1rem;
+  }
+</style>
+{% endaddtoblock %}
