@@ -13,3 +13,4 @@ media/
 .ruff_cache/
 .pytest_cache/
 .tox/
+.DS_Store
