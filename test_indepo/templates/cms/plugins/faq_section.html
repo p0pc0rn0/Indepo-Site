@@ -49,7 +49,10 @@
   [data-faq-accordion] .faq-content {
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.35s ease;
+  }
+  [data-faq-accordion] .faq-content--scroll {
+    overflow-y: auto;
   }
   [data-faq-accordion] .faq-content-inner {
     padding: 0.75rem 0;
@@ -74,14 +77,18 @@
       if (!content) {
         return 0;
       }
-      var previousMax = content.style.maxHeight;
-      var previousOverflow = content.style.overflow;
-      content.style.maxHeight = 'none';
-      content.style.overflow = 'visible';
-      var height = content.scrollHeight;
-      content.style.maxHeight = previousMax;
-      content.style.overflow = previousOverflow;
-      return height;
+      var inner = content.firstElementChild;
+      return inner ? inner.scrollHeight : content.scrollHeight;
+    }
+
+    function onHeightTransitionEnd(content, callback) {
+      var handler = function (event) {
+        if (event.propertyName === "max-height") {
+          content.removeEventListener("transitionend", handler);
+          callback();
+        }
+      };
+      content.addEventListener("transitionend", handler);
     }
 
     function setExpanded(item, expanded) {
@@ -95,36 +102,43 @@
 
       if (expanded) {
         item.classList.add('faq-active');
-
         var fullHeight = measureContentHeight(content);
         var targetHeight = Math.min(fullHeight, MAX_PANEL_HEIGHT);
-
-        content.style.overflowY = fullHeight > MAX_PANEL_HEIGHT ? 'auto' : 'hidden';
-        content.style.webkitOverflowScrolling = fullHeight > MAX_PANEL_HEIGHT ? 'touch' : '';
-
-        var startHeight = content.offsetHeight;
-        content.style.transition = 'none';
-        content.style.maxHeight = startHeight + 'px';
-        content.offsetHeight;
-        content.style.transition = '';
-
-        requestAnimationFrame(function () {
+        if (fullHeight > MAX_PANEL_HEIGHT) {
+          content.classList.add('faq-content--scroll');
+          content.style.transition = 'none';
+          content.style.maxHeight = content.offsetHeight + 'px';
+          content.offsetHeight;
+          content.style.transition = '';
           content.style.maxHeight = targetHeight + 'px';
-        });
+        } else {
+          content.classList.remove('faq-content--scroll');
+          content.style.transition = 'none';
+          content.style.maxHeight = content.offsetHeight + 'px';
+          content.offsetHeight;
+          content.style.transition = '';
+          content.style.maxHeight = targetHeight + 'px';
+          onHeightTransitionEnd(content, function () {
+            if (item.classList.contains('faq-active')) {
+              content.style.maxHeight = 'none';
+            }
+          });
+        }
       } else {
         item.classList.remove('faq-active');
-
-        content.style.overflowY = 'hidden';
-        content.style.webkitOverflowScrolling = '';
-
-        var currentHeight = content.scrollHeight;
-        content.style.transition = 'none';
-        content.style.maxHeight = currentHeight + 'px';
-        content.offsetHeight;
-        content.style.transition = '';
-
+        var initialHeight = content.style.maxHeight;
+        if (!initialHeight || initialHeight === 'none') {
+          var currentHeight = measureContentHeight(content);
+          content.style.maxHeight = currentHeight + 'px';
+        }
+        content.classList.remove('faq-content--scroll');
         requestAnimationFrame(function () {
           content.style.maxHeight = '0px';
+        });
+        onHeightTransitionEnd(content, function () {
+          if (!item.classList.contains('faq-active')) {
+            content.style.maxHeight = '0px';
+          }
         });
       }
     }
