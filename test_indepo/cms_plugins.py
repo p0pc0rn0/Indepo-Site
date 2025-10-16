@@ -2,6 +2,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import gettext_lazy as _
 
+
 from .forms import (
     AboutItemPluginForm,
     AboutSectionPluginForm,
@@ -141,6 +142,11 @@ class HeaderPlugin(CMSPluginBase):
     form = HeaderPluginForm
     cache = False
     module = _("Header")
+
+
+
+
+
 
 
 @plugin_pool.register_plugin
