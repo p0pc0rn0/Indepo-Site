@@ -228,9 +228,23 @@ class TeamMember(TranslatableCMSPlugin):
 
 
 class ContactInfoPluginModel(TranslatableCMSPlugin):
+    ICON_SIZE_CHOICES = [
+        ("sm", _("Small")),
+        ("md", _("Medium")),
+        ("lg", _("Large")),
+    ]
+    LAYOUT_VARIANT_CHOICES = [
+        ("vertical", _("Vertical")),
+        ("inline", _("Inline")),
+    ]
+
     translations = TranslatedFields(
         title=models.CharField(max_length=100, default="Contact"),
-        subtitle=models.CharField(max_length=255, default="<span>Need Help?</span> <span class='description-title'>Contact Us</span>"),
+        subtitle=models.CharField(
+            max_length=255,
+            blank=True,
+            default="<span>Need Help?</span> <span class='description-title'>Contact Us</span>",
+        ),
         address=models.CharField(max_length=255, default="A108 Adam Street, New York, NY 535022"),
     )
     phone = models.CharField(max_length=50, default="+1 5589 55488 55")
@@ -238,6 +252,28 @@ class ContactInfoPluginModel(TranslatableCMSPlugin):
     map_iframe = models.TextField(
         default='<iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A..." width="100%" height="400" frameborder="0"></iframe>',
         help_text="Вставьте iframe карты Яндекс",
+    )
+    work_hours_title = models.CharField(
+        _("Work hours title"), max_length=120, blank=True, default="Время работы"
+    )
+    work_hours_text = models.TextField(_("Work hours"), blank=True, default="")
+    vk_url = models.URLField(_("VK URL"), blank=True, default="")
+    tg_url = models.URLField(
+        _("Telegram URL"),
+        blank=True,
+        default="",
+        help_text=_("Например: https://t.me/your_channel или tg://resolve?domain=your_channel"),
+    )
+    ok_url = models.URLField(_("Odnoklassniki URL"), blank=True, default="")
+    show_labels = models.BooleanField(_("Show labels near icons"), default=False)
+    icon_size = models.CharField(
+        _("Icon size"), max_length=2, choices=ICON_SIZE_CHOICES, default="md"
+    )
+    layout_variant = models.CharField(
+        _("Layout variant"),
+        max_length=8,
+        choices=LAYOUT_VARIANT_CHOICES,
+        default="vertical",
     )
 
     def __str__(self):
