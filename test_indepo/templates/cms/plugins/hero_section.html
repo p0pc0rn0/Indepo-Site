@@ -31,7 +31,8 @@
             </a>
           {% endif %}
           {% if instance.telegram_text and instance.telegram_url %}
-            <a href="{{ instance.telegram_url }}" class="glightbox btn-watch-video d-flex align-items-center">
+            <a href="{{ instance.telegram_url }}" class="btn-watch-video d-flex align-items-center"
+               target="_blank" rel="noopener noreferrer">
               <i class="bi bi-play-circle"></i><span>{{ instance.telegram_text }}</span>
             </a>
           {% endif %}

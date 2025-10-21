@@ -1,66 +1,375 @@
-<section id="contact" style="width: 100%; padding: 60px 0; background-color: #f8f9fa;">
-    <!-- Заголовок секции из админки -->
-    <div class="container section-title" data-aos="fade-up">
-        <h2>{{ instance.title }}</h2>
-        <p>{{ instance.subtitle|safe }}</p>
+{% load i18n sekizai_tags %}
+
+{% with layout=instance.layout_variant|default:"vertical" icon_size=instance.icon_size|default:"md" %}
+<section
+  id="contact"
+  class="contact-info-section"
+  data-contact-layout="{{ layout }}"
+  data-icon-size="{{ icon_size }}"
+  data-show-labels="{{ instance.show_labels|yesno:'true,false' }}"
+>
+  <div class="container contact-info">
+    <div class="contact-info__header" data-aos="fade-up">
+      <h2 class="contact-info__title">{{ instance.title }}</h2>
+      {% if instance.subtitle %}
+        <p class="contact-info__subtitle">{{ instance.subtitle|safe }}</p>
+      {% endif %}
     </div>
 
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row gy-4 d-flex align-items-stretch">
-
-            <!-- Контактные данные слева -->
-            <div class="col-lg-5 col-12">
-                <div class="info-wrap" style="
-                    background: #ffffff;
-                    padding: 30px;
-                    border-radius: 8px;
-                    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                ">
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
-                        <i class="bi bi-geo-alt flex-shrink-0" style="font-size: 2rem; margin-right: 10px;"></i>
-                        <div>
-                            <h3>Адрес</h3>
-                            <p>{{ instance.address }}</p>
-                        </div>
-                    </div>
-
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
-                        <i class="bi bi-telephone flex-shrink-0" style="font-size: 2rem; margin-right: 10px;"></i>
-                        <div>
-                            <h3>Номер телефона</h3>
-                            <p>{{ instance.phone }}</p>
-                        </div>
-                    </div>
-
-                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
-                        <i class="bi bi-envelope flex-shrink-0" style="font-size: 2rem; margin-right: 10px;"></i>
-                        <div>
-                            <h3>Почта</h3>
-                            <p>{{ instance.email }}</p>
-                        </div>
-                    </div>
-                </div>
+    <div class="contact-info__body" data-aos="fade-up" data-aos-delay="100">
+      <div class="contact-info__content">
+        <div class="contact-info__panel contact-info__items contact-info__items--{{ layout }}">
+          <div class="contact-info__item contact-info__item--address">
+            <span class="contact-info__icon" aria-hidden="true">
+              <i class="bi bi-geo-alt-fill"></i>
+            </span>
+            <div class="contact-info__item-body">
+              <h3 class="contact-info__item-title">{% trans "Address" %}</h3>
+              <address class="contact-info__item-text">{{ instance.address }}</address>
             </div>
-
-            <!-- Карта справа -->
-            <div class="col-lg-7 col-12">
-                <div class="map-wrap" style="
-                    background: #ffffff;
-                    padding: 10px;
-                    border-radius: 8px;
-                    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                ">
-                    {{ instance.map_iframe|safe }}
-                </div>
+          </div>
+          <div class="contact-info__item contact-info__item--phone">
+            <span class="contact-info__icon" aria-hidden="true">
+              <i class="bi bi-telephone-fill"></i>
+            </span>
+            <div class="contact-info__item-body">
+              <h3 class="contact-info__item-title">{% trans "Phone" %}</h3>
+              {% with phone_href=instance.phone|default_if_none:''|cut:" "|cut:"("|cut:")"|cut:"-" %}
+                <a class="contact-info__item-text" href="tel:{{ phone_href }}">
+                  {{ instance.phone }}
+                </a>
+              {% endwith %}
             </div>
-
+          </div>
+          <div class="contact-info__item contact-info__item--email">
+            <span class="contact-info__icon" aria-hidden="true">
+              <i class="bi bi-envelope-fill"></i>
+            </span>
+            <div class="contact-info__item-body">
+              <h3 class="contact-info__item-title">{% trans "Email" %}</h3>
+              <a class="contact-info__item-text" href="mailto:{{ instance.email }}">
+                {{ instance.email }}
+              </a>
+            </div>
+          </div>
         </div>
+
+        {% if instance.work_hours_text %}
+          <div class="contact-info__panel contact-info__schedule" data-aos="fade-up" data-aos-delay="150">
+            <div class="contact-info__schedule-inner">
+              <span class="contact-info__icon contact-info__icon--schedule" aria-hidden="true">
+                <i class="bi bi-clock-fill"></i>
+              </span>
+              <div class="contact-info__schedule-body">
+                {% if instance.work_hours_title %}
+                  <h3 class="contact-info__schedule-title">{{ instance.work_hours_title }}</h3>
+                {% endif %}
+                <p class="contact-info__schedule-text">{{ instance.work_hours_text|linebreaksbr }}</p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if instance.vk_url or instance.tg_url or instance.ok_url %}
+          <div class="contact-info__panel contact-info__socials" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="contact-info__socials-title">{% trans "Социальные сети" %}</h3>
+            <div class="contact-info__social-list">
+              {% if instance.vk_url %}
+                <a
+                  href="{{ instance.vk_url }}"
+                  class="contact-info__social contact-info__social--vk"
+                  target="_blank"
+                  rel="noopener"
+                  {% if not instance.show_labels %}aria-label="VK"{% endif %}
+                >
+                  <span class="contact-info__social-icon" aria-hidden="true">
+                    <span>VK</span>
+                  </span>
+                  {% if instance.show_labels %}
+                    <span class="contact-info__social-label">VK</span>
+                  {% endif %}
+                </a>
+              {% endif %}
+              {% if instance.tg_url %}
+                <a
+                  href="{{ instance.tg_url }}"
+                  class="contact-info__social contact-info__social--tg"
+                  target="_blank"
+                  rel="noopener"
+                  {% if not instance.show_labels %}aria-label="Telegram"{% endif %}
+                >
+                  <span class="contact-info__social-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                      <path d="M21.6 3.2L2.4 10.2c-.9.3-.9 1.1-.2 1.3l4.9 1.5 11.4-7.2c.5-.3 1-.1.6.2l-9.2 8.3-.3 5c.4 0 .7-.2 1-.4l2.4-2.3 4.9 3.6c.9.5 1.5.3 1.7-.8l3-14.6c.2-.9-.3-1.3-1-1z"/>
+                    </svg>
+                  </span>
+                  {% if instance.show_labels %}
+                    <span class="contact-info__social-label">Telegram</span>
+                  {% endif %}
+                </a>
+              {% endif %}
+              {% if instance.ok_url %}
+                <a
+                  href="{{ instance.ok_url }}"
+                  class="contact-info__social contact-info__social--ok"
+                  target="_blank"
+                  rel="noopener"
+                  {% if not instance.show_labels %}aria-label="OK"{% endif %}
+                >
+                  <span class="contact-info__social-icon" aria-hidden="true">
+                    <span>OK</span>
+                  </span>
+                  {% if instance.show_labels %}
+                    <span class="contact-info__social-label">OK</span>
+                  {% endif %}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if instance.map_iframe %}
+        <div class="contact-info__map" data-aos="fade-up" data-aos-delay="150">
+          {{ instance.map_iframe|safe }}
+        </div>
+      {% endif %}
     </div>
+  </div>
 </section>
+{% endwith %}
+
+{% addtoblock "css" %}
+<style>
+  .contact-info-section {
+    padding: clamp(2.5rem, 4vw, 4rem) 0;
+    background-color: var(--bs-body-bg, #fff);
+  }
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  .contact-info__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .contact-info__title {
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .contact-info__subtitle {
+    color: rgba(33, 37, 41, 0.7);
+    margin: 0;
+  }
+  .contact-info__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  .contact-info__content {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .contact-info__panel {
+    background-color: rgba(33, 37, 41, 0.03);
+    border-radius: 1rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.06);
+  }
+  .contact-info__schedule-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .contact-info__schedule-body {
+    flex: 1 1 auto;
+  }
+  .contact-info__icon--schedule {
+    font-size: 1.4rem;
+  }
+  .contact-info__items {
+    display: flex;
+    gap: 1rem;
+  }
+  .contact-info__items--vertical {
+    flex-direction: column;
+  }
+  .contact-info__items--inline {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .contact-info__item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    flex: 1 1 auto;
+  }
+  .contact-info__items--inline .contact-info__item + .contact-info__item {
+    border-left: 1px solid rgba(33, 37, 41, 0.08);
+    padding-left: 1rem;
+  }
+  .contact-info__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    background: var(--accent-color, #0d6efd);
+    color: var(--contrast-color, #fff);
+    flex-shrink: 0;
+    font-size: 1.25rem;
+  }
+  .contact-info__icon i {
+    color: inherit;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .contact-info__icon--schedule i {
+    font-size: 1.25rem;
+  }
+  .contact-info__item-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .contact-info__item-text {
+    display: inline-block;
+    margin: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .contact-info__item-text:hover,
+  .contact-info__item-text:focus-visible {
+    color: var(--bs-primary, #0d6efd);
+  }
+  .contact-info__schedule-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .contact-info__schedule-text {
+    margin: 0;
+    color: rgba(33, 37, 41, 0.75);
+  }
+  .contact-info__socials {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .contact-info__socials-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .contact-info__social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .contact-info__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 40px;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    text-decoration: none;
+    background: rgba(33, 37, 41, 0.05);
+    color: inherit;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .contact-info__social:focus-visible,
+  .contact-info__social:hover {
+    transform: translateY(-1px);
+    background: rgba(13, 110, 253, 0.15);
+  }
+  .contact-info__social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--contact-social-size, 44px);
+    height: var(--contact-social-size, 44px);
+    border-radius: 999px;
+    background: rgba(33, 37, 41, 0.12);
+    color: inherit;
+  }
+  .contact-info__social-icon span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: calc(var(--contact-social-size, 44px) * 0.34);
+  }
+  .contact-info__social-icon svg {
+    width: calc(var(--contact-social-size, 44px) * 0.55);
+    height: calc(var(--contact-social-size, 44px) * 0.55);
+    fill: currentColor;
+  }
+  .contact-info__social-label {
+    display: none;
+    font-weight: 600;
+  }
+  [data-show-labels="true"] .contact-info__social-label {
+    display: inline;
+  }
+  .contact-info__map {
+    flex: 1 1 360px;
+    min-height: 320px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 1.25rem 2.5rem rgba(15, 23, 42, 0.08);
+  }
+  .contact-info__map iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  [data-icon-size="sm"] {
+    --contact-social-size: 40px;
+  }
+  [data-icon-size="md"] {
+    --contact-social-size: 48px;
+  }
+  [data-icon-size="lg"] {
+    --contact-social-size: 56px;
+  }
+  [data-contact-layout="inline"] .contact-info__items {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  @media (max-width: 991.98px) {
+    .contact-info__items,
+    [data-contact-layout="inline"] .contact-info__items {
+      flex-direction: column;
+    }
+    .contact-info__items--inline .contact-info__item + .contact-info__item {
+      border-left: none;
+      padding-left: 0;
+      border-top: 1px solid rgba(33, 37, 41, 0.08);
+      padding-top: 1rem;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .contact-info__social-list {
+      gap: 0.5rem;
+    }
+    .contact-info__social {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endaddtoblock %}
