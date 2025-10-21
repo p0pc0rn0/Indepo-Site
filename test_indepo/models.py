@@ -128,12 +128,8 @@ class HeroSectionPluginModel(TranslatableCMSPlugin):
             ),
         ),
         get_started_text=models.CharField(_("Primary button text"), max_length=100, default="Get Started"),
-        telegram_text=models.CharField(_("Secondary button text"), max_length=100, default="Телеграмм канал", blank=True),
     )
     get_started_url = models.CharField(_("Primary button URL"), max_length=200, default="#about", blank=True)
-    telegram_url = models.CharField(
-        _("Secondary button URL"), max_length=200, default="https://t.me/integral_security", blank=True
-    )
     aos_animation = models.CharField(_("AOS animation"), max_length=50, default="zoom-out", blank=True)
 
     def __str__(self):
