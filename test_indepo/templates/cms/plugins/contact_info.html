@@ -24,7 +24,7 @@
               <i class="bi bi-geo-alt-fill"></i>
             </span>
             <div class="contact-info__item-body">
-              <h3 class="contact-info__item-title">{% trans "Address" %}</h3>
+              <h3 class="contact-info__item-title">{% trans "Адрес" %}</h3>
               <address class="contact-info__item-text">{{ instance.address }}</address>
             </div>
           </div>
@@ -33,7 +33,7 @@
               <i class="bi bi-telephone-fill"></i>
             </span>
             <div class="contact-info__item-body">
-              <h3 class="contact-info__item-title">{% trans "Phone" %}</h3>
+              <h3 class="contact-info__item-title">{% trans "Контакный телефон" %}</h3>
               {% with phone_href=instance.phone|default_if_none:''|cut:" "|cut:"("|cut:")"|cut:"-" %}
                 <a class="contact-info__item-text" href="tel:{{ phone_href }}">
                   {{ instance.phone }}
