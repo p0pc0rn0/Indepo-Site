@@ -311,6 +311,40 @@ class FeaturedServiceItem(TranslatableCMSPlugin):
         return self.safe_translation_getter("title", any_language=True) or "Service Item"
 
 
+class DocumentsSectionPluginModel(CMSPlugin):
+    LAYOUT_CHOICES = [
+        ("list", _("List")),
+        ("accordion", _("Accordion")),
+    ]
+
+    title = models.CharField(_("Title"), max_length=200, blank=True, default="")
+    show_search = models.BooleanField(_("Show search field"), default=True)
+    show_empty_sections = models.BooleanField(_("Show empty subsections"), default=True)
+    layout_variant = models.CharField(
+        _("Layout variant"), max_length=20, choices=LAYOUT_CHOICES, default="list"
+    )
+
+    def __str__(self):
+        return self.title or _("Documents section")
+
+
+class DocumentSubsectionPluginModel(CMSPlugin):
+    title = models.CharField(_("Subsection title"), max_length=200, blank=True, default="")
+    description = HTMLField(_("Description"), blank=True, default="")
+
+    def __str__(self):
+        return self.title or _("Documents subsection")
+
+
+class DocumentItemPluginModel(CMSPlugin):
+    name = models.CharField(_("Document name"), max_length=255)
+    url = models.URLField(_("Document URL"))
+    description = models.TextField(_("Short description"), blank=True, default="")
+
+    def __str__(self):
+        return self.name
+
+
 class HeaderPluginModel(CMSPlugin):
     show_avatar = models.BooleanField(default=True, verbose_name=_("Show avatar"))
     avatar = FilerImageField(

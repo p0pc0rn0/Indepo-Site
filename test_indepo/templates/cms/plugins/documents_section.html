@@ -1,0 +1,217 @@
+{% load cms_tags sekizai_tags i18n %}
+
+<section
+  class="documents-section"
+  data-documents-root
+  data-layout="{{ layout_variant }}"
+  data-show-empty="{{ show_empty_sections|yesno:'true,false' }}"
+>
+  {% if instance.title %}
+    <header class="documents-section__header">
+      <h2 class="documents-section__title">{{ instance.title }}</h2>
+    </header>
+  {% endif %}
+
+  {% if instance.show_search %}
+    <div class="documents-section__search">
+      <label class="visually-hidden" for="documents-search-{{ instance.pk }}">
+        {% trans "Search documents" %}
+      </label>
+      <input
+        type="search"
+        id="documents-search-{{ instance.pk }}"
+        class="documents-section__search-input"
+        placeholder="{% trans 'Search documents...' %}"
+        data-documents-search
+        autocomplete="off"
+      />
+    </div>
+  {% endif %}
+
+  <div class="documents-section__body" data-documents-sections>
+    {% if children %}
+      {% for plugin in children %}
+        {% render_plugin plugin %}
+      {% endfor %}
+    {% else %}
+      <p class="documents-section__empty">
+        {% trans "No documents have been added yet." %}
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+{% addtoblock "css" %}
+<style>
+  .documents-section {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid rgba(33, 37, 41, 0.08);
+    border-radius: 1rem;
+    box-shadow: 0 1.25rem 2.5rem rgba(15, 23, 42, 0.08);
+  }
+  .documents-section__header {
+    margin-bottom: 1.25rem;
+  }
+  .documents-section__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+  }
+  .documents-section__search {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .documents-section__search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(33, 37, 41, 0.18);
+    background: rgba(33, 37, 41, 0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .documents-section__search-input:focus-visible {
+    border-color: var(--bs-primary, #0d6efd);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  }
+  .documents-section__empty {
+    margin: 0;
+    color: rgba(33, 37, 41, 0.6);
+    text-align: center;
+  }
+</style>
+{% endaddtoblock %}
+
+{% trans "Nothing found for your query." as documents_no_results %}
+{% addtoblock "js" %}
+<script>
+  (function () {
+    function toggleAccordion(control, expand, root) {
+      var targetId = control.getAttribute("data-target");
+      if (!targetId) return;
+      var panel = document.getElementById(targetId);
+      if (!panel) return;
+      var isExpanded = expand !== undefined ? expand : control.getAttribute("aria-expanded") === "true";
+      var nextState = expand !== undefined ? expand : !isExpanded;
+      if (nextState && root) {
+        root.querySelectorAll("[data-document-header]").forEach(function (otherControl) {
+          if (otherControl === control) return;
+          var otherPanelId = otherControl.getAttribute("data-target");
+          var otherPanel = document.getElementById(otherPanelId);
+          otherControl.setAttribute("aria-expanded", "false");
+          if (otherPanel) {
+            otherPanel.hidden = true;
+          }
+        });
+      }
+      control.setAttribute("aria-expanded", String(nextState));
+      panel.hidden = !nextState;
+    }
+
+    function initDocumentsSection(section) {
+      var showEmpty = section.dataset.showEmpty === "true";
+      var layout = section.dataset.layout || "list";
+      var searchInput = section.querySelector("[data-documents-search]");
+      var sectionItems = Array.from(section.querySelectorAll("[data-document-section]"));
+
+      if (layout === "accordion") {
+        sectionItems.forEach(function (subsection) {
+          var header = subsection.querySelector("[data-document-header]");
+          if (header) {
+            var handler = function () {
+              toggleAccordion(header, undefined, section);
+            };
+            header.addEventListener("click", handler);
+            header.addEventListener("keydown", function (event) {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handler();
+              }
+            });
+          }
+        });
+      }
+
+      if (!searchInput) {
+        return;
+      }
+
+      var noResultsPlaceholder = document.createElement("p");
+      noResultsPlaceholder.className = "documents-section__empty";
+      noResultsPlaceholder.textContent = "{{ documents_no_results|escapejs }}";
+      noResultsPlaceholder.hidden = true;
+      section.appendChild(noResultsPlaceholder);
+
+      var originalStates = new WeakMap();
+      sectionItems.forEach(function (subsection) {
+        originalStates.set(subsection, {
+          hasDocuments: subsection.dataset.hasDocuments === "true",
+        });
+      });
+
+      function updateVisibility() {
+        var query = searchInput.value.trim().toLowerCase();
+        var matchesFound = 0;
+
+        sectionItems.forEach(function (subsection) {
+          var items = Array.from(subsection.querySelectorAll("[data-document-item]"));
+          var meta = originalStates.get(subsection) || { hasDocuments: items.length > 0 };
+          var subsectionMatches = 0;
+
+          items.forEach(function (item) {
+            var title = (item.dataset.documentTitle || "").toLowerCase();
+            var matches = !query || title.indexOf(query) !== -1;
+            item.style.display = matches ? "" : "none";
+            if (matches) {
+              subsectionMatches += 1;
+            }
+          });
+
+          var shouldShow;
+          if (query) {
+            shouldShow = subsectionMatches > 0;
+          } else if (meta.hasDocuments) {
+            shouldShow = true;
+          } else {
+            shouldShow = showEmpty;
+          }
+
+          subsection.style.display = shouldShow ? "" : "none";
+          if (shouldShow && subsectionMatches > 0) {
+            matchesFound += subsectionMatches;
+          }
+
+          if (layout === "accordion") {
+            var header = subsection.querySelector("[data-document-header]");
+            if (header) {
+              var body = document.getElementById(header.getAttribute("data-target"));
+              if (!body) return;
+              if (query) {
+                toggleAccordion(header, subsectionMatches > 0, section);
+              } else if (body.dataset.initiallyExpanded === "true") {
+                toggleAccordion(header, true, section);
+              } else {
+                toggleAccordion(header, false, section);
+              }
+            }
+          }
+        });
+
+        noResultsPlaceholder.hidden = matchesFound > 0 || !searchInput.value.trim();
+      }
+
+      updateVisibility();
+      searchInput.addEventListener("input", updateVisibility);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .querySelectorAll("[data-documents-root]")
+        .forEach(function (section) {
+          initDocumentsSection(section);
+        });
+    });
+  })();
+</script>
+{% endaddtoblock %}

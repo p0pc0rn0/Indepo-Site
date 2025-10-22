@@ -1,0 +1,161 @@
+{% load cms_tags i18n sekizai_tags %}
+
+<article
+  class="documents-subsection documents-subsection--{{ layout_variant }}"
+  data-document-section
+  data-has-documents="{{ has_documents|yesno:'true,false' }}"
+>
+  <header
+    class="documents-subsection__header"
+    {% if layout_variant == "accordion" %}
+      data-document-header
+      data-target="{{ section_dom_id }}-body"
+      role="button"
+      tabindex="0"
+      aria-controls="{{ section_dom_id }}-body"
+      aria-expanded="false"
+    {% endif %}
+  >
+    {% if instance.title %}
+      <h3 class="documents-subsection__title">{{ instance.title }}</h3>
+    {% endif %}
+    {% if layout_variant == "accordion" %}
+      <span class="documents-subsection__toggle" aria-hidden="true"></span>
+    {% endif %}
+  </header>
+
+  <div
+    id="{{ section_dom_id }}-body"
+    class="documents-subsection__body"
+    data-document-body
+    data-initially-expanded="false"
+    {% if layout_variant == "accordion" %}hidden{% endif %}
+  >
+    {% if instance.description %}
+      <div class="documents-subsection__description" data-document-description>
+        {{ instance.description|safe }}
+      </div>
+    {% endif %}
+
+    {% if documents %}
+      <ul class="documents-subsection__list" data-document-list>
+        {% for plugin in documents %}
+          <li class="documents-subsection__list-item">
+            {% render_plugin plugin %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif show_empty_sections %}
+      <p class="documents-subsection__empty">
+        {% trans "" %}
+      </p>
+    {% endif %}
+  </div>
+</article>
+
+{% addtoblock "css" %}
+<style>
+  .documents-subsection {
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 0.9rem;
+    padding: 1.35rem 1.65rem;
+    background: rgba(248, 249, 252, 0.9);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+  .documents-subsection::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(13, 110, 253, 0.08), rgba(13, 110, 253, 0));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .documents-subsection:hover::before,
+  .documents-subsection:focus-within::before {
+    opacity: 1;
+  }
+  .documents-subsection:hover,
+  .documents-subsection:focus-within {
+    border-color: rgba(13, 110, 253, 0.25);
+    box-shadow: 0 1.2rem 2.3rem rgba(15, 23, 42, 0.12);
+    transform: translateY(-2px);
+  }
+  .documents-subsection + .documents-subsection {
+    margin-top: 1rem;
+  }
+  .documents-subsection__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: relative;
+  }
+  .documents-subsection__header[data-document-header] {
+    cursor: pointer;
+  }
+  .documents-subsection__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .documents-subsection__toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(33, 37, 41, 0.18);
+    background: #fff;
+    pointer-events: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .documents-subsection__toggle::before,
+  .documents-subsection__toggle::after {
+    content: "";
+    position: absolute;
+    background: currentColor;
+    transition: transform 0.2s ease;
+  }
+  .documents-subsection__toggle::before {
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+  }
+  .documents-subsection__toggle::after {
+    width: 2px;
+    height: 16px;
+    border-radius: 1px;
+  }
+  .documents-subsection__header[aria-expanded="true"] .documents-subsection__toggle::after {
+    transform: scaleY(0);
+  }
+  .documents-subsection__header[aria-expanded="true"] .documents-subsection__toggle {
+    border-color: rgba(13, 110, 253, 0.35);
+    background: rgba(13, 110, 253, 0.08);
+  }
+  .documents-subsection__body {
+    margin-top: 1rem;
+  }
+  .documents-subsection__description {
+    color: rgba(33, 37, 41, 0.75);
+    margin-bottom: 0.9rem;
+  }
+  .documents-subsection__list {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .documents-subsection__empty {
+    margin: 0;
+    color: rgba(33, 37, 41, 0.55);
+    font-style: italic;
+  }
+</style>
+{% endaddtoblock %}
