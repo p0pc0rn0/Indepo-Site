@@ -33,6 +33,9 @@ from .models import (
     FooterPluginModel,
     HeroSectionPluginModel,
     HeaderPluginModel,
+    DocumentItemPluginModel,
+    DocumentSubsectionPluginModel,
+    DocumentsSectionPluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -142,6 +145,83 @@ class HeaderPlugin(CMSPluginBase):
     form = HeaderPluginForm
     cache = False
     module = _("Header")
+
+
+@plugin_pool.register_plugin
+class DocumentsSectionPlugin(CMSPluginBase):
+    model = DocumentsSectionPluginModel
+    name = _("Documents Section")
+    render_template = "cms/plugins/documents_section.html"
+    cache = False
+    allow_children = True
+    child_classes = ["DocumentSubsectionPlugin"]
+    module = _("Documents")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        children = getattr(instance, "child_plugin_instances", []) or []
+        visible_children = []
+        has_documents = False
+
+        for child in children:
+            if isinstance(child, DocumentSubsectionPluginModel):
+                documents = [
+                    doc
+                    for doc in (getattr(child, "child_plugin_instances", []) or [])
+                    if isinstance(doc, DocumentItemPluginModel)
+                ]
+                section_has_docs = bool(documents)
+                if section_has_docs:
+                    has_documents = True
+                if section_has_docs or instance.show_empty_sections:
+                    visible_children.append(child)
+
+        context["children"] = visible_children
+        context["has_documents"] = has_documents
+        context["layout_variant"] = instance.layout_variant
+        context["show_empty_sections"] = instance.show_empty_sections
+        return context
+
+
+@plugin_pool.register_plugin
+class DocumentSubsectionPlugin(CMSPluginBase):
+    model = DocumentSubsectionPluginModel
+    name = _("Document Subsection")
+    render_template = "cms/plugins/document_subsection.html"
+    cache = False
+    allow_children = True
+    child_classes = ["DocumentItemPlugin"]
+    parent_classes = ["DocumentsSectionPlugin"]
+    module = _("Documents")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        documents = [
+            doc
+            for doc in (getattr(instance, "child_plugin_instances", []) or [])
+            if isinstance(doc, DocumentItemPluginModel)
+        ]
+        parent_model = None
+        if instance.parent:
+            parent_model, _plugin = instance.parent.get_plugin_instance()
+
+        context["documents"] = documents
+        context["has_documents"] = bool(documents)
+        context["layout_variant"] = getattr(parent_model, "layout_variant", "list")
+        context["show_empty_sections"] = getattr(parent_model, "show_empty_sections", True)
+        context["section_dom_id"] = f"docs-subsection-{instance.pk}"
+        return context
+
+
+@plugin_pool.register_plugin
+class DocumentItemPlugin(CMSPluginBase):
+    model = DocumentItemPluginModel
+    name = _("Document Item")
+    render_template = "cms/plugins/document_item.html"
+    cache = False
+    require_parent = True
+    parent_classes = ["DocumentSubsectionPlugin"]
+    module = _("Documents")
 
 
 

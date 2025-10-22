@@ -1,0 +1,53 @@
+{% load i18n sekizai_tags %}
+
+<div
+  class="document-item"
+  data-document-item
+  data-document-title="{{ instance.name|lower }}"
+>
+  <a
+    class="document-item__link"
+    href="{{ instance.url }}"
+    target="_blank"
+    rel="noopener"
+  >
+    {{ instance.name }}
+  </a>
+  {% if instance.description %}
+    <p class="document-item__description">
+      {{ instance.description|linebreaksbr }}
+    </p>
+  {% endif %}
+</div>
+
+{% addtoblock "css" %}
+<style>
+  .document-item {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: #fff;
+    border: 1px solid rgba(33, 37, 41, 0.08);
+    box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .document-item:hover,
+  .document-item:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 1.2rem 2.2rem rgba(15, 23, 42, 0.12);
+  }
+  .document-item__link {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--bs-primary, #0d6efd);
+  }
+  .document-item__link:hover,
+  .document-item__link:focus-visible {
+    text-decoration: underline;
+  }
+  .document-item__description {
+    margin: 0.5rem 0 0;
+    color: rgba(33, 37, 41, 0.65);
+    font-size: 0.95rem;
+  }
+</style>
+{% endaddtoblock %}
