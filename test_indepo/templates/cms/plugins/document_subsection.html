@@ -40,7 +40,7 @@
     {% if documents %}
       <ul class="documents-subsection__list" data-document-list>
         {% for plugin in documents %}
-          <li class="documents-subsection__list-item">
+          <li class="documents-subsection__list-item" data-document-item-wrapper>
             {% render_plugin plugin %}
           </li>
         {% endfor %}

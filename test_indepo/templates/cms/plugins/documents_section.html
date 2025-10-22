@@ -163,6 +163,10 @@
             var title = (item.dataset.documentTitle || "").toLowerCase();
             var matches = !query || title.indexOf(query) !== -1;
             item.style.display = matches ? "" : "none";
+            var wrapper = item.closest("[data-document-item-wrapper]");
+            if (wrapper) {
+              wrapper.style.display = matches ? "" : "none";
+            }
             if (matches) {
               subsectionMatches += 1;
             }
