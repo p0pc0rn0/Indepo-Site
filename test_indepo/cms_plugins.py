@@ -36,6 +36,7 @@ from .models import (
     DocumentItemPluginModel,
     DocumentSubsectionPluginModel,
     DocumentsSectionPluginModel,
+    TablePluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -222,6 +223,20 @@ class DocumentItemPlugin(CMSPluginBase):
     require_parent = True
     parent_classes = ["DocumentSubsectionPlugin"]
     module = _("Documents")
+
+
+@plugin_pool.register_plugin
+class TablePlugin(CMSPluginBase):
+    model = TablePluginModel
+    name = _("Tables")
+    render_template = "cms/plugins/table.html"
+    cache = False
+    module = _("Content")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
+        return context
 
 
 
