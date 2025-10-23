@@ -325,7 +325,7 @@ class DocumentsSectionPluginModel(CMSPlugin):
     )
 
     def __str__(self):
-        return self.title or _("Documents section")
+        return self.title or str(_("Documents section"))
 
 
 class DocumentSubsectionPluginModel(CMSPlugin):
@@ -333,7 +333,7 @@ class DocumentSubsectionPluginModel(CMSPlugin):
     description = HTMLField(_("Description"), blank=True, default="")
 
     def __str__(self):
-        return self.title or _("Documents subsection")
+        return self.title or str(_("Documents subsection"))
 
 
 class DocumentItemPluginModel(CMSPlugin):
@@ -343,6 +343,15 @@ class DocumentItemPluginModel(CMSPlugin):
 
     def __str__(self):
         return self.name
+
+
+class TablePluginModel(CMSPlugin):
+    title = models.CharField(_("Table title"), max_length=200, blank=True, default="")
+    table_html = HTMLField(_("Table content"))
+    footnote = models.CharField(_("Footnote"), max_length=255, blank=True, default="")
+
+    def __str__(self):
+        return self.title or str(_("Table"))
 
 
 class HeaderPluginModel(CMSPlugin):

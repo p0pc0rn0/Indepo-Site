@@ -1,0 +1,105 @@
+{% load sekizai_tags i18n %}
+
+<section class="table-plugin" data-table-plugin>
+  {% if instance.title %}
+    <header class="table-plugin__header">
+      <h3 class="table-plugin__title">{{ instance.title }}</h3>
+    </header>
+  {% endif %}
+  <div class="table-plugin__wrapper">
+    <div class="table-plugin__scroll" tabindex="0">
+      <div class="table-plugin__inner">
+        {{ instance.table_html|safe }}
+      </div>
+    </div>
+  </div>
+  {% if instance.footnote %}
+    <footer class="table-plugin__footnote">
+      {{ instance.footnote }}
+    </footer>
+  {% endif %}
+</section>
+
+{% addtoblock "css" %}
+<style>
+  .table-plugin {
+    margin: clamp(1.5rem, 3vw, 2.5rem) 0;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid rgba(33, 37, 41, 0.08);
+    border-radius: 1rem;
+    box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.08);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  }
+  .table-plugin__header {
+    margin-bottom: 1rem;
+  }
+  .table-plugin__title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 700;
+  }
+  .table-plugin__wrapper {
+    position: relative;
+  }
+  .table-plugin__scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.75rem;
+    outline: none;
+  }
+  .table-plugin__scroll:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+  .table-plugin table {
+    width: 100%;
+    min-width: 320px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid rgba(33, 37, 41, 0.12);
+    background: #fff;
+  }
+  .table-plugin thead {
+    background: rgba(13, 110, 253, 0.08);
+  }
+  .table-plugin th,
+  .table-plugin td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(33, 37, 41, 0.08);
+    border-right: 1px solid rgba(33, 37, 41, 0.08);
+    text-align: left;
+    vertical-align: top;
+  }
+  .table-plugin th {
+    font-weight: 700;
+  }
+  .table-plugin tr:last-child td {
+    border-bottom: none;
+  }
+  .table-plugin tr td:last-child,
+  .table-plugin tr th:last-child {
+    border-right: none;
+  }
+  .table-plugin tbody tr:nth-child(odd) {
+    background: rgba(33, 37, 41, 0.015);
+  }
+  .table-plugin table img {
+    max-width: 100%;
+    height: auto;
+  }
+  .table-plugin__footnote {
+    margin-top: 0.85rem;
+    font-size: 0.9rem;
+    color: rgba(33, 37, 41, 0.65);
+  }
+  @media (max-width: 575.98px) {
+    .table-plugin {
+      padding: 1rem;
+    }
+    .table-plugin th,
+    .table-plugin td {
+      padding: 0.65rem 0.75rem;
+      white-space: nowrap;
+    }
+  }
+</style>
+{% endaddtoblock %}
