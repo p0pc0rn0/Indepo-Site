@@ -153,12 +153,26 @@
   .contact-info-section .contact-info__header {
     text-align: center;
     max-width: 720px;
-    margin: 0 auto;
+    margin: 0 auto clamp(1.5rem, 3vw, 2rem);
   }
   .contact-info-section .contact-info__title {
     font-size: clamp(2rem, 3vw, 2.5rem);
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin: 0;
+    display: inline-block;
+    position: relative;
+    padding-bottom: 0.7rem;
+  }
+  .contact-info-section .contact-info__title::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 78px;
+    height: 3px;
+    background: rgba(13, 110, 253, 0.25);
+    transform: translateX(-50%);
+    border-radius: 999px;
   }
   .contact-info-section .contact-info__subtitle {
     color: rgba(33, 37, 41, 0.7);
