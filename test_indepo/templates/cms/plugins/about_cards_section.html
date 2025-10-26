@@ -1,0 +1,112 @@
+{% load cms_tags sekizai_tags i18n %}
+
+<section
+  class="about-cards-section"
+  data-about-root
+  data-layout="{{ layout_variant }}"
+>
+  {% if instance.title %}
+    <header class="about-cards-section__header">
+      <h2 class="about-cards-section__title">{{ instance.title }}</h2>
+    </header>
+  {% endif %}
+
+  <div class="about-cards-section__body">
+    {% if children %}
+      {% for plugin in children %}
+        {% render_plugin plugin %}
+      {% endfor %}
+    {% else %}
+      <p class="about-cards-section__empty">
+        {% trans "No descriptions added yet." %}
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+{% addtoblock "css" %}
+<style>
+  .about-cards-section {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    background: var(--bs-body-bg, #fff);
+    border-radius: 1rem;
+    border: 1px solid rgba(33, 37, 41, 0.08);
+    box-shadow: 0 1.2rem 2.5rem rgba(15, 23, 42, 0.08);
+  }
+  .about-cards-section__header {
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  }
+  .about-cards-section__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+  }
+  .about-cards-section__body {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2vw, 1.25rem);
+  }
+  .about-cards-section__empty {
+    margin: 0;
+    color: rgba(33, 37, 41, 0.6);
+    font-style: italic;
+    text-align: center;
+  }
+</style>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+  (function () {
+    function toggleCard(control, expand, root) {
+      var targetId = control.getAttribute("data-target");
+      if (!targetId) return;
+      var panel = document.getElementById(targetId);
+      if (!panel) return;
+      var isExpanded = expand !== undefined ? expand : control.getAttribute("aria-expanded") === "true";
+      var nextState = expand !== undefined ? expand : !isExpanded;
+      if (nextState && root) {
+        root.querySelectorAll("[data-about-header]").forEach(function (otherControl) {
+          if (otherControl === control) return;
+          var otherPanelId = otherControl.getAttribute("data-target");
+          var otherPanel = document.getElementById(otherPanelId);
+          otherControl.setAttribute("aria-expanded", "false");
+          if (otherPanel) {
+            otherPanel.hidden = true;
+          }
+        });
+      }
+      control.setAttribute("aria-expanded", String(nextState));
+      panel.hidden = !nextState;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("[data-about-root]").forEach(function (root) {
+        var layout = root.dataset.layout || "list";
+        if (layout !== "accordion") {
+          return;
+        }
+        root.querySelectorAll("[data-about-header]").forEach(function (header) {
+          var handler = function () {
+            toggleCard(header, undefined, root);
+          };
+          header.addEventListener("click", handler);
+          header.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handler();
+            }
+          });
+
+          var body = document.getElementById(header.getAttribute("data-target"));
+          if (body && body.dataset.initiallyExpanded === "true") {
+            toggleCard(header, true, root);
+          } else if (body) {
+            body.hidden = true;
+          }
+        });
+      });
+    });
+  })();
+</script>
+{% endaddtoblock %}

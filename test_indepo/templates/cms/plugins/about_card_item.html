@@ -1,0 +1,170 @@
+{% load cms_tags sekizai_tags i18n %}
+
+<article
+  class="about-card about-card--{{ layout_variant }}"
+  data-about-card
+>
+  <header
+    class="about-card__header"
+    {% if layout_variant == "accordion" %}
+      data-about-header
+      data-target="{{ card_dom_id }}-body"
+      role="button"
+      tabindex="0"
+      aria-controls="{{ card_dom_id }}-body"
+      aria-expanded="{{ is_initially_open|yesno:'true,false' }}"
+    {% endif %}
+  >
+    {% if instance.title %}
+      <h3 class="about-card__title">{{ instance.title }}</h3>
+    {% endif %}
+    {% if layout_variant == "accordion" %}
+      <span class="about-card__toggle" aria-hidden="true"></span>
+    {% endif %}
+  </header>
+  <div
+    id="{{ card_dom_id }}-body"
+    class="about-card__body"
+    data-initially-expanded="{{ is_initially_open|yesno:'true,false' }}"
+    {% if layout_variant == "accordion" and not is_initially_open %}
+      hidden
+    {% endif %}
+  >
+    <div class="about-card__content">
+      {{ instance.body|safe }}
+    </div>
+  </div>
+</article>
+
+{% addtoblock "css" %}
+<style>
+  .about-card {
+    border: 1px solid rgba(33, 37, 41, 0.1);
+    border-radius: 0.9rem;
+    padding: 1.35rem 1.65rem;
+    background: rgba(248, 249, 252, 0.9);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+  .about-card:hover,
+  .about-card:focus-within {
+    border-color: rgba(13, 110, 253, 0.25);
+    box-shadow: 0 1.25rem 2.2rem rgba(15, 23, 42, 0.12);
+    transform: translateY(-2px);
+  }
+  .about-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: relative;
+    cursor: default;
+  }
+  .about-card__header[data-about-header] {
+    cursor: pointer;
+  }
+  .about-card__title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .about-card__toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(33, 37, 41, 0.18);
+    background: #fff;
+    pointer-events: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .about-card__toggle::before,
+  .about-card__toggle::after {
+    content: "";
+    position: absolute;
+    background: currentColor;
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease;
+  }
+  .about-card__toggle::after {
+    width: 2px;
+    height: 16px;
+  }
+  .about-card__header[aria-expanded="true"] .about-card__toggle::after {
+    transform: translate(-50%, -50%) scaleY(0);
+  }
+  .about-card__header[aria-expanded="true"] .about-card__toggle {
+    border-color: rgba(13, 110, 253, 0.35);
+    background: rgba(13, 110, 253, 0.1);
+  }
+  .about-card__body {
+    margin-top: 1rem;
+  }
+  .about-card__content :where(p, ul, ol) {
+    margin: 0 0 0.65rem;
+  }
+  .about-card__content :where(p:last-child, ul:last-child, ol:last-child) {
+    margin-bottom: 0;
+  }
+  .about-card__content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    border: 1px solid rgba(33, 37, 41, 0.1);
+  }
+  .about-card__content th,
+  .about-card__content td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid rgba(33, 37, 41, 0.08);
+    border-right: 1px solid rgba(33, 37, 41, 0.08);
+    text-align: left;
+  }
+  .about-card__content th {
+    font-weight: 600;
+    background: rgba(13, 110, 253, 0.08);
+  }
+  .about-card__content tr td:last-child,
+  .about-card__content tr th:last-child {
+    border-right: none;
+  }
+  .about-card__content tr:last-child td {
+    border-bottom: none;
+  }
+  .about-card__content table img {
+    max-width: 100%;
+    height: auto;
+  }
+  @media (max-width: 575.98px) {
+    .about-card {
+      padding: 1.1rem 1.25rem;
+    }
+    .about-card__toggle {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      min-height: 34px;
+    }
+    .about-card__toggle::before {
+      width: 14px;
+    }
+    .about-card__toggle::after {
+      height: 14px;
+    }
+    .about-card__content table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+</style>
+{% endaddtoblock %}
