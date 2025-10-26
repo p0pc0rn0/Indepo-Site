@@ -378,6 +378,32 @@ class AboutCardItemModel(CMSPlugin):
         return self.title
 
 
+class LeadershipSectionModel(CMSPlugin):
+    title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
+    description = models.TextField(_("Section description"), blank=True, default="")
+
+    def __str__(self):
+        return self.title or str(_("Leadership"))
+
+
+class LeaderItemModel(CMSPlugin):
+    photo = FilerImageField(
+        verbose_name=_("Photo"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    full_name = models.CharField(_("Full name"), max_length=200)
+    job_title = models.CharField(_("Position"), max_length=200, blank=True, default="")
+    description = HTMLField(_("Description"), blank=True, default="")
+    email = models.EmailField(_("Email"), blank=True, default="")
+    phone = models.CharField(_("Phone"), max_length=100, blank=True, default="")
+
+    def __str__(self):
+        return self.full_name
+
+
 class HeaderPluginModel(CMSPlugin):
     show_avatar = models.BooleanField(default=True, verbose_name=_("Show avatar"))
     avatar = FilerImageField(

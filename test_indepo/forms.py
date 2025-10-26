@@ -14,6 +14,8 @@ from .models import (
     HeaderPluginModel,
     AboutCardsSectionModel,
     AboutCardItemModel,
+    LeadershipSectionModel,
+    LeaderItemModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -135,4 +137,16 @@ class AboutCardsSectionPluginForm(forms.ModelForm):
 class AboutCardItemPluginForm(forms.ModelForm):
     class Meta:
         model = AboutCardItemModel
+        fields = "__all__"
+
+
+class LeadershipSectionPluginForm(forms.ModelForm):
+    class Meta:
+        model = LeadershipSectionModel
+        fields = "__all__"
+
+
+class LeaderItemPluginForm(forms.ModelForm):
+    class Meta:
+        model = LeaderItemModel
         fields = "__all__"
