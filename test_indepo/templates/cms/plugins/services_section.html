@@ -1,17 +1,52 @@
-{% load static cms_tags %}
+{% load static cms_tags sekizai_tags %}
 <section id="services" class="services section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2>{{ instance.title }}</h2>
+  <div class="container services-section__header" data-aos="fade-up">
+    {% if instance.title %}
+      <h2 class="services-section__title">{{ instance.title }}</h2>
+    {% endif %}
     {% if instance.subtitle %}
-      <p><span>{{ instance.subtitle }}</span></p>
+      <p class="services-section__subtitle">{{ instance.subtitle }}</p>
     {% endif %}
   </div><!-- End Section Title -->
 
   <div class="container">
     <div class="row gy-4">
       {% for plugin in children %}
-        {% render_plugin plugin %}
+      {% render_plugin plugin %}
       {% endfor %}
     </div>
   </div>
 </section>
+
+{% addtoblock "css" %}
+<style>
+  #services .services-section__header {
+    text-align: center;
+    margin-bottom: clamp(1.5rem, 3vw, 2.4rem);
+  }
+  #services .services-section__title {
+    display: inline-block;
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.3rem);
+    font-weight: 700;
+    padding-bottom: 0.65rem;
+    position: relative;
+  }
+  #services .services-section__title::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 72px;
+    height: 3px;
+    background: rgba(13, 110, 253, 0.25);
+    transform: translateX(-50%);
+    border-radius: 999px;
+  }
+  #services .services-section__subtitle {
+    margin: 0.85rem auto 0;
+    max-width: 680px;
+    color: rgba(33, 37, 41, 0.65);
+  }
+</style>
+{% endaddtoblock %}
