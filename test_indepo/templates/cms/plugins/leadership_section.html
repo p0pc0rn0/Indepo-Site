@@ -1,0 +1,72 @@
+{% load cms_tags sekizai_tags i18n %}
+
+<section class="leadership-section">
+  {% if instance.title %}
+    <header class="leadership-section__header">
+      <h2 class="leadership-section__title">{{ instance.title }}</h2>
+      {% if instance.description %}
+        <p class="leadership-section__description">{{ instance.description }}</p>
+      {% endif %}
+    </header>
+  {% elif instance.description %}
+    <div class="leadership-section__description leadership-section__description--solo">
+      {{ instance.description }}
+    </div>
+  {% endif %}
+
+  <div class="leadership-section__grid">
+    {% for leader in leaders %}
+      {% render_plugin leader %}
+    {% endfor %}
+  </div>
+</section>
+
+{% addtoblock "css" %}
+<style>
+  .leadership-section {
+    padding: clamp(2rem, 4vw, 3rem);
+    background: rgba(245, 247, 252, 0.95);
+    border-radius: 1.5rem;
+  }
+  .leadership-section__header {
+    margin-bottom: clamp(1.4rem, 2.8vw, 2.2rem);
+    text-align: center;
+  }
+  .leadership-section__title {
+    margin: 0;
+    font-size: clamp(1.9rem, 3.3vw, 2.5rem);
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.7rem;
+  }
+  .leadership-section__title::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 78px;
+    height: 3px;
+    background: rgba(13, 110, 253, 0.25);
+    transform: translateX(-50%);
+    border-radius: 999px;
+  }
+  .leadership-section__description {
+    margin-top: 0.75rem;
+    color: rgba(33, 37, 41, 0.65);
+  }
+  .leadership-section__description--solo {
+    margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+  }
+  .leadership-section__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(1.2rem, 2.5vw, 1.8rem);
+  }
+  @media (max-width: 575.98px) {
+    .leadership-section__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
+{% endaddtoblock %}

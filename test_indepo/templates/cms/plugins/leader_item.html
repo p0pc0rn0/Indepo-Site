@@ -1,0 +1,164 @@
+{% load sekizai_tags i18n %}
+
+<article class="leader-card">
+  <div class="leader-card__top">
+    <div class="leader-card__media">
+      {% if instance.photo %}
+        <img src="{{ instance.photo.url }}" alt="{{ instance.full_name }}" class="leader-card__photo" />
+      {% else %}
+        <div class="leader-card__placeholder" aria-hidden="true">
+          <span class="leader-card__placeholder-text">
+            {{ instance.full_name|slice:":1"|upper }}
+          </span>
+        </div>
+      {% endif %}
+    </div>
+    <div class="leader-card__identity">
+      <h3 class="leader-card__name">{{ instance.full_name }}</h3>
+      {% if instance.job_title %}
+        <p class="leader-card__position">{{ instance.job_title }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if instance.description %}
+    <div class="leader-card__divider" aria-hidden="true"></div>
+    <div class="leader-card__description">
+      {{ instance.description|safe }}
+    </div>
+  {% endif %}
+
+  {% if instance.email or instance.phone %}
+    <ul class="leader-card__contacts">
+      {% if instance.email %}
+        <li>
+          <a href="mailto:{{ instance.email }}">{{ instance.email }}</a>
+        </li>
+      {% endif %}
+      {% if instance.phone %}
+        <li>
+          <a href="tel:{{ instance.phone|cut:' ' }}">{{ instance.phone }}</a>
+        </li>
+      {% endif %}
+    </ul>
+  {% endif %}
+</article>
+
+{% addtoblock "css" %}
+<style>
+  .leader-card {
+    padding: 1.5rem 1.75rem;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(33, 37, 41, 0.06);
+    background: #fff;
+    box-shadow: 0 1.2rem 2.4rem rgba(15, 23, 42, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .leader-card:hover,
+  .leader-card:focus-within {
+    transform: translateY(-2px);
+    border-color: rgba(13, 110, 253, 0.25);
+    box-shadow: 0 1.25rem 2.3rem rgba(15, 23, 42, 0.12);
+  }
+  .leader-card__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.15rem;
+    min-height: 112px;
+  }
+  .leader-card__media {
+    flex: 0 0 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .leader-card__photo,
+  .leader-card__placeholder {
+    width: 92px;
+    height: 92px;
+    border-radius: 1.25rem;
+    object-fit: cover;
+    background: rgba(13, 110, 253, 0.12);
+  }
+  .leader-card__placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(13, 110, 253, 0.8);
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+  .leader-card__identity {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .leader-card__name {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .leader-card__position {
+    margin: 0.4rem 0 0;
+    color: rgba(33, 37, 41, 0.65);
+    font-weight: 500;
+    padding-top: 0.7rem;
+    position: relative;
+  }
+  .leader-card__position::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(33, 37, 41, 0.08);
+  }
+  .leader-card__divider {
+    height: 1px;
+    margin: 1.15rem 0;
+    background: rgba(33, 37, 41, 0.08);
+  }
+  .leader-card__description {
+    color: rgba(33, 37, 41, 0.75);
+    font-size: 0.95rem;
+  }
+  .leader-card__description :where(p, ul, ol) {
+    margin: 0 0 0.6rem;
+  }
+  .leader-card__contacts {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.92rem;
+  }
+  .leader-card__contacts a {
+    text-decoration: none;
+    color: var(--bs-primary, #0d6efd);
+  }
+  @media (max-width: 575.98px) {
+    .leader-card {
+      text-align: center;
+    }
+    .leader-card__top {
+      flex-direction: column;
+    }
+    .leader-card__identity {
+      text-align: center;
+    }
+    .leader-card__position::before {
+      left: 50%;
+      width: 120px;
+      margin-left: -60px;
+    }
+    .leader-card__contacts {
+      justify-content: center;
+    }
+  }
+</style>
+{% endaddtoblock %}

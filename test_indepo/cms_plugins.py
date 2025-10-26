@@ -16,6 +16,8 @@ from .forms import (
     HeaderPluginForm,
     AboutCardsSectionPluginForm,
     AboutCardItemPluginForm,
+    LeadershipSectionPluginForm,
+    LeaderItemPluginForm,
     ServiceItemPluginForm,
     ServicesSectionPluginForm,
     ServiceTilePluginForm,
@@ -40,6 +42,8 @@ from .models import (
     DocumentsSectionPluginModel,
     AboutCardsSectionModel,
     AboutCardItemModel,
+    LeadershipSectionModel,
+    LeaderItemModel,
     TablePluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
@@ -288,6 +292,41 @@ class AboutCardItemPlugin(CMSPluginBase):
         context["layout_variant"] = layout_variant
         context["card_dom_id"] = f"about-card-{instance.pk}"
         context["is_initially_open"] = bool(instance.initially_open)
+        return context
+
+
+@plugin_pool.register_plugin
+class LeadershipSectionPlugin(CMSPluginBase):
+    model = LeadershipSectionModel
+    name = _("Leadership")
+    render_template = "cms/plugins/leadership_section.html"
+    form = LeadershipSectionPluginForm
+    cache = False
+    allow_children = True
+    child_classes = ["LeaderItemPlugin"]
+    module = _("About")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
+        context["leaders"] = list(getattr(instance, "child_plugin_instances", []) or [])
+        return context
+
+
+@plugin_pool.register_plugin
+class LeaderItemPlugin(CMSPluginBase):
+    model = LeaderItemModel
+    name = _("Leader")
+    render_template = "cms/plugins/leader_item.html"
+    form = LeaderItemPluginForm
+    cache = False
+    require_parent = True
+    parent_classes = ["LeadershipSectionPlugin"]
+    module = _("About")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
         return context
 
 
