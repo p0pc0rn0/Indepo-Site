@@ -14,6 +14,8 @@ from .forms import (
     FooterPluginForm,
     HeroSectionPluginForm,
     HeaderPluginForm,
+    AboutCardsSectionPluginForm,
+    AboutCardItemPluginForm,
     ServiceItemPluginForm,
     ServicesSectionPluginForm,
     ServiceTilePluginForm,
@@ -36,6 +38,8 @@ from .models import (
     DocumentItemPluginModel,
     DocumentSubsectionPluginModel,
     DocumentsSectionPluginModel,
+    AboutCardsSectionModel,
+    AboutCardItemModel,
     TablePluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
@@ -242,6 +246,49 @@ class TablePlugin(CMSPluginBase):
 
 
 
+
+
+@plugin_pool.register_plugin
+class AboutCardsSectionPlugin(CMSPluginBase):
+    model = AboutCardsSectionModel
+    name = _("About")
+    render_template = "cms/plugins/about_cards_section.html"
+    form = AboutCardsSectionPluginForm
+    cache = False
+    allow_children = True
+    child_classes = ["AboutCardItemPlugin"]
+    module = _("About")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["children"] = list(getattr(instance, "child_plugin_instances", []) or [])
+        context["layout_variant"] = instance.layout_variant
+        context["instance"] = instance
+        context["section_dom_id"] = f"about-section-{instance.pk}"
+        return context
+
+
+@plugin_pool.register_plugin
+class AboutCardItemPlugin(CMSPluginBase):
+    model = AboutCardItemModel
+    name = _("About card")
+    render_template = "cms/plugins/about_card_item.html"
+    form = AboutCardItemPluginForm
+    cache = False
+    require_parent = True
+    parent_classes = ["AboutCardsSectionPlugin"]
+    module = _("About")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        parent_model = None
+        if instance.parent:
+            parent_model, _plugin = instance.parent.get_plugin_instance()
+        layout_variant = getattr(parent_model, "layout_variant", "list")
+        context["layout_variant"] = layout_variant
+        context["card_dom_id"] = f"about-card-{instance.pk}"
+        context["is_initially_open"] = bool(instance.initially_open)
+        return context
 
 
 @plugin_pool.register_plugin

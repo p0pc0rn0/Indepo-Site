@@ -354,6 +354,30 @@ class TablePluginModel(CMSPlugin):
         return self.title or str(_("Table"))
 
 
+class AboutCardsSectionModel(CMSPlugin):
+    LAYOUT_CHOICES = [
+        ("list", _("List")),
+        ("accordion", _("Accordion")),
+    ]
+
+    title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
+    layout_variant = models.CharField(
+        _("Layout variant"), max_length=20, choices=LAYOUT_CHOICES, default="list"
+    )
+
+    def __str__(self):
+        return self.title or str(_("About section"))
+
+
+class AboutCardItemModel(CMSPlugin):
+    title = models.CharField(_("Card title"), max_length=200)
+    body = HTMLField(_("Card description"), blank=True, default="")
+    initially_open = models.BooleanField(_("Open by default (accordion)"), default=False)
+
+    def __str__(self):
+        return self.title
+
+
 class HeaderPluginModel(CMSPlugin):
     show_avatar = models.BooleanField(default=True, verbose_name=_("Show avatar"))
     avatar = FilerImageField(

@@ -12,6 +12,8 @@ from .models import (
     FooterPluginModel,
     HeroSectionPluginModel,
     HeaderPluginModel,
+    AboutCardsSectionModel,
+    AboutCardItemModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
     ServiceTilePluginModel,
@@ -121,4 +123,16 @@ class FeaturedServiceItemPluginForm(TranslatableModelForm):
 class HeaderPluginForm(forms.ModelForm):
     class Meta:
         model = HeaderPluginModel
+        fields = "__all__"
+
+
+class AboutCardsSectionPluginForm(forms.ModelForm):
+    class Meta:
+        model = AboutCardsSectionModel
+        fields = "__all__"
+
+
+class AboutCardItemPluginForm(forms.ModelForm):
+    class Meta:
+        model = AboutCardItemModel
         fields = "__all__"
