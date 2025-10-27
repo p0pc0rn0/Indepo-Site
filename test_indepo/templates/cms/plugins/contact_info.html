@@ -130,8 +130,27 @@
       </div>
 
       {% if instance.map_iframe %}
-        <div class="contact-info__map" data-aos="fade-up" data-aos-delay="150">
-          {{ instance.map_iframe|safe }}
+        <div class="contact-info__map" data-aos="fade-up" data-aos-delay="150" data-map-container>
+          <div class="contact-info__map-shell" data-map-shell>
+            <div class="contact-info__map-preview" role="presentation">
+              <div class="contact-info__map-icon" aria-hidden="true">
+                <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6" y="6" width="60" height="60" rx="16" fill="rgba(13, 110, 253, 0.1)" />
+                  <path d="M36 22c-1.1 0-2 .9-2 2v10h-10c-1.1 0-2 .9-2 2s.9 2 2 2h10v10c0 1.1.9 2 2 2s2-.9 2-2V38h10c1.1 0 2-.9 2-2s-.9-2-2-2H38V24c0-1.1-.9-2-2-2z" fill="rgba(13, 110, 253, 0.6)" />
+                </svg>
+              </div>
+              <div class="contact-info__map-preview-text">{% trans "Нажмите, чтобы загрузить карту" %}</div>
+              <button type="button" class="contact-info__map-button" data-map-load>
+                {% trans "Загрузить карту" %}
+              </button>
+            </div>
+          </div>
+          <template data-map-template>
+            {{ instance.map_iframe|safe }}
+          </template>
+          <noscript>
+            {{ instance.map_iframe|safe }}
+          </noscript>
         </div>
       {% endif %}
     </div>
@@ -351,6 +370,58 @@
     height: 100%;
     border: 0;
   }
+  .contact-info__map-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 30% 30%, rgba(13, 110, 253, 0.18), rgba(13, 110, 253, 0.05))
+      , linear-gradient(135deg, rgba(33, 37, 41, 0.05), rgba(33, 37, 41, 0.01));
+  }
+  .contact-info__map-preview {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    color: rgba(33, 37, 41, 0.7);
+  }
+  .contact-info__map-icon {
+    width: 72px;
+    height: 72px;
+    display: inline-flex;
+  }
+  .contact-info__map-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  .contact-info__map-preview-text {
+    font-weight: 600;
+  }
+  .contact-info__map-button {
+    border: none;
+    background: var(--accent-color, #0d6efd);
+    color: var(--contrast-color, #fff);
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0.5rem 1.2rem rgba(13, 110, 253, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .contact-info__map-button:hover,
+  .contact-info__map-button:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 0.75rem 1.6rem rgba(13, 110, 253, 0.35);
+    outline: none;
+  }
+  .contact-info__map-shell.is-loaded {
+    padding: 0;
+    background: none;
+  }
   .contact-info-section[data-icon-size="sm"] {
     --contact-social-size: 40px;
   }
@@ -386,4 +457,51 @@
     }
   }
 </style>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+  (function () {
+    function setupLazyMap(container) {
+      var shell = container.querySelector("[data-map-shell]");
+      var template = container.querySelector("template[data-map-template]");
+      if (!shell || !template) return;
+      var button = container.querySelector("[data-map-load]");
+      var loaded = false;
+
+      function loadMap() {
+        if (loaded) return;
+        shell.innerHTML = template.innerHTML.trim();
+        shell.classList.add("is-loaded");
+        loaded = true;
+      }
+
+      if (button) {
+        button.addEventListener("click", function () {
+          loadMap();
+        });
+      } else {
+        shell.addEventListener("click", loadMap);
+      }
+
+      if ("IntersectionObserver" in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              loadMap();
+              observer.disconnect();
+            }
+          });
+        }, { rootMargin: "160px" });
+        observer.observe(container);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .querySelectorAll("[data-map-container]")
+        .forEach(setupLazyMap);
+    });
+  })();
+</script>
 {% endaddtoblock %}
