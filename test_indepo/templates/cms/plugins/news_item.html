@@ -104,6 +104,19 @@
               </span>
             </a>
           {% endif %}
+          {% if instance.link_url %}
+            <a
+              href="{{ instance.link_url }}"
+              class="news-card__social news-card__social--link"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="{% trans 'Внешняя ссылка' %}"
+            >
+              <span class="news-card__social-icon">
+                <i class="bi bi-link-45deg" aria-hidden="true"></i>
+              </span>
+            </a>
+          {% endif %}
         </div>
       {% endif %}
     </div>
