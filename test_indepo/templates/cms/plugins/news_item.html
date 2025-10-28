@@ -1,0 +1,104 @@
+{% load static i18n %}
+
+<article class="news-card" data-news-card>
+  <button
+    type="button"
+    class="news-card__inner"
+    data-news-toggle
+    aria-expanded="false"
+    aria-controls="news-card-panel-{{ instance.pk }}"
+  >
+    <span class="news-card__image">
+      {% if instance.image %}
+        <img
+          src="{{ instance.image.url }}"
+          alt="{{ instance.title|default:_('Изображение новости') }}"
+          loading="lazy"
+        />
+      {% else %}
+        <img
+          src="{% static placeholder_image %}"
+          alt="{{ instance.title|default:_('Изображение новости') }}"
+          loading="lazy"
+        />
+      {% endif %}
+    </span>
+    <span class="news-card__body">
+      {% with display_date=instance.date|default:instance.creation_date %}
+        {% if display_date %}
+          <time class="news-card__date" datetime="{{ display_date|date:'Y-m-d' }}">
+            {{ display_date|date:"d.m.Y" }}
+          </time>
+        {% endif %}
+      {% endwith %}
+      {% if instance.title %}
+        <h3 class="news-card__title">{{ instance.title }}</h3>
+      {% endif %}
+      {% if instance.text %}
+        <p class="news-card__excerpt">{{ instance.text|linebreaksbr }}</p>
+      {% endif %}
+    </span>
+    <span class="news-card__chevron" aria-hidden="true"></span>
+  </button>
+
+  <div
+    class="news-card__panel"
+    id="news-card-panel-{{ instance.pk }}"
+    data-news-content
+    hidden
+  >
+    <div class="news-card__panel-inner">
+      {% if instance.text %}
+        <div class="news-card__panel-text">
+          {{ instance.text|linebreaks }}
+        </div>
+      {% endif %}
+
+      {% if instance.vk_url or instance.tg_url or instance.ok_url %}
+        <div class="news-card__panel-socials" data-news-socials>
+          {% if instance.vk_url %}
+            <a
+              href="{{ instance.vk_url }}"
+              class="news-card__social news-card__social--vk"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="VK"
+            >
+              <span class="news-card__social-icon">
+                <span>VK</span>
+              </span>
+            </a>
+          {% endif %}
+          {% if instance.tg_url %}
+            <a
+              href="{{ instance.tg_url }}"
+              class="news-card__social news-card__social--tg"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Telegram"
+            >
+              <span class="news-card__social-icon">
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                  <path d="M21.6 3.2L2.4 10.2c-.9.3-.9 1.1-.2 1.3l4.9 1.5 11.4-7.2c.5-.3 1-.1.6.2l-9.2 8.3-.3 5c.4 0 .7-.2 1-.4l2.4-2.3 4.9 3.6c.9.5 1.5.3 1.7-.8l3-14.6c.2-.9-.3-1.3-1-1z"/>
+                </svg>
+              </span>
+            </a>
+          {% endif %}
+          {% if instance.ok_url %}
+            <a
+              href="{{ instance.ok_url }}"
+              class="news-card__social news-card__social--ok"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="OK"
+            >
+              <span class="news-card__social-icon">
+                <span>OK</span>
+              </span>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</article>

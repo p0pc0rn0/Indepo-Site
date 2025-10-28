@@ -1,5 +1,6 @@
 from django.db import models
 from cms.models.pluginmodel import CMSPlugin
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
@@ -317,6 +318,47 @@ class FeaturedServiceItem(TranslatableCMSPlugin):
 
     def __str__(self):
         return self.safe_translation_getter("title", any_language=True) or "Service Item"
+
+
+class NewsSectionPluginModel(CMSPlugin):
+    LAYOUT_CHOICES = [
+        ("grid", _("Grid")),
+        ("list", _("List")),
+    ]
+
+    title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
+    layout_variant = models.CharField(
+        _("Layout variant"), max_length=20, choices=LAYOUT_CHOICES, default="grid"
+    )
+    count = models.PositiveIntegerField(
+        _("Number of items"),
+        blank=True,
+        null=True,
+        help_text=_("Limit how many news cards are shown. Leave empty to show all."),
+    )
+
+    def __str__(self):
+        return self.title or str(_("News section"))
+
+
+class NewsItemPluginModel(CMSPlugin):
+    title = models.CharField(_("News title"), max_length=255, blank=True, default="")
+    image = FilerImageField(
+        verbose_name=_("Image"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    text = models.TextField(_("Text"), blank=True, default="")
+    vk_url = models.URLField(_("VK URL"), blank=True, default="")
+    tg_url = models.URLField(_("Telegram URL"), blank=True, default="")
+    ok_url = models.URLField(_("Odnoklassniki URL"), blank=True, default="")
+    date = models.DateField(_("Publication date"), blank=True, null=True, default=timezone.now)
+    is_active = models.BooleanField(_("Is active"), default=True)
+
+    def __str__(self):
+        return self.title or str(_("News item"))
 
 
 class DocumentsSectionPluginModel(CMSPlugin):
