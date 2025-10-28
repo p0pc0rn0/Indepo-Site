@@ -368,6 +368,7 @@ class NewsItemPluginModel(CMSPlugin):
     vk_url = models.URLField(_("VK URL"), blank=True, default="")
     tg_url = models.URLField(_("Telegram URL"), blank=True, default="")
     ok_url = models.URLField(_("Odnoklassniki URL"), blank=True, default="")
+    link_url = models.URLField(_("External link"), blank=True, default="")
     date = models.DateField(_("Publication date"), blank=True, null=True, default=timezone.now)
     is_active = models.BooleanField(_("Is active"), default=True)
 
