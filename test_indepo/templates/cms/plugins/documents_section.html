@@ -15,13 +15,13 @@
   {% if instance.show_search %}
     <div class="documents-section__search">
       <label class="visually-hidden" for="documents-search-{{ instance.pk }}">
-        {% trans "Search documents" %}
+        {% trans "Поиск" %}
       </label>
       <input
         type="search"
         id="documents-search-{{ instance.pk }}"
         class="documents-section__search-input"
-        placeholder="{% trans 'Search documents...' %}"
+        placeholder="{% trans 'Поиск...' %}"
         data-documents-search
         autocomplete="off"
       />
@@ -98,7 +98,7 @@
 </style>
 {% endaddtoblock %}
 
-{% trans "Nothing found for your query." as documents_no_results %}
+{% trans "Ничего не найдено" as documents_no_results %}
 {% addtoblock "js" %}
 <script>
   (function () {
