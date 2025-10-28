@@ -249,6 +249,14 @@ class ContactInfoPluginModel(TranslatableCMSPlugin):
         default='<iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A..." width="100%" height="400" frameborder="0"></iframe>',
         help_text="Вставьте iframe карты Яндекс",
     )
+    map_preview = FilerImageField(
+        verbose_name=_("Map preview image"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text=_("Используется как заставка до загрузки карты"),
+    )
     work_hours_title = models.CharField(
         _("Work hours title"), max_length=120, blank=True, default="Время работы"
     )
