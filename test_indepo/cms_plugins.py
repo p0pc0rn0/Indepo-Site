@@ -1,5 +1,8 @@
+from datetime import datetime, time as datetime_time
+
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -44,6 +47,8 @@ from .models import (
     AboutCardItemModel,
     LeadershipSectionModel,
     LeaderItemModel,
+    NewsItemPluginModel,
+    NewsSectionPluginModel,
     TablePluginModel,
     ServiceItemPluginModel,
     ServicesSectionPluginModel,
@@ -231,6 +236,68 @@ class DocumentItemPlugin(CMSPluginBase):
     require_parent = True
     parent_classes = ["DocumentSubsectionPlugin"]
     module = _("Documents")
+
+
+@plugin_pool.register_plugin
+class NewsSectionPlugin(CMSPluginBase):
+    model = NewsSectionPluginModel
+    name = _("News Section")
+    render_template = "cms/plugins/news_section.html"
+    cache = False
+    allow_children = True
+    child_classes = ["NewsItemPlugin"]
+    module = _("News")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        children = list(getattr(instance, "child_plugin_instances", []) or [])
+        items = [
+            child
+            for child in children
+            if isinstance(child, NewsItemPluginModel) and getattr(child, "is_active", True)
+        ]
+
+        current_tz = timezone.get_current_timezone()
+
+        def sort_key(item):
+            if item.date:
+                dt = datetime.combine(item.date, datetime_time.min)
+                if timezone.is_naive(dt):
+                    dt = timezone.make_aware(dt, current_tz)
+                return dt
+            value = getattr(item, "creation_date", None)
+            return value or timezone.now()
+
+        items.sort(key=sort_key, reverse=True)
+
+        if instance.count:
+            items = items[: instance.count]
+
+        context["instance"] = instance
+        context["items"] = items
+        context["layout_variant"] = instance.layout_variant
+        context["section_dom_id"] = f"news-section-{instance.pk}"
+        context["has_items"] = bool(items)
+        return context
+
+
+@plugin_pool.register_plugin
+class NewsItemPlugin(CMSPluginBase):
+    model = NewsItemPluginModel
+    name = _("News Item")
+    render_template = "cms/plugins/news_item.html"
+    cache = False
+    require_parent = True
+    parent_classes = ["NewsSectionPlugin"]
+    module = _("News")
+
+    PLACEHOLDER_STATIC_PATH = "assets/img/news/news-placeholder.jpg"
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
+        context["placeholder_image"] = self.PLACEHOLDER_STATIC_PATH
+        return context
 
 
 @plugin_pool.register_plugin
