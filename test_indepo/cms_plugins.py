@@ -270,7 +270,7 @@ class NewsSectionPlugin(CMSPluginBase):
 
         items.sort(key=sort_key, reverse=True)
 
-        if instance.count:
+        if instance.count and instance.count > 0:
             items = items[: instance.count]
 
         context["instance"] = instance
@@ -278,6 +278,8 @@ class NewsSectionPlugin(CMSPluginBase):
         context["layout_variant"] = instance.layout_variant
         context["section_dom_id"] = f"news-section-{instance.pk}"
         context["has_items"] = bool(items)
+        context["display_mode"] = instance.display_mode
+        context["items_per_page"] = instance.items_per_page
         return context
 
 
