@@ -1,6 +1,10 @@
 {% load i18n sekizai_tags cms_tags %}
 
-<section id="{{ section_dom_id }}" class="news-section" data-layout="{{ layout_variant }}">
+<section
+  id="{{ section_dom_id }}"
+  class="news-section"
+  data-layout="{{ layout_variant }}"
+>
   <div class="container">
     {% if instance.title %}
       <header class="news-section__header" data-aos="fade-up">
@@ -9,11 +13,40 @@
     {% endif %}
 
     {% if has_items %}
-      <div class="news-section__grid" data-aos="fade-up">
-        {% for plugin in items %}
-          {% render_plugin plugin %}
-        {% endfor %}
+      <div class="news-section__controls" data-aos="fade-up">
+        <div class="news-section__search">
+          <label class="visually-hidden" for="{{ section_dom_id }}-search">
+            {% trans "Поиск по новостям" %}
+          </label>
+          <input
+            id="{{ section_dom_id }}-search"
+            type="search"
+            class="news-section__search-input"
+            placeholder="{% trans 'Поиск по новостям...' %}"
+            autocomplete="off"
+            data-news-search
+          />
+        </div>
       </div>
+
+      <p class="news-section__empty" data-news-empty hidden>
+        {% trans "Новостей не найдено." %}
+      </p>
+
+      <div class="news-section__results" data-aos="fade-up">
+        <div class="news-section__grid" data-news-track>
+          {% for plugin in items %}
+            {% render_plugin plugin %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <nav
+        class="news-section__tabs"
+        data-news-tabs
+        aria-label="{% trans 'Страницы новостей' %}"
+        hidden
+      ></nav>
     {% else %}
       <p class="news-section__empty" data-aos="fade-up">
         {% trans "Пока нет новостей для отображения." %}
@@ -57,21 +90,80 @@
     transform: translateX(-50%);
     border-radius: 999px;
   }
-  .news-section__grid {
+  .news-section__controls {
     display: grid;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    padding: clamp(1rem, 2vw, 1.5rem);
+    background: rgba(13, 110, 253, 0.06);
+    border-radius: 1rem;
   }
-  .news-section[data-layout="grid"] .news-section__grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  .news-section__search-input {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    background: #fff;
+    box-shadow: 0 0.35rem 1.5rem rgba(15, 23, 42, 0.1);
+    outline: none;
+    transition: box-shadow 0.2s ease;
   }
-  .news-section[data-layout="list"] .news-section__grid {
-    grid-template-columns: 1fr;
+  .news-section__search-input:focus {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25), 0 0.35rem 1.5rem rgba(15, 23, 42, 0.1);
   }
   .news-section__empty {
     margin: 0;
     text-align: center;
     color: rgba(33, 37, 41, 0.65);
   }
+  .news-section__results {
+    position: relative;
+  }
+  .news-section__grid {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    grid-template-columns: repeat(auto-fit, minmax(320px, 380px));
+    justify-content: center;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  .news-section__grid.is-transitioning {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .news-section__tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .news-section__tab-btn {
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    color: rgba(33, 37, 41, 0.75);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  .news-section__tab-btn:hover,
+  .news-section__tab-btn:focus-visible {
+    transform: translateY(-1px);
+    background: rgba(13, 110, 253, 0.18);
+    color: rgba(13, 110, 253, 0.95);
+    outline: none;
+    box-shadow: 0 0.75rem 1.5rem rgba(13, 110, 253, 0.18);
+  }
+  .news-section__tab-btn.is-active {
+    background: rgba(13, 110, 253, 0.85);
+    color: #fff;
+    box-shadow: 0 1rem 2rem rgba(13, 110, 253, 0.35);
+  }
+
   .news-card {
     display: flex;
     flex-direction: column;
@@ -86,15 +178,8 @@
     transform: translateY(-4px);
     box-shadow: 0 1.75rem 2.75rem rgba(15, 23, 42, 0.12);
   }
-  .news-card.is-expanded {
-    transform: translateY(-2px);
-    box-shadow: 0 1.9rem 3rem rgba(15, 23, 42, 0.14);
-  }
   .news-card__inner {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
     border: none;
     background: transparent;
     width: 100%;
@@ -105,6 +190,11 @@
   }
   .news-card__inner:focus-visible {
     outline: none;
+  }
+  .news-card__preview {
+    display: flex;
+    flex-direction: column;
+    min-height: clamp(16.5rem, 32vw, 18.5rem);
   }
   .news-card__image {
     position: relative;
@@ -124,11 +214,14 @@
   .news-card__inner:focus-visible .news-card__image img {
     transform: scale(1.04);
   }
-  .news-card__body {
+  .news-card__content {
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     gap: 0.65rem;
     padding: clamp(1.1rem, 2vw, 1.5rem);
+    min-height: clamp(8.5rem, 16vw, 10rem);
   }
   .news-card__date {
     font-size: 0.85rem;
@@ -142,6 +235,10 @@
     font-weight: 700;
     margin: 0;
     color: rgba(33, 37, 41, 0.95);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
   .news-card__excerpt {
     margin: 0;
@@ -151,6 +248,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.6;
+    flex: 1 1 auto;
   }
   .news-card.is-expanded .news-card__excerpt {
     display: none;
@@ -167,7 +265,7 @@
     justify-content: center;
     background: rgba(13, 110, 253, 0.15);
     color: rgba(13, 110, 253, 0.8);
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition: all 0.3s ease-in-out;
   }
   .news-card__chevron::before,
   .news-card__chevron::after {
@@ -208,7 +306,7 @@
     flex-direction: column;
     gap: 1.2rem;
     padding: clamp(1.2rem, 2.4vw, 1.75rem);
-    background: linear-gradient(180deg, rgba(13, 110, 253, 0.08) 0%, rgba(13, 110, 253, 0.03) 100%);
+    background: transparent;
   }
   .news-card__panel-text {
     max-height: min(45vh, 420px);
@@ -270,38 +368,36 @@
     height: 22px;
     fill: currentColor;
   }
-  .news-section[data-layout="list"] .news-card__inner {
-    flex-direction: row;
-    gap: clamp(1.2rem, 3vw, 2rem);
+  .news-card.is-hidden {
+    display: none !important;
   }
-  .news-section[data-layout="list"] .news-card__image {
-    flex: 0 0 clamp(220px, 30vw, 320px);
-    aspect-ratio: auto;
-    height: 100%;
-    min-height: 180px;
+
+  @media (max-width: 991.98px) {
+    .news-section__controls {
+      justify-items: center;
+      text-align: center;
+    }
   }
-  .news-section[data-layout="list"] .news-card__image img {
-    height: 100%;
-  }
-  .news-section[data-layout="list"] .news-card__body {
-    padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem);
-  }
-  .news-section[data-layout="list"] .news-card__panel-inner {
-    padding: clamp(1rem, 2vw, 1.5rem) clamp(1.2rem, 2.5vw, 2rem) clamp(1.3rem, 2.6vw, 1.9rem);
-  }
+
   @media (max-width: 575.98px) {
     .news-section__title {
       font-size: clamp(1.75rem, 5vw, 2.2rem);
     }
-    .news-section[data-layout="list"] .news-card__inner {
-      flex-direction: column;
+    .news-section__grid {
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: stretch;
     }
-    .news-section[data-layout="list"] .news-card__image {
-      flex: none;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      min-height: auto;
-    }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
   }
 </style>
 {% endaddtoblock %}
@@ -309,6 +405,8 @@
 {% addtoblock "js" %}
 <script>
   (function () {
+    var TAB_SIZE = 3;
+
     function setPanelHeight(panel) {
       panel.style.maxHeight = panel.scrollHeight + "px";
     }
@@ -333,6 +431,8 @@
     }
 
     function setupNewsCard(card) {
+      if (card.dataset.newsCardReady === "true") return;
+      card.dataset.newsCardReady = "true";
       var toggle = card.querySelector("[data-news-toggle]");
       var panel = card.querySelector("[data-news-content]");
       if (!toggle || !panel) return;
@@ -340,10 +440,14 @@
       panel.style.maxHeight = "0px";
       panel.hidden = true;
 
+      function collapse() {
+        collapsePanel(card, toggle, panel);
+      }
+
       toggle.addEventListener("click", function () {
         var isExpanded = card.classList.contains("is-expanded");
         if (isExpanded) {
-          collapsePanel(card, toggle, panel);
+          collapse();
         } else {
           expandPanel(card, toggle, panel);
         }
@@ -357,15 +461,174 @@
           setPanelHeight(panel);
         }
       });
+
+      card.__newsCollapse = collapse;
+    }
+
+    function setupNewsSection(section) {
+      if (section.dataset.newsSectionReady === "true") return;
+      section.dataset.newsSectionReady = "true";
+      var track = section.querySelector("[data-news-track]");
+      if (!track) return;
+
+      var cards = Array.from(track.querySelectorAll("[data-news-card]"));
+      if (!cards.length) return;
+
+      var searchInput = section.querySelector("[data-news-search]");
+      var emptyState = section.querySelector("[data-news-empty]");
+      var tabsNav = section.querySelector("[data-news-tabs]");
+
+      var state = {
+        search: "",
+        tab: 1,
+      };
+
+      var cardData = cards.map(function (card, index) {
+        var dateValue = card.dataset.date ? Date.parse(card.dataset.date) : 0;
+        return {
+          element: card,
+          originalIndex: index,
+          dateValue: Number.isNaN(dateValue) ? 0 : dateValue,
+          searchString: (card.dataset.search || "").toLowerCase(),
+        };
+      });
+
+      function collapseHiddenCard(card) {
+        if (card.__newsCollapse) {
+          card.__newsCollapse();
+        }
+      }
+
+      function renderTabs(totalTabs) {
+        if (!tabsNav) return;
+        tabsNav.innerHTML = "";
+        if (totalTabs <= 1) {
+          tabsNav.hidden = true;
+          return;
+        }
+        tabsNav.hidden = false;
+        for (var tab = 1; tab <= totalTabs; tab += 1) {
+          (function (tabIndex) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "news-section__tab-btn";
+            if (tabIndex === state.tab) {
+              button.classList.add("is-active");
+            }
+            button.textContent = tabIndex;
+            button.addEventListener("click", function () {
+              if (state.tab === tabIndex) return;
+              state.tab = tabIndex;
+              applyFilters(true);
+            });
+            tabsNav.appendChild(button);
+          })(tab);
+        }
+      }
+
+      function applyFilters(animate) {
+        if (animate && track) {
+          track.classList.add("is-transitioning");
+        }
+
+        var searchTerm = state.search.trim().toLowerCase();
+
+        var visibleItems = [];
+        var hiddenItems = [];
+
+        cardData.forEach(function (item) {
+          var matchesSearch = !searchTerm || item.searchString.indexOf(searchTerm) !== -1;
+          if (matchesSearch) {
+            visibleItems.push(item);
+          } else {
+            hiddenItems.push(item);
+          }
+        });
+
+        visibleItems.sort(function (a, b) {
+          return b.dateValue - a.dateValue;
+        });
+
+        var combinedOrder = visibleItems.concat(hiddenItems);
+        if (combinedOrder.length) {
+          var fragment = document.createDocumentFragment();
+          combinedOrder.forEach(function (item) {
+            fragment.appendChild(item.element);
+          });
+          track.appendChild(fragment);
+          cardData = combinedOrder;
+        }
+
+        var totalVisible = visibleItems.length;
+        if (emptyState) {
+          emptyState.hidden = totalVisible !== 0;
+        }
+
+        var totalTabs = Math.max(1, Math.ceil(totalVisible / TAB_SIZE));
+        if (state.tab > totalTabs) {
+          state.tab = totalTabs;
+        }
+
+        visibleItems.forEach(function (item, index) {
+          var tabIndex = Math.floor(index / TAB_SIZE) + 1;
+          var isActiveTab = tabIndex === state.tab;
+          item.element.classList.toggle("is-hidden", !isActiveTab);
+          if (!isActiveTab) {
+            collapseHiddenCard(item.element);
+          }
+        });
+
+        hiddenItems.forEach(function (item) {
+          if (!item.element.classList.contains("is-hidden")) {
+            item.element.classList.add("is-hidden");
+            collapseHiddenCard(item.element);
+          }
+        });
+
+        renderTabs(totalTabs);
+
+        if (tabsNav && tabsNav.children.length) {
+          Array.prototype.forEach.call(tabsNav.children, function (button, idx) {
+            button.classList.toggle("is-active", idx + 1 === state.tab);
+          });
+        }
+
+        if (track) {
+          track.scrollTop = 0;
+          if (animate) {
+            setTimeout(function () {
+              track.classList.remove("is-transitioning");
+            }, 220);
+          } else {
+            track.classList.remove("is-transitioning");
+          }
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener("input", function (event) {
+          state.search = event.target.value || "";
+          state.tab = 1;
+          applyFilters(true);
+        });
+      }
+
+      applyFilters(false);
     }
 
     function refreshExpandedHeights() {
       document.querySelectorAll("[data-news-card].is-expanded [data-news-content]").forEach(setPanelHeight);
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    function initNewsSections() {
       document.querySelectorAll("[data-news-card]").forEach(setupNewsCard);
-    });
+      document.querySelectorAll(".news-section").forEach(setupNewsSection);
+    }
+
+    initNewsSections();
+    document.addEventListener("DOMContentLoaded", initNewsSections);
+    document.addEventListener("cms-structure-update", initNewsSections);
+    document.addEventListener("cms-content-refresh", initNewsSections);
 
     window.addEventListener("resize", function () {
       window.requestAnimationFrame(refreshExpandedHeights);

@@ -325,6 +325,11 @@ class NewsSectionPluginModel(CMSPlugin):
         ("grid", _("Grid")),
         ("list", _("List")),
     ]
+    DISPLAY_MODE_CHOICES = [
+        ("grid", _("Grid")),
+        ("pagination", _("Pagination")),
+        ("slider", _("Slider")),
+    ]
 
     title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
     layout_variant = models.CharField(
@@ -335,6 +340,14 @@ class NewsSectionPluginModel(CMSPlugin):
         blank=True,
         null=True,
         help_text=_("Limit how many news cards are shown. Leave empty to show all."),
+    )
+    display_mode = models.CharField(
+        _("Display mode"), max_length=12, choices=DISPLAY_MODE_CHOICES, default="grid"
+    )
+    items_per_page = models.PositiveIntegerField(
+        _("Items per page"),
+        default=6,
+        help_text=_("Used when display mode is pagination."),
     )
 
     def __str__(self):
@@ -351,6 +364,7 @@ class NewsItemPluginModel(CMSPlugin):
         related_name="+",
     )
     text = models.TextField(_("Text"), blank=True, default="")
+    category = models.CharField(_("Category"), max_length=100, blank=True, default="")
     vk_url = models.URLField(_("VK URL"), blank=True, default="")
     tg_url = models.URLField(_("Telegram URL"), blank=True, default="")
     ok_url = models.URLField(_("Odnoklassniki URL"), blank=True, default="")
