@@ -393,9 +393,12 @@ class LeaderItemPlugin(CMSPluginBase):
     parent_classes = ["LeadershipSectionPlugin"]
     module = _("About")
 
+    PLACEHOLDER_STATIC_PATH = "assets/img/leadership/leader-placeholder.jpg"
+
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
         context["instance"] = instance
+        context["placeholder_image"] = self.PLACEHOLDER_STATIC_PATH
         return context
 
 

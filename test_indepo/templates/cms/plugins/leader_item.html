@@ -1,4 +1,4 @@
-{% load sekizai_tags i18n %}
+{% load static sekizai_tags i18n %}
 
 <article class="leader-card">
   <div class="leader-card__top">
@@ -6,11 +6,7 @@
       {% if instance.photo %}
         <img src="{{ instance.photo.url }}" alt="{{ instance.full_name }}" class="leader-card__photo" />
       {% else %}
-        <div class="leader-card__placeholder" aria-hidden="true">
-          <span class="leader-card__placeholder-text">
-            {{ instance.full_name|slice:":1"|upper }}
-          </span>
-        </div>
+        <img src="{% static placeholder_image %}" alt="{{ instance.full_name }}" class="leader-card__photo leader-card__photo--placeholder" />
       {% endif %}
     </div>
     <div class="leader-card__identity">
@@ -72,21 +68,17 @@
     align-items: center;
     justify-content: center;
   }
-  .leader-card__photo,
-  .leader-card__placeholder {
+  .leader-card__photo {
     width: 92px;
     height: 92px;
     border-radius: 1.25rem;
     object-fit: cover;
-    background: rgba(13, 110, 253, 0.12);
+    background: rgba(13, 110, 253, 0.08);
   }
-  .leader-card__placeholder {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(13, 110, 253, 0.8);
-    font-size: 1.75rem;
-    font-weight: 700;
+  .leader-card__photo--placeholder {
+    filter: saturate(85%);
+    opacity: 0.92;
+    background: rgba(13, 110, 253, 0.12);
   }
   .leader-card__identity {
     flex: 1 1 auto;
