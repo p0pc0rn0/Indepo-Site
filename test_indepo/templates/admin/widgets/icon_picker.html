@@ -1,0 +1,29 @@
+{% load i18n %}
+<div class="icon-picker" data-icon-picker>
+  {% for icon in widget.icons %}
+    <label class="icon-picker__option{% if icon.selected %} is-selected{% endif %}" for="{{ icon.id }}">
+      <input
+        type="radio"
+        id="{{ icon.id }}"
+        name="{{ widget.name }}"
+        value="{{ icon.value }}"
+        {% if icon.selected %}checked{% endif %}
+        {% if widget.attrs.required %}required{% endif %}
+      />
+      <span class="icon-picker__preview">
+        {% if icon.value %}
+          <i class="{{ icon.value }}" aria-hidden="true"></i>
+        {% else %}
+          <span class="icon-picker__empty" aria-hidden="true">—</span>
+        {% endif %}
+      </span>
+      <span class="icon-picker__label">
+        {% if icon.label %}
+          {{ icon.label }}
+        {% else %}
+          {% trans "Без иконки" %}
+        {% endif %}
+      </span>
+    </label>
+  {% endfor %}
+</div>
