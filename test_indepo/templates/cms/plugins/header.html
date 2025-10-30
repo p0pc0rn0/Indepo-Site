@@ -1,19 +1,22 @@
 {% load cms_tags menu_tags static sekizai_tags navigation_extras %}
 <aside class="fly-nav" data-fly-nav>
   <div class="fly-nav__inner">
-    <div class="fly-nav__top">
-      <button
-        type="button"
-        class="accessibility-toggle fly-nav__accessibility"
-        data-accessibility-toggle
-        aria-pressed="false"
-        aria-label="Версия для слабовидящих"
-      >
-        <i class="bi bi-eyeglasses"></i>
-      </button>
-    </div>
     <nav class="fly-nav__menu" aria-label="Основная навигация">
       <ul class="fly-nav__list">
+        <li class="fly-nav__item fly-nav__item--utility">
+          <button
+            type="button"
+            class="fly-nav__link fly-nav__link--button accessibility-toggle"
+            data-accessibility-toggle
+            aria-pressed="false"
+            aria-label="Версия для слабовидящих"
+          >
+            <span class="fly-nav__icon" aria-hidden="true">
+              <i class="bi bi-eyeglasses"></i>
+            </span>
+            <span class="fly-nav__label">Версия для слабовидящих</span>
+          </button>
+        </li>
         {% show_menu 0 1 1 100 "menu/sidebar_menu.html" %}
       </ul>
     </nav>
@@ -55,11 +58,6 @@
     flex-direction: column;
     gap: 0.8rem;
   }
-  .fly-nav__top {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
   .fly-nav__menu {
     overflow: hidden;
   }
@@ -73,6 +71,9 @@
   }
   .fly-nav__item {
     position: relative;
+  }
+  .fly-nav__item--utility {
+    margin-bottom: 0.25rem;
   }
   .fly-nav__link {
     display: flex;
@@ -124,6 +125,21 @@
     flex: 1 1 auto;
     min-width: 0;
     transition: opacity 0.2s ease;
+  }
+  .fly-nav__link--button {
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .fly-nav__link--button.is-active {
+    background: rgba(37, 99, 235, 0.18);
+    color: var(--fly-nav-accent);
+    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.35);
   }
   .fly-nav--collapsed {
     width: var(--fly-nav-collapsed);
@@ -184,28 +200,6 @@
   .fly-nav__child-link:focus-visible {
     background: rgba(37, 99, 235, 0.18);
     color: var(--fly-nav-accent);
-    outline: none;
-  }
-  .fly-nav__accessibility {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.04);
-    color: #fff;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-  }
-  .fly-nav__accessibility:hover,
-  .fly-nav__accessibility:focus-visible,
-  .fly-nav__accessibility.is-active {
-    background: rgba(37, 99, 235, 0.25);
-    border-color: rgba(37, 99, 235, 0.55);
     outline: none;
   }
   @media (max-width: 991.98px) {
