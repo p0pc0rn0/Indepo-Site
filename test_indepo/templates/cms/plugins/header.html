@@ -1,5 +1,5 @@
 {% load cms_tags menu_tags static sekizai_tags navigation_extras %}
-<aside class="fly-nav" data-fly-nav>
+<aside id="fly-nav" class="fly-nav" data-fly-nav>
   <div class="fly-nav__inner">
     <nav class="fly-nav__menu" aria-label="Основная навигация">
       <ul class="fly-nav__list">
@@ -22,6 +22,17 @@
     </nav>
   </div>
 </aside>
+<button
+  type="button"
+  class="fly-nav__mobile-toggle"
+  data-fly-nav-mobile-toggle
+  aria-controls="fly-nav"
+  aria-expanded="false"
+  aria-label="Открыть меню"
+>
+  <span class="fly-nav__mobile-icon" aria-hidden="true"></span>
+</button>
+<div class="fly-nav__mobile-backdrop" data-fly-nav-mobile-backdrop hidden></div>
 
 {% addtoblock "css" %}
 <style>
@@ -35,9 +46,9 @@
   }
   .fly-nav {
     position: fixed;
-    top: 52%;
+    top: 50%;
     right: 24px;
-    transform: translateY(-52%);
+    transform: translateY(-50%);
     z-index: 999;
     width: var(--fly-nav-width);
     max-height: 82vh;
@@ -202,19 +213,146 @@
     color: var(--fly-nav-accent);
     outline: none;
   }
+  .fly-nav__mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 62px;
+    right: 16px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: none;
+    background: var(--fly-nav-accent);
+    color: #fff;
+    box-shadow: 0 18px 38px rgba(37, 99, 235, 0.35);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .fly-nav__mobile-toggle:hover {
+    box-shadow: 0 20px 42px rgba(37, 99, 235, 0.4);
+  }
+  .fly-nav__mobile-toggle:active {
+    transform: scale(0.96);
+  }
+  .fly-nav__mobile-toggle:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 3px;
+  }
+  .fly-nav__mobile-icon {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: background 0.24s ease;
+  }
+  .fly-nav__mobile-icon::before,
+  .fly-nav__mobile-icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 0.24s ease, opacity 0.24s ease;
+  }
+  .fly-nav__mobile-icon::before {
+    transform: translateY(-6px);
+  }
+  .fly-nav__mobile-icon::after {
+    transform: translateY(6px);
+  }
+  .fly-nav__mobile-toggle.is-active .fly-nav__mobile-icon {
+    background: transparent;
+  }
+  .fly-nav__mobile-toggle.is-active .fly-nav__mobile-icon::before {
+    transform: rotate(45deg);
+  }
+  .fly-nav__mobile-toggle.is-active .fly-nav__mobile-icon::after {
+    transform: rotate(-45deg);
+  }
+  .fly-nav__mobile-backdrop {
+    display: none;
+  }
+  body.fly-nav-mobile-open {
+    overflow: hidden;
+  }
   @media (max-width: 991.98px) {
     .fly-nav {
-      top: auto;
-      bottom: 24px;
-      right: 24px;
-      transform: none;
-      width: var(--fly-nav-collapsed);
+      top: 0;
+      bottom: 0;
+      right: 0;
+      transform: translateX(110%);
+      width: min(320px, 86vw);
+      max-height: none;
+      pointer-events: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .fly-nav.fly-nav--mobile-open {
+      transform: translateX(0);
+      pointer-events: auto;
+      box-shadow: var(--fly-nav-shadow);
     }
     .fly-nav__inner {
-      padding: 0.75rem 0.55rem;
+      height: 100%;
+      padding: 1.6rem 1.2rem 2rem;
+      overflow-y: auto;
+      border-radius: 0;
+      gap: 1rem;
+    }
+    .fly-nav__list {
+      gap: 0.75rem;
     }
     .fly-nav__label {
       display: none;
+    }
+    .fly-nav.fly-nav--mobile-open .fly-nav__label {
+      display: block;
+    }
+    .fly-nav--collapsed {
+      width: min(320px, 86vw);
+    }
+    .fly-nav--collapsed .fly-nav__inner {
+      padding: 1.6rem 1.2rem 2rem;
+    }
+    .fly-nav--collapsed .fly-nav__link {
+      justify-content: flex-start;
+      padding: 0.65rem 0.85rem;
+    }
+    .fly-nav--collapsed .fly-nav__label {
+      position: static;
+      right: auto;
+      top: auto;
+      transform: none;
+      background: transparent;
+      padding: 0;
+      opacity: 1;
+      pointer-events: auto;
+      box-shadow: none;
+    }
+    .fly-nav__mobile-toggle {
+      display: inline-flex;
+      top: 42px;
+      right: 16px;
+    }
+    .fly-nav__mobile-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 998;
+    }
+    .fly-nav__mobile-backdrop.is-active {
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 </style>
@@ -228,29 +366,71 @@
 
     var collapseClass = 'fly-nav--collapsed';
     var hoverClass = 'fly-nav--hover';
+    var mobileOpenClass = 'fly-nav--mobile-open';
+    var bodyMobileClass = 'fly-nav-mobile-open';
     var hoverTimeout;
+    var mobileToggle = document.querySelector('[data-fly-nav-mobile-toggle]');
+    var mobileBackdrop = document.querySelector('[data-fly-nav-mobile-backdrop]');
+
+    function isMobile() {
+      return window.innerWidth < 992;
+    }
 
     function setCollapsed(state) {
       nav.classList.toggle(collapseClass, state);
     }
 
-    function shouldStayCollapsed() {
-      return window.innerWidth < 992;
-    }
-
     function openNav() {
-      if (shouldStayCollapsed()) return;
+      if (isMobile()) return;
       clearTimeout(hoverTimeout);
       nav.classList.add(hoverClass);
       setCollapsed(false);
     }
 
     function scheduleClose() {
-      if (shouldStayCollapsed()) return;
+      if (isMobile()) return;
       nav.classList.remove(hoverClass);
       hoverTimeout = setTimeout(function () {
         setCollapsed(true);
       }, 150);
+    }
+
+    function openMobileNav() {
+      if (!isMobile()) return;
+      clearTimeout(hoverTimeout);
+      nav.classList.add(mobileOpenClass);
+      nav.classList.remove(hoverClass);
+      setCollapsed(false);
+      document.body.classList.add(bodyMobileClass);
+      if (mobileToggle) {
+        mobileToggle.classList.add('is-active');
+        mobileToggle.setAttribute('aria-expanded', 'true');
+        mobileToggle.setAttribute('aria-label', 'Закрыть меню');
+      }
+      if (mobileBackdrop) {
+        mobileBackdrop.classList.add('is-active');
+        mobileBackdrop.removeAttribute('hidden');
+      }
+    }
+
+    function closeMobileNav(force) {
+      var wasOpen = nav.classList.contains(mobileOpenClass);
+      if (!wasOpen && force !== true) {
+        return;
+      }
+      nav.classList.remove(mobileOpenClass);
+      nav.classList.remove(hoverClass);
+      setCollapsed(true);
+      document.body.classList.remove(bodyMobileClass);
+      if (mobileToggle) {
+        mobileToggle.classList.remove('is-active');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        mobileToggle.setAttribute('aria-label', 'Открыть меню');
+      }
+      if (mobileBackdrop) {
+        mobileBackdrop.classList.remove('is-active');
+        mobileBackdrop.setAttribute('hidden', '');
+      }
     }
 
     function handleHover(event) {
@@ -262,12 +442,12 @@
     }
 
     function handleFocus(event) {
-      if (!nav.contains(event.target)) return;
+      if (!nav.contains(event.target) || isMobile()) return;
       openNav();
     }
 
     function handleBlur(event) {
-      if (nav.contains(event.relatedTarget)) return;
+      if (isMobile() || nav.contains(event.relatedTarget)) return;
       scheduleClose();
     }
 
@@ -276,10 +456,44 @@
     nav.addEventListener('focusin', handleFocus);
     nav.addEventListener('focusout', handleBlur);
 
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', function () {
+        if (nav.classList.contains(mobileOpenClass)) {
+          closeMobileNav();
+        } else {
+          openMobileNav();
+        }
+      });
+    }
+
+    if (mobileBackdrop) {
+      mobileBackdrop.addEventListener('click', function () {
+        closeMobileNav();
+      });
+    }
+
+    nav.addEventListener('click', function (event) {
+      if (isMobile() && event.target.closest('a')) {
+        closeMobileNav();
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeMobileNav();
+      }
+    });
+
     setCollapsed(true);
 
     window.addEventListener('resize', function () {
-      if (shouldStayCollapsed()) {
+      if (isMobile()) {
+        nav.classList.remove(hoverClass);
+        if (!nav.classList.contains(mobileOpenClass)) {
+          setCollapsed(true);
+        }
+      } else {
+        closeMobileNav(true);
         nav.classList.remove(hoverClass);
         setCollapsed(true);
       }
