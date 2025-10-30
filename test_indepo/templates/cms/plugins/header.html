@@ -35,9 +35,9 @@
   }
   .fly-nav {
     position: fixed;
-    top: 32%;
+    top: 42%;
     right: 24px;
-    transform: translateY(-32%);
+    transform: translateY(-42%);
     z-index: 999;
     width: var(--fly-nav-width);
     max-height: 82vh;
@@ -228,43 +228,62 @@
 
     var collapseClass = 'fly-nav--collapsed';
     var hoverClass = 'fly-nav--hover';
-    var scrollThreshold = 24;
     var hoverTimeout;
 
     function setCollapsed(state) {
       nav.classList.toggle(collapseClass, state);
     }
 
-    function isAtTop() {
-      return window.scrollY <= scrollThreshold;
+    function shouldStayCollapsed() {
+      return window.innerWidth < 992;
     }
 
-    function handleScroll() {
-      if (window.innerWidth < 992) return;
-      setCollapsed(!isAtTop());
+    function openNav() {
+      if (shouldStayCollapsed()) return;
+      clearTimeout(hoverTimeout);
+      nav.classList.add(hoverClass);
+      setCollapsed(false);
+    }
+
+    function scheduleClose() {
+      if (shouldStayCollapsed()) return;
+      nav.classList.remove(hoverClass);
+      hoverTimeout = setTimeout(function () {
+        setCollapsed(true);
+      }, 150);
     }
 
     function handleHover(event) {
-      if (window.innerWidth < 992) return;
       if (event.type === 'mouseenter') {
-        clearTimeout(hoverTimeout);
-        nav.classList.add(hoverClass);
-        setCollapsed(false);
+        openNav();
       } else if (event.type === 'mouseleave') {
-        nav.classList.remove(hoverClass);
-        var shouldCollapse = !isAtTop();
-        hoverTimeout = setTimeout(function () {
-          setCollapsed(shouldCollapse);
-        }, 150);
+        scheduleClose();
       }
+    }
+
+    function handleFocus(event) {
+      if (!nav.contains(event.target)) return;
+      openNav();
+    }
+
+    function handleBlur(event) {
+      if (nav.contains(event.relatedTarget)) return;
+      scheduleClose();
     }
 
     nav.addEventListener('mouseenter', handleHover);
     nav.addEventListener('mouseleave', handleHover);
+    nav.addEventListener('focusin', handleFocus);
+    nav.addEventListener('focusout', handleBlur);
 
-    setCollapsed(!isAtTop());
+    setCollapsed(true);
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', function () {
+      if (shouldStayCollapsed()) {
+        nav.classList.remove(hoverClass);
+        setCollapsed(true);
+      }
+    });
   })();
 </script>
 {% endaddtoblock %}
