@@ -26,7 +26,7 @@
 {% addtoblock "css" %}
 <style>
   :root {
-    --fly-nav-width: 236px;
+    --fly-nav-width: 310px;
     --fly-nav-collapsed: 64px;
     --fly-nav-bg: rgba(255, 255, 255, 0.96);
     --fly-nav-border: rgba(37, 99, 235, 0.12);
@@ -228,7 +228,6 @@
 
     var collapseClass = 'fly-nav--collapsed';
     var hoverClass = 'fly-nav--hover';
-    var lastScrollY = window.scrollY;
     var scrollThreshold = 24;
     var hoverTimeout;
 
@@ -236,15 +235,13 @@
       nav.classList.toggle(collapseClass, state);
     }
 
+    function isAtTop() {
+      return window.scrollY <= scrollThreshold;
+    }
+
     function handleScroll() {
       if (window.innerWidth < 992) return;
-      var currentY = window.scrollY;
-      if (currentY - lastScrollY > scrollThreshold) {
-        setCollapsed(true);
-      } else if (lastScrollY - currentY > scrollThreshold) {
-        setCollapsed(false);
-      }
-      lastScrollY = currentY;
+      setCollapsed(!isAtTop());
     }
 
     function handleHover(event) {
@@ -255,7 +252,7 @@
         setCollapsed(false);
       } else if (event.type === 'mouseleave') {
         nav.classList.remove(hoverClass);
-        var shouldCollapse = window.scrollY > scrollThreshold;
+        var shouldCollapse = !isAtTop();
         hoverTimeout = setTimeout(function () {
           setCollapsed(shouldCollapse);
         }, 150);
@@ -265,9 +262,7 @@
     nav.addEventListener('mouseenter', handleHover);
     nav.addEventListener('mouseleave', handleHover);
 
-    var initialCollapse = window.scrollY > scrollThreshold;
-    setCollapsed(initialCollapse);
-    lastScrollY = window.scrollY;
+    setCollapsed(!isAtTop());
 
     window.addEventListener('scroll', handleScroll, { passive: true });
   })();
