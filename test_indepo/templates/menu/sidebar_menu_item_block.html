@@ -1,0 +1,29 @@
+<li class="fly-nav__item{% if node.selected %} fly-nav__item--active{% endif %}{% if child_count %} fly-nav__item--has-children{% endif %}">
+  <a
+    class="fly-nav__link"
+    href="{{ node.get_absolute_url }}"
+    {% if node.selected %}aria-current="page"{% endif %}
+  >
+    <span class="fly-nav__icon" aria-hidden="true">
+      <i class="{{ icon }}"></i>
+    </span>
+    <span class="fly-nav__label">{{ title }}</span>
+  </a>
+  {% if child_count %}
+    <ul class="fly-nav__child-list">
+      {% for child in node.children %}
+        {% if child.get_absolute_url %}
+          <li>
+            <a
+              class="fly-nav__child-link"
+              href="{{ child.get_absolute_url }}"
+              {% if child.selected %}aria-current="page"{% endif %}
+            >
+              {{ child.get_menu_title }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+</li>

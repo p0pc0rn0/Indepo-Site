@@ -1,0 +1,7 @@
+{% load i18n navigation_extras %}
+{% if node.get_absolute_url %}
+  {% with title=node.get_menu_title child_count=node.children|length %}
+    {% resolve_nav_icon icon_map default_icons node.id title as icon_class %}
+    {% include "menu/sidebar_menu_item_block.html" with node=node title=title child_count=child_count icon=icon_class %}
+  {% endwith %}
+{% endif %}
