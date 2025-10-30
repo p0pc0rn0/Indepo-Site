@@ -168,6 +168,8 @@ class HeaderPlugin(CMSPluginBase):
         "Правовое обеспечение": "bi bi-folder2",
         "Документы": "bi bi-folder2",
         "Образование": "bi bi-mortarboard",
+        "ИС Антифишинг": "bi bi-shield-exclamation",
+        "Антифишинг": "bi bi-shield-exclamation",
         "Передать сообщение о фишинги": "bi bi-shield-exclamation",
         "Передать сообщение о фишинге": "bi bi-shield-exclamation",
         "#МЫВМЕСТЕ": "bi bi-megaphone",
