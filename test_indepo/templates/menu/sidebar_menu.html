@@ -1,0 +1,4 @@
+{% load menu_tags %}
+{% for child in children %}
+  {% include "menu/sidebar_menu_item.html" with node=child depth=0 %}
+{% endfor %}

@@ -3,6 +3,7 @@ from datetime import datetime, time as datetime_time
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils import timezone
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 
@@ -40,6 +41,7 @@ from .models import (
     FooterPluginModel,
     HeroSectionPluginModel,
     HeaderPluginModel,
+    NavigationIcon,
     DocumentItemPluginModel,
     DocumentSubsectionPluginModel,
     DocumentsSectionPluginModel,
@@ -159,6 +161,51 @@ class HeaderPlugin(CMSPluginBase):
     form = HeaderPluginForm
     cache = False
     module = _("Header")
+
+    DEFAULT_ICON_SEEDS = {
+        "Главная": "bi bi-house",
+        "Регистрация программ": "bi bi-journal-check",
+        "Правовое обеспечение": "bi bi-balance-scale",
+        "Документы": "bi bi-balance-scale",
+        "Образование": "bi bi-mortarboard",
+        "Передать сообщение о фишинги": "bi bi-shield-exclamation",
+        "Передать сообщение о фишинге": "bi bi-shield-exclamation",
+        "#МЫВМЕСТЕ": "bi bi-people-heart",
+        "Мы вместе": "bi bi-people-heart",
+        "Конкурс вместе против коррупции": "bi bi-award",
+    }
+    FALLBACK_ICON = "bi bi-app-indicator"
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        icon_map = {
+            icon.page_id: icon.icon_class
+            for icon in NavigationIcon.objects.select_related("page")
+        }
+        normalized_defaults = {"__fallback__": self.FALLBACK_ICON}
+        for title_seed, icon_class in self.DEFAULT_ICON_SEEDS.items():
+            if not title_seed:
+                continue
+            stripped = title_seed.strip()
+            casefolded = stripped.casefold()
+            ascii_slug = slugify(stripped, allow_unicode=False)
+            unicode_slug = slugify(stripped, allow_unicode=True)
+            dashed = casefolded.replace(" ", "-")
+            compact = casefolded.replace(" ", "")
+
+            for key in {
+                casefolded,
+                ascii_slug,
+                unicode_slug,
+                dashed,
+                compact,
+            }:
+                if key:
+                    normalized_defaults[key] = icon_class
+
+        context["icon_map"] = icon_map
+        context["default_icons"] = normalized_defaults
+        return context
 
 
 @plugin_pool.register_plugin

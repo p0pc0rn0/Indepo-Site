@@ -1,4 +1,5 @@
 from django.db import models
+from cms.models import Page
 from cms.models.pluginmodel import CMSPlugin
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -481,3 +482,19 @@ class HeaderPluginModel(CMSPlugin):
 
     def __str__(self):
         return "Header navigation"
+
+
+class NavigationIcon(models.Model):
+    page = models.OneToOneField(Page, on_delete=models.CASCADE, related_name="navigation_icon")
+    icon_class = models.CharField(
+        _("Icon CSS class"),
+        max_length=100,
+        help_text=_("Например: bi bi-house или любая другая иконка из вашего набора"),
+    )
+
+    class Meta:
+        verbose_name = _("Navigation icon")
+        verbose_name_plural = _("Navigation icons")
+
+    def __str__(self):
+        return f"{self.page.get_title()} -> {self.icon_class}"
