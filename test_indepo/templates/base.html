@@ -21,13 +21,61 @@
     <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet" />
     <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" />
+    <script>
+      (function () {
+        try {
+          if (window.localStorage && localStorage.getItem('accessibilityMode') === 'true') {
+            document.documentElement.classList.add('accessibility-mode');
+          }
+        } catch (error) {
+          /* ignore */
+        }
+      })();
+    </script>
+    <style>
+      html.accessibility-mode {
+        font-size: 20px;
+        filter: grayscale(100%);
+      }
+      html.accessibility-mode body {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+      html.accessibility-mode body * {
+        color: inherit !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        border-color: rgba(0, 0, 0, 0.4) !important;
+      }
+      html.accessibility-mode img,
+      html.accessibility-mode picture,
+      html.accessibility-mode video,
+      html.accessibility-mode figure,
+      html.accessibility-mode svg.image,
+      html.accessibility-mode [data-background],
+      html.accessibility-mode [style*="background-image"] {
+        display: none !important;
+      }
+      html.accessibility-mode a,
+      html.accessibility-mode button,
+      html.accessibility-mode .btn {
+        text-decoration: underline !important;
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+      html.accessibility-mode .accessibility-toggle {
+        text-decoration: none !important;
+        border-color: #000 !important;
+      }
+    </style>
     {% render_block "css" %}
   </head>
   <body class="{% block body_class %}{% endblock %}">
     {% cms_toolbar %}
     <header id="header" class="header sticky-top">
       <div class="topbar d-flex align-items-center">
-        <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="container d-flex justify-content-start">
           {% placeholder "Top Bar" %}
         </div>
       </div>
@@ -79,6 +127,58 @@
     <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
     <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
     <script src="{% static 'assets/js/main.js' %}"></script>
+    <script>
+      (function () {
+        var STORAGE_KEY = 'accessibilityMode';
+        var MODE_CLASS = 'accessibility-mode';
+
+        function setState(enabled) {
+          document.documentElement.classList.toggle(MODE_CLASS, enabled);
+          document.querySelectorAll('[data-accessibility-toggle]').forEach(function (button) {
+            button.classList.toggle('is-active', enabled);
+            button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+          });
+        }
+
+        function readState() {
+          try {
+            return localStorage.getItem(STORAGE_KEY) === 'true';
+          } catch (error) {
+            return false;
+          }
+        }
+
+        function toggleState() {
+          var nextState = !document.documentElement.classList.contains(MODE_CLASS);
+          setState(nextState);
+          try {
+            localStorage.setItem(STORAGE_KEY, nextState ? 'true' : 'false');
+          } catch (error) {
+            /* ignore */
+          }
+        }
+
+        function init() {
+          setState(readState());
+        }
+
+        document.addEventListener('click', function (event) {
+          var target = event.target.closest('[data-accessibility-toggle]');
+          if (!target) return;
+          event.preventDefault();
+          toggleState();
+        });
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+
+        document.addEventListener('cms-content-refresh', init);
+        document.addEventListener('cms-structure-update', init);
+      })();
+    </script>
     {% render_block "js" %}
   </body>
 </html>
