@@ -165,13 +165,13 @@ class HeaderPlugin(CMSPluginBase):
     DEFAULT_ICON_SEEDS = {
         "Главная": "bi bi-house",
         "Регистрация программ": "bi bi-journal-check",
-        "Правовое обеспечение": "bi bi-balance-scale",
-        "Документы": "bi bi-balance-scale",
+        "Правовое обеспечение": "bi bi-folder2",
+        "Документы": "bi bi-folder2",
         "Образование": "bi bi-mortarboard",
         "Передать сообщение о фишинги": "bi bi-shield-exclamation",
         "Передать сообщение о фишинге": "bi bi-shield-exclamation",
-        "#МЫВМЕСТЕ": "bi bi-people-heart",
-        "Мы вместе": "bi bi-people-heart",
+        "#МЫВМЕСТЕ": "bi bi-megaphone",
+        "Мы вместе": "bi bi-megaphone",
         "Конкурс вместе против коррупции": "bi bi-award",
     }
     FALLBACK_ICON = "bi bi-app-indicator"
