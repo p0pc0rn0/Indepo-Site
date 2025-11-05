@@ -20,18 +20,21 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import include, path
 from django.views.i18n import JavaScriptCatalog
+from .views import GlobalSearchView
 
+# filer лучше вынести сюда, вне i18n, чтобы не было /ru/filer/
 urlpatterns = [
-    # filer лучше вынести сюда, вне i18n, чтобы не было /ru/filer/
     path('filer/', include('filer.urls')),
 ]
 
 urlpatterns += i18n_patterns(
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('admin/', admin.site.urls),
+    path('search/', GlobalSearchView.as_view(), name='site-search'),
     path('', include('cms.urls')),
 )
 
 # медиафайлы вне i18n — правильно
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
