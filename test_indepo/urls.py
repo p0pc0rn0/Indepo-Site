@@ -21,14 +21,17 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.i18n import JavaScriptCatalog
 
+from .views import GlobalSearchView  # импорт из origin/main
+
+# filer — вне i18n, чтобы не было /ru/filer/
 urlpatterns = [
-    # filer лучше вынести сюда, вне i18n, чтобы не было /ru/filer/
     path('filer/', include('filer.urls')),
 ]
 
 urlpatterns += i18n_patterns(
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('admin/', admin.site.urls),
+    path('search/', GlobalSearchView.as_view(), name='site-search'),  # добавлено из origin/main
     path('', include('cms.urls')),
 )
 
