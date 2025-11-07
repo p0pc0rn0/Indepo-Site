@@ -190,7 +190,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [APPS_DIR / "static"]
 STATIC_ROOT = Path(env("DJANGO_STATIC_ROOT", default=str(BASE_DIR / "staticfiles")))
 
-MEDIA_URL = "media/"
+#MEDIA_URL = "media/"
+MEDIA_URL = '/file/'
 MEDIA_ROOT = Path(env("DJANGO_MEDIA_ROOT", default=str(BASE_DIR.parent / "media")))
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
