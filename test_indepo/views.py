@@ -92,11 +92,16 @@ class GlobalSearchView(View):
         results = []
         documents = (
             DocumentItemPluginModel.objects.select_related("cmsplugin_ptr")
-            .order_by("name", "pk")
+            .order_by("-cmsplugin_ptr__changed_date", "-pk")
             .iterator()
         )
 
+        seen_names = set()
+
         for document in documents:
+            normalized_name = (document.name or "").strip().casefold()
+            if normalized_name in seen_names:
+                continue
             haystack = " ".join(filter(None, [document.name, document.description])).casefold()
             if term not in haystack:
                 continue
@@ -107,6 +112,7 @@ class GlobalSearchView(View):
             if key in seen:
                 continue
             seen.add(key)
+            seen_names.add(normalized_name)
             results.append(
                 {
                     "type": "document",
