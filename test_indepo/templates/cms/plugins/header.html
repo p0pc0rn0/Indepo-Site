@@ -945,7 +945,16 @@
 
           var icon = document.createElement('span');
           icon.className = 'site-search__result-icon';
-          icon.innerHTML = '<i class=\"' + (item.icon || 'bi bi-search') + '\" aria-hidden=\"true\"></i>';
+          var iconClass = item.icon || 'bi bi-search';
+          icon.innerHTML = '<i class=\"' + iconClass + '\" aria-hidden=\"true\"></i>';
+          var type = (item.type || '').toLowerCase();
+          if (type === 'page') {
+            icon.style.background = 'rgba(16, 185, 129, 0.18)';
+            icon.style.color = '#047857';
+          } else if (type === 'document') {
+            icon.style.background = 'rgba(37, 99, 235, 0.15)';
+            icon.style.color = '#1d4ed8';
+          }
 
           var body = document.createElement('div');
           body.className = 'site-search__result-body';

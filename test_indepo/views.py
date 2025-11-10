@@ -81,7 +81,7 @@ class GlobalSearchView(View):
                     "url": request.build_absolute_uri(url),
                     "label": _("Страница"),
                     "description": Truncator(content.meta_description or "").chars(160),
-                    "icon": "bi bi-journal-text",
+                    "icon": "bi bi-collection-play",
                 }
             )
         return results
