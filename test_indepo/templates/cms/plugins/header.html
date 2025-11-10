@@ -3,34 +3,6 @@
   <div class="fly-nav__inner">
     <nav class="fly-nav__menu" aria-label="Основная навигация">
       <ul class="fly-nav__list">
-        <li class="fly-nav__item fly-nav__item--utility">
-          <button
-            type="button"
-            class="fly-nav__link fly-nav__link--button fly-nav__search-trigger"
-            data-search-open
-            aria-haspopup="dialog"
-            aria-controls="site-search-overlay"
-          >
-            <span class="fly-nav__icon" aria-hidden="true">
-              <i class="bi bi-search"></i>
-            </span>
-            <span class="fly-nav__label">{% trans "Поиск по сайту" %}</span>
-          </button>
-        </li>
-        <li class="fly-nav__item fly-nav__item--utility">
-          <button
-            type="button"
-            class="fly-nav__link fly-nav__link--button accessibility-toggle"
-            data-accessibility-toggle
-            aria-pressed="false"
-            aria-label="Версия для слабовидящих"
-          >
-            <span class="fly-nav__icon" aria-hidden="true">
-              <i class="bi bi-eyeglasses"></i>
-            </span>
-            <span class="fly-nav__label">Версия для слабовидящих</span>
-          </button>
-        </li>
         {% show_menu 0 1 1 100 "menu/sidebar_menu.html" %}
       </ul>
     </nav>
@@ -48,41 +20,6 @@
   hidden
 >
   <div class="site-search__backdrop" data-search-close></div>
-  <div class="site-search__panel" role="dialog" aria-modal="true" aria-labelledby="site-search-title">
-    <button
-      type="button"
-      class="site-search__close"
-      data-search-close
-      aria-label="{% trans 'Закрыть поиск' %}"
-    >
-      <i class="bi bi-x-lg" aria-hidden="true"></i>
-    </button>
-    <div class="site-search__body">
-      <div class="site-search__header">
-        <h2 class="site-search__title" id="site-search-title">{% trans "Поиск по сайту" %}</h2>
-        <form class="site-search__form" data-search-form>
-          <span class="site-search__input-icon" aria-hidden="true">
-            <i class="bi bi-search"></i>
-          </span>
-          <input
-            type="search"
-            name="q"
-            class="site-search__input"
-            placeholder="{% trans 'Введите запрос…' %}"
-            autocomplete="off"
-            spellcheck="false"
-            data-search-input
-          />
-          <button type="submit" class="site-search__submit">
-            <span>{% trans "Найти" %}</span>
-          </button>
-        </form>
-      </div>
-      <div class="site-search__status is-hidden" data-search-status aria-live="polite"></div>
-      <div class="site-search__results" data-search-results></div>
-      <p class="site-search__empty" data-search-empty>{% trans "Введите запрос, чтобы увидеть результаты" %}</p>
-    </div>
-  </div>
 </div>
 <button
   type="button"
@@ -278,137 +215,45 @@
   .site-search {
     position: fixed;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(1.5rem, 5vw, 4rem);
-    z-index: 1200;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+    z-index: 900;
   }
-  .site-search.is-open {
-    opacity: 1;
-    pointer-events: auto;
+  .site-search[hidden] {
+    display: none;
+  }
+  .site-search:not(.is-open) {
+    pointer-events: none;
   }
   .site-search__backdrop {
     position: absolute;
     inset: 0;
     backdrop-filter: blur(18px);
-    background: rgba(15, 23, 42, 0.55);
+    background: rgba(15, 23, 42, 0.45);
+    pointer-events: auto;
   }
   .site-search__panel {
-    position: relative;
-    width: min(680px, 94vw);
-    max-height: min(560px, 90vh);
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 20px;
-    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.25);
-    border: 1px solid rgba(37, 99, 235, 0.16);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transform: translateY(10px) scale(0.98);
-    transition: transform 0.28s ease;
-  }
-  .site-search.is-open .site-search__panel {
-    transform: translateY(0) scale(1);
-  }
-  .site-search__close {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--fly-nav-accent);
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    z-index: 2;
-  }
-  .site-search__close:hover,
-  .site-search__close:focus-visible {
-    background: rgba(37, 99, 235, 0.2);
-    transform: rotate(90deg);
-  }
-  .site-search__body {
-    padding: clamp(1.75rem, 4vw, 2.25rem) clamp(1.5rem, 4vw, 2.75rem) clamp(1.5rem, 5vw, 2.5rem);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    overflow-y: auto;
-  }
-  .site-search__header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .site-search__title {
-    margin: 0;
-    font-size: clamp(1.45rem, 2vw, 1.8rem);
-    font-weight: 700;
-    color: #111827;
-  }
-  .site-search__form {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    background: rgba(241, 245, 255, 0.9);
-    border-radius: 16px;
-    border: 1px solid rgba(37, 99, 235, 0.12);
-    padding: 0.5rem;
-    gap: 0.5rem;
-    box-shadow: inset 0 0 0 1px transparent;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .site-search__form:focus-within {
-    border-color: rgba(37, 99, 235, 0.45);
-    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.35);
-  }
-  .site-search__input-icon {
-    position: absolute;
-    left: 1.1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(37, 99, 235, 0.75);
-    font-size: 1.1rem;
-    pointer-events: none;
-  }
-  .site-search__input {
+    top: calc(100% + 0.75rem);
+    left: 0;
     width: 100%;
-    border: none;
-    background: transparent;
-    padding: 0.75rem 0.75rem 0.75rem 2.65rem;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #0f172a;
+    max-height: min(70vh, 520px);
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 50;
   }
-  .site-search__input:focus {
-    outline: none;
-  }
-  .site-search__submit {
-    border: none;
-    border-radius: 14px;
-    padding: 0 1.4rem;
-    background: var(--fly-nav-accent);
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.95rem;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
-  .site-search__submit:hover,
-  .site-search__submit:focus-visible {
-    background: #1e4ed8;
-  }
-  .site-search__submit:active {
-    transform: translateY(1px);
+  [data-search-panel].is-open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
   .site-search__status {
     font-size: 0.92rem;
@@ -418,9 +263,12 @@
     display: grid;
     gap: 0.65rem;
     --result-animation-duration: 260ms;
+    max-height: min(45vh, 360px);
+    overflow-y: auto;
+    padding-right: 0.35rem;
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.32s ease, transform 0.32s ease;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
   }
   .site-search__results.is-visible {
     opacity: 1;
@@ -640,21 +488,10 @@
       right: 16px;
     }
     .site-search__panel {
-      width: min(96vw, 520px);
-      max-height: 92vh;
-      border-radius: 18px;
-    }
-    .site-search__body {
-      padding: 1.4rem 1.2rem 2rem;
-    }
-    .site-search__form {
-      grid-template-columns: 1fr;
-      padding: 0.45rem 0.6rem 0.6rem 0.6rem;
-      row-gap: 0.45rem;
-    }
-    .site-search__submit {
-      justify-self: flex-end;
-      padding: 0.55rem 1.15rem;
+      width: 100%;
+      max-height: min(78vh, 520px);
+      border-radius: 14px;
+      left: 0;
     }
     .fly-nav__mobile-backdrop {
       display: block;
@@ -801,11 +638,12 @@
     if (searchOverlay) {
       var searchEndpoint = searchOverlay.getAttribute('data-search-endpoint');
       var searchOpeners = document.querySelectorAll('[data-search-open]');
-      var searchInput = searchOverlay.querySelector('[data-search-input]');
-      var searchForm = searchOverlay.querySelector('[data-search-form]');
-      var searchResults = searchOverlay.querySelector('[data-search-results]');
-      var searchEmpty = searchOverlay.querySelector('[data-search-empty]');
-      var searchStatus = searchOverlay.querySelector('[data-search-status]');
+      var searchInputs = Array.prototype.slice.call(document.querySelectorAll('[data-search-input]'));
+      var searchButtons = Array.prototype.slice.call(document.querySelectorAll('[data-search-button]'));
+      var searchPanel = document.querySelector('[data-search-panel]');
+      var searchResults = document.querySelector('[data-search-results]');
+      var searchEmpty = document.querySelector('[data-search-empty]');
+      var searchStatus = document.querySelector('[data-search-status]');
       var searchClosers = searchOverlay.querySelectorAll('[data-search-close]');
       var searchAbort = null;
       var searchDebounce = null;
@@ -814,6 +652,59 @@
       var loadingMessage = searchOverlay.getAttribute('data-loading-label') || 'Ищем…';
       var errorMessage = searchOverlay.getAttribute('data-error-label') || 'Не удалось выполнить поиск. Попробуйте ещё раз.';
       var noResultsTemplate = searchOverlay.getAttribute('data-no-results-label') || 'По запросу «{query}» ничего не найдено.';
+
+      function setSearchButtonsExpanded(isOpen) {
+        if (!searchButtons.length) {
+          return;
+        }
+        searchButtons.forEach(function (btn) {
+          btn.setAttribute('aria-expanded', String(!!isOpen));
+        });
+      }
+
+      function focusSearchInput(preferredInput) {
+        if (!searchInputs.length) {
+          return;
+        }
+        var target = null;
+        if (preferredInput && searchInputs.indexOf(preferredInput) !== -1) {
+          target = preferredInput;
+        } else if (searchInputs.indexOf(document.activeElement) !== -1) {
+          target = document.activeElement;
+        } else {
+          target = searchInputs[0];
+        }
+        window.requestAnimationFrame(function () {
+          if (document.activeElement !== target) {
+            target.focus();
+          }
+          var length = target.value.length;
+          if (typeof target.setSelectionRange === 'function') {
+            try {
+              target.setSelectionRange(length, length);
+            } catch (error) {
+              /* ignore */
+            }
+          }
+        });
+      }
+
+      function resolveInputForOpener(opener) {
+        if (!searchInputs.length) {
+          return null;
+        }
+        if (!opener) {
+          return searchInputs[0];
+        }
+        var scope = opener.closest('.branding__search');
+        if (scope) {
+          var scopedInput = scope.querySelector('[data-search-input]');
+          if (scopedInput) {
+            return scopedInput;
+          }
+        }
+        return searchInputs[0];
+      }
 
       function setStatus(message) {
         if (!searchStatus) return;
@@ -841,22 +732,33 @@
         }
       }
 
-      function openSearch() {
+      function openSearch(options) {
+        var focusTarget = options && options.focusTarget ? options.focusTarget : null;
         closeMobileNav(true);
         nav.classList.remove(hoverClass);
         setCollapsed(true);
         if (searchOverlay.hasAttribute('hidden')) {
           searchOverlay.removeAttribute('hidden');
         }
-        searchOverlay.classList.add('is-open');
-        document.body.classList.add('site-search-open');
-        resetSearchUI(true);
-        if (searchInput) {
-          window.setTimeout(function () {
-            searchInput.focus();
-            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
-          }, 60);
+        var wasClosed = !searchOverlay.classList.contains('is-open');
+        if (wasClosed) {
+          searchOverlay.classList.add('is-open');
+          document.body.classList.add('site-search-open');
+          setSearchButtonsExpanded(true);
+          if (!lastQuery) {
+            resetResults(emptyDefaultMessage);
+            setStatus('');
+          }
         }
+        if (searchPanel) {
+          if (searchPanel.hasAttribute('hidden')) {
+            searchPanel.removeAttribute('hidden');
+          }
+          window.requestAnimationFrame(function () {
+            searchPanel.classList.add('is-open');
+          });
+        }
+        focusSearchInput(focusTarget);
       }
 
       function closeSearch() {
@@ -865,9 +767,21 @@
         }
         searchOverlay.classList.remove('is-open');
         document.body.classList.remove('site-search-open');
+        setSearchButtonsExpanded(false);
         resetSearchUI(true);
+        if (searchInputs.length) {
+          searchInputs.forEach(function (input) {
+            input.blur();
+          });
+        }
+        if (searchPanel) {
+          searchPanel.classList.remove('is-open');
+        }
         window.setTimeout(function () {
           searchOverlay.setAttribute('hidden', '');
+          if (searchPanel) {
+            searchPanel.setAttribute('hidden', '');
+          }
         }, 220);
       }
 
@@ -986,36 +900,38 @@
         searchResults.classList.add('is-visible');
       }
 
-    function resetSearchUI(clearInput = true) {
-      if (clearInput && searchInput) {
-        searchInput.value = '';
+      function resetSearchUI(clearInput = true) {
+        if (clearInput && searchInputs.length) {
+          searchInputs.forEach(function (input) {
+            input.value = '';
+          });
+        }
+        lastQuery = '';
+        if (searchAbort) {
+          searchAbort.abort();
+          searchAbort = null;
+        }
+        resetResults(emptyDefaultMessage);
+        setStatus('');
       }
-      lastQuery = '';
-      if (searchAbort) {
-        searchAbort.abort();
-        searchAbort = null;
-      }
-      resetResults(emptyDefaultMessage);
-      setStatus('');
-    }
 
-    function scheduleSearch(query) {
-      if (searchDebounce) {
-        clearTimeout(searchDebounce);
+      function scheduleSearch(query) {
+        if (searchDebounce) {
+          clearTimeout(searchDebounce);
+        }
+        if (!query) {
+          resetSearchUI(false);
+          return;
+        }
+        searchDebounce = window.setTimeout(function () {
+          performSearch(query);
+        }, 240);
       }
-      if (!query) {
-        resetSearchUI(false);
-        return;
-      }
-      searchDebounce = window.setTimeout(function () {
-        performSearch(query);
-      }, 240);
-    }
 
       if (searchOpeners.length) {
         Array.prototype.forEach.call(searchOpeners, function (btn) {
           btn.addEventListener('click', function () {
-            openSearch();
+            openSearch({ focusTarget: resolveInputForOpener(btn) });
           });
         });
       }
@@ -1028,24 +944,23 @@
         });
       }
 
-      if (searchForm) {
-        searchForm.addEventListener('submit', function (event) {
-          event.preventDefault();
-          if (searchInput) {
-            performSearch(searchInput.value.trim());
-          }
-        });
-      }
-
-      if (searchInput) {
-        searchInput.addEventListener('input', function () {
-          var value = searchInput.value || '';
-          var trimmed = value.trim();
-          if (!trimmed) {
-            scheduleSearch('');
-            return;
-          }
-          scheduleSearch(trimmed);
+      if (searchInputs.length) {
+        searchInputs.forEach(function (input) {
+          input.addEventListener('focus', function () {
+            openSearch({ focusTarget: input });
+          });
+          input.addEventListener('click', function () {
+            openSearch({ focusTarget: input });
+          });
+          input.addEventListener('input', function () {
+            var value = input.value || '';
+            var trimmed = value.trim();
+            if (!trimmed) {
+              scheduleSearch('');
+              return;
+            }
+            scheduleSearch(trimmed);
+          });
         });
       }
 

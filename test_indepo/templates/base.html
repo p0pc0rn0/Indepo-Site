@@ -84,8 +84,57 @@
         {% endif %}
       {% endplaceholder %}
       <div class="branding d-flex align-items-center">
-        <div class="container position-relative d-flex align-items-center justify-content-between">
-          {% placeholder "Header" %}
+        <div class="container position-relative d-flex align-items-center justify-content-between branding__container">
+          <div class="branding__utility">
+            <button
+              type="button"
+              class="branding__accessibility accessibility-toggle"
+              data-accessibility-toggle
+              aria-label="{% trans 'Версия для слабовидящих' %}"
+              aria-pressed="false"
+            >
+              <i class="bi bi-eyeglasses" aria-hidden="true"></i>
+            </button>
+            <div class="branding__search" role="search">
+              <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
+              <input
+                id="branding-search-input"
+                type="search"
+                class="branding__search-input"
+                placeholder="{% trans 'Поиск по сайту…' %}"
+                autocomplete="off"
+                spellcheck="false"
+                data-search-input
+                aria-controls="site-search-overlay"
+                aria-haspopup="dialog"
+              />
+              <button
+                type="button"
+                class="branding__search-button"
+                data-search-button
+                data-search-open
+                aria-label="{% trans 'Открыть поиск' %}"
+                aria-controls="site-search-overlay"
+                aria-expanded="false"
+              >
+                <i class="bi bi-search" aria-hidden="true"></i>
+              </button>
+              <div
+                class="branding__search-panel site-search__panel"
+                data-search-panel
+                role="region"
+                aria-live="polite"
+                hidden
+              >
+                <div class="site-search__status is-hidden" data-search-status></div>
+                <div class="site-search__results" data-search-results></div>
+                <p class="site-search__empty" data-search-empty>{% trans "Введите запрос, чтобы увидеть результаты" %}</p>
+              </div>
+            </div>
+          </div>
+          <div class="branding__nav">
+            {% placeholder "Header" %}
+          </div>
         </div>
       </div>
     </header>
