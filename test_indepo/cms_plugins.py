@@ -2,6 +2,7 @@ from datetime import datetime, time as datetime_time
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.contrib import admin
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -29,6 +30,7 @@ from .forms import (
     TeamMemberPluginForm,
     TestimonialItemPluginForm,
     TestimonialsSectionPluginForm,
+    HeaderQuickIconInlineForm,
 )
 from .models import (
     AboutItemPluginModel,
@@ -41,6 +43,7 @@ from .models import (
     FooterPluginModel,
     HeroSectionPluginModel,
     HeaderPluginModel,
+    HeaderQuickIcon,
     NavigationIcon,
     DocumentItemPluginModel,
     DocumentSubsectionPluginModel,
@@ -153,6 +156,25 @@ class TopBarPlugin(CMSPluginBase):
     module = _("Header")
 
 
+class HeaderQuickIconInline(admin.TabularInline):
+    model = HeaderQuickIcon
+    form = HeaderQuickIconInlineForm
+    extra = 0
+    fields = (
+        "slot",
+        "icon_class",
+        "custom_icon_class",
+        "label",
+        "tooltip",
+        "url",
+        "open_in_new_tab",
+        "background_color",
+        "icon_color",
+        "order",
+    )
+    ordering = ("slot", "order")
+
+
 @plugin_pool.register_plugin
 class HeaderPlugin(CMSPluginBase):
     model = HeaderPluginModel
@@ -161,6 +183,7 @@ class HeaderPlugin(CMSPluginBase):
     form = HeaderPluginForm
     cache = False
     module = _("Header")
+    inlines = [HeaderQuickIconInline]
 
     DEFAULT_ICON_SEEDS = {
         "Главная": "bi bi-house",
@@ -205,6 +228,9 @@ class HeaderPlugin(CMSPluginBase):
                 if key:
                     normalized_defaults[key] = icon_class
 
+        icons = list(instance.quick_icons.all())
+        context["header_contact_icons"] = [icon for icon in icons if icon.slot == HeaderQuickIcon.Slot.LEFT]
+        context["header_social_icons"] = [icon for icon in icons if icon.slot == HeaderQuickIcon.Slot.RIGHT]
         context["icon_map"] = icon_map
         context["default_icons"] = normalized_defaults
         return context

@@ -1,4 +1,132 @@
 {% load cms_tags menu_tags static sekizai_tags navigation_extras i18n %}
+<div class="branding__utility">
+  <div class="branding__cluster branding__cluster--left">
+    {% for icon in header_contact_icons %}
+      {% if icon.url %}
+        <a
+          href="{{ icon.url }}"
+          class="branding-chip branding-chip--emphasis branding-chip--copy"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }};"
+          aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
+          data-copy-text="{{ icon.tooltip|default:icon.label|default:''|escape }}"
+          {% if icon.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
+        >
+      {% else %}
+        <span
+          class="branding-chip branding-chip--emphasis branding-chip--copy"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }};"
+          role="button"
+          tabindex="0"
+          aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
+          data-copy-text="{{ icon.tooltip|default:icon.label|default:''|escape }}"
+        >
+      {% endif %}
+        {% if icon.icon_class|slice:":5" == "text:" %}
+          <span class="branding-chip__icon-text" aria-hidden="true">{{ icon.icon_class|slice:"5:" }}</span>
+        {% else %}
+          <span class="branding-chip__icon" aria-hidden="true">
+            <i class="{{ icon.icon_class }}"></i>
+          </span>
+        {% endif %}
+        {% if icon.tooltip %}
+          <span class="branding-chip__tooltip" role="tooltip">{{ icon.tooltip }}</span>
+        {% endif %}
+        <span class="visually-hidden">{{ icon.label }}</span>
+      {% if icon.url %}
+        </a>
+      {% else %}
+        </span>
+      {% endif %}
+    {% endfor %}
+    <button
+      type="button"
+      class="branding__accessibility accessibility-toggle"
+      data-accessibility-toggle
+      aria-label="{% trans 'Версия для слабовидящих' %}"
+      aria-pressed="false"
+    >
+      <i class="bi bi-eyeglasses" aria-hidden="true"></i>
+      <span class="branding__accessibility-tooltip">{% trans "Режим для слабовидящих" %}</span>
+    </button>
+  </div>
+  <div class="branding__search" role="search">
+    <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
+    <input
+      id="branding-search-input"
+      type="search"
+      class="branding__search-input"
+      placeholder="{% trans 'Поиск по сайту…' %}"
+      autocomplete="off"
+      spellcheck="false"
+      data-search-input
+      aria-controls="site-search-overlay"
+      aria-haspopup="dialog"
+    />
+    <button
+      type="button"
+      class="branding__search-button"
+      data-search-button
+      data-search-open
+      aria-label="{% trans 'Открыть поиск' %}"
+      aria-controls="site-search-overlay"
+      aria-expanded="false"
+    >
+      <i class="bi bi-search" aria-hidden="true"></i>
+    </button>
+    <div
+      class="branding__search-panel site-search__panel"
+      data-search-panel
+      role="region"
+      aria-live="polite"
+      hidden
+    >
+      <div class="site-search__status is-hidden" data-search-status></div>
+      <div class="site-search__results" data-search-results></div>
+      <p class="site-search__empty" data-search-empty>{% trans "Введите запрос, чтобы увидеть результаты" %}</p>
+    </div>
+  </div>
+  <div class="branding__cluster branding__cluster--right">
+    {% for icon in header_social_icons %}
+      {% if icon.url %}
+        <a
+          href="{{ icon.url }}"
+          class="branding-chip branding-chip--emphasis"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }};"
+          aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
+          {% if icon.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
+        >
+      {% else %}
+        <span
+          class="branding-chip branding-chip--emphasis"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }};"
+          role="button"
+          tabindex="0"
+          aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
+        >
+      {% endif %}
+        {% if icon.icon_class|slice:":5" == "text:" %}
+          <span class="branding-chip__icon-text" aria-hidden="true">{{ icon.icon_class|slice:"5:" }}</span>
+        {% else %}
+          <span class="branding-chip__icon" aria-hidden="true">
+            <i class="{{ icon.icon_class }}"></i>
+          </span>
+        {% endif %}
+        {% if icon.tooltip %}
+          <span class="branding-chip__tooltip" role="tooltip">{{ icon.tooltip }}</span>
+        {% endif %}
+        <span class="visually-hidden">{{ icon.label }}</span>
+      {% if icon.url %}
+        </a>
+      {% else %}
+        </span>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="branding__copy-toast" data-copy-toast hidden>
+    {% trans "Скопировано" %}
+  </div>
+</div>
+<div class="branding__nav">
 <aside id="fly-nav" class="fly-nav" data-fly-nav>
   <div class="fly-nav__inner">
     <nav class="fly-nav__menu" aria-label="Основная навигация">
@@ -32,6 +160,7 @@
   <span class="fly-nav__mobile-icon" aria-hidden="true"></span>
 </button>
 <div class="fly-nav__mobile-backdrop" data-fly-nav-mobile-backdrop hidden></div>
+</div>
 
 {% addtoblock "css" %}
 <style>
@@ -514,6 +643,79 @@
 {% addtoblock "js" %}
 <script>
   (function () {
+    "use strict";
+
+    var copyToast = document.querySelector('[data-copy-toast]');
+    var copyToastTimer = null;
+
+    function showCopyToast() {
+      if (!copyToast) {
+        return;
+      }
+      copyToast.removeAttribute('hidden');
+      copyToast.classList.add('is-visible');
+      if (copyToastTimer) {
+        window.clearTimeout(copyToastTimer);
+      }
+      copyToastTimer = window.setTimeout(function () {
+        copyToast.classList.remove('is-visible');
+      }, 1600);
+    }
+
+    function fallbackCopy(text) {
+      try {
+        var textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyToast();
+      } catch (error) {
+        window.prompt('Скопируйте значение', text);
+      }
+    }
+
+    function copyValue(text) {
+      if (!text) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(text)
+          .then(function () {
+            showCopyToast();
+          })
+          .catch(function () {
+            fallbackCopy(text);
+          });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    (function bindCopyTriggers() {
+      var copyChips = document.querySelectorAll('.branding-chip--copy[data-copy-text]');
+      if (!copyChips.length) {
+        return;
+      }
+      copyChips.forEach(function (chip) {
+        function triggerCopy(event) {
+          event.preventDefault();
+          var text = chip.getAttribute('data-copy-text');
+          if (!text) return;
+          copyValue(text.trim());
+        }
+        chip.addEventListener('click', triggerCopy);
+        chip.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            triggerCopy(event);
+          }
+        });
+      });
+    })();
+
     var nav = document.querySelector('[data-fly-nav]');
     if (!nav) return;
 

@@ -483,6 +483,71 @@ class HeaderPluginModel(CMSPlugin):
     def __str__(self):
         return "Header navigation"
 
+    def copy_relations(self, oldinstance):
+        for icon in oldinstance.quick_icons.all():
+            icon.pk = None
+            icon.plugin = self
+            icon.save()
+
+
+class HeaderQuickIcon(models.Model):
+    class Slot(models.TextChoices):
+        LEFT = "left", _("Левая группа (контакты)")
+        RIGHT = "right", _("Правая группа (соцсети)")
+
+    plugin = models.ForeignKey(
+        HeaderPluginModel,
+        on_delete=models.CASCADE,
+        related_name="quick_icons",
+        verbose_name=_("Header plugin"),
+    )
+    slot = models.CharField(max_length=10, choices=Slot.choices, default=Slot.LEFT, verbose_name=_("Slot"))
+    label = models.CharField(
+        _("Label"),
+        max_length=150,
+        help_text=_("Название иконки для скринридеров и CMS."),
+    )
+    tooltip = models.CharField(
+        _("Tooltip text"),
+        max_length=255,
+        blank=True,
+        help_text=_("Отображается во всплывающем окошке (например, номер телефона или почта)."),
+    )
+    url = models.CharField(
+        _("URL / action"),
+        max_length=255,
+        blank=True,
+        help_text=_("Например: https://vk.com/..., mailto:info@example.com или tel:+74951234567"),
+    )
+    open_in_new_tab = models.BooleanField(_("Open in new tab"), default=False)
+    icon_class = models.CharField(
+        _("Bootstrap icon class"),
+        max_length=80,
+        default="bi bi-telegram",
+        help_text=_("Например: bi bi-telegram"),
+    )
+    background_color = models.CharField(
+        _("Background color"),
+        max_length=40,
+        blank=True,
+        default="#e0edff",
+    )
+    icon_color = models.CharField(
+        _("Icon color"),
+        max_length=40,
+        blank=True,
+        default="#1d4ed8",
+    )
+    order = models.PositiveIntegerField(_("Display order"), default=0)
+
+    class Meta:
+        ordering = ("slot", "order", "pk")
+        verbose_name = _("Header quick icon")
+        verbose_name_plural = _("Header quick icons")
+
+    def __str__(self):
+        return f"{self.label} ({self.get_slot_display()})"
+
 
 class NavigationIcon(models.Model):
     page = models.OneToOneField(Page, on_delete=models.CASCADE, related_name="navigation_icon")

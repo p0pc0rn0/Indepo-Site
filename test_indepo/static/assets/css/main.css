@@ -222,10 +222,24 @@ h6 {
   gap: 1.5rem;
 }
 .branding__utility {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
-  flex: 1;
+  width: 100%;
+  position: relative;
+}
+.branding__cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+.branding__cluster--left {
+  justify-content: flex-start;
+}
+.branding__cluster--right {
+  justify-content: flex-end;
 }
 .branding__accessibility {
   display: inline-flex;
@@ -241,6 +255,7 @@ h6 {
   transition: border-color 0.2s ease, background-color 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
+  position: relative;
 }
 .branding__accessibility:hover,
 .branding__accessibility:focus-visible,
@@ -325,6 +340,137 @@ body.site-search-open .branding__search-button:hover,
 body.site-search-open .branding__search-button:focus-visible {
   background: color-mix(in srgb, var(--heading-color), #111827 12%);
 }
+.branding-chip {
+  --chip-bg: rgba(15, 23, 42, 0.06);
+  --chip-color: var(--heading-color);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: var(--chip-bg);
+  color: var(--chip-color);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+.branding-chip:hover,
+.branding-chip:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2);
+  outline: none;
+}
+.branding-chip__icon i {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.branding-chip__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.branding-chip__icon-text {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.branding-chip__tooltip {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  transform: translate(-50%, -6px) scale(0.96);
+  transform-origin: top center;
+  background: #fff;
+  color: #0f172a;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.branding-chip__tooltip::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  background: inherit;
+  box-shadow: inherit;
+}
+.branding-chip:hover .branding-chip__tooltip,
+.branding-chip:focus-visible .branding-chip__tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+.branding-chip--copy {
+  cursor: pointer;
+}
+.branding__copy-toast {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 2000;
+}
+.branding__copy-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.branding__accessibility-tooltip {
+  position: absolute;
+  bottom: -0.35rem;
+  left: 50%;
+  transform: translate(-50%, 100%) scale(0.95);
+  transform-origin: top center;
+  background: #fff;
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.branding__accessibility:hover .branding__accessibility-tooltip,
+.branding__accessibility:focus-visible .branding__accessibility-tooltip {
+  opacity: 1;
+  transform: translate(-50%, calc(100% + 6px)) scale(1);
+}
+.branding-chip--emphasis {
+  --chip-bg: rgba(37, 99, 235, 0.12);
+  --chip-color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.35);
+}
 .branding__nav {
   flex-shrink: 0;
 }
@@ -335,6 +481,12 @@ body.site-search-open .branding__search-button:focus-visible {
   }
   .branding__utility {
     width: 100%;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .branding__cluster--right,
+  .branding__cluster--left {
+    justify-content: flex-start;
   }
 }
 
