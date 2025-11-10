@@ -87,18 +87,19 @@ class GlobalSearchView(View):
         return results
 
     def _search_documents(self, request, query: str) -> List[dict]:
-        term = query
-        documents = (
-            DocumentItemPluginModel.objects.filter(
-                Q(name__icontains=term) | Q(description__icontains=term)
-            )
-            .select_related("cmsplugin_ptr")
-            .order_by("name", "pk")[: self.document_limit * 3]
-        )
-
+        term = query.casefold()
         seen = set()
         results = []
+        documents = (
+            DocumentItemPluginModel.objects.select_related("cmsplugin_ptr")
+            .order_by("name", "pk")
+            .iterator()
+        )
+
         for document in documents:
+            haystack = " ".join(filter(None, [document.name, document.description])).casefold()
+            if term not in haystack:
+                continue
             normalized_url = self._build_absolute_document_url(request, document.url)
             if not normalized_url:
                 continue
@@ -117,6 +118,8 @@ class GlobalSearchView(View):
                     "external": normalized_url.startswith(("http://", "https://")),
                 }
             )
+            if len(results) >= self.document_limit * 2:
+                break
         return results
 
     def _build_absolute_document_url(self, request, url: str) -> str:
