@@ -36,7 +36,6 @@
 
     const hideThreshold = 120;
     const showThreshold = 80;
-    const snapWindow = 15;
     const isApplied = selectBody.classList.contains('scrolled');
     const currentY = window.scrollY;
     const goingDown = currentY > lastScrollY;
@@ -48,12 +47,13 @@
       selectBody.classList.remove('scrolled');
     }
 
-    if (!isSnapping) {
-      if (currentY > showThreshold && currentY < showThreshold + snapWindow && !goingDown) {
-        triggerSnap(Math.max(showThreshold - 5, 0));
-      } else if (currentY < hideThreshold && currentY > hideThreshold - snapWindow && goingDown) {
-        triggerSnap(hideThreshold + 5);
-      }
+    if (
+      !isSnapping &&
+      currentY > showThreshold &&
+      currentY < hideThreshold
+    ) {
+      const target = goingDown ? hideThreshold + 5 : Math.max(showThreshold - 5, 0);
+      triggerSnap(target);
     }
   }
 
