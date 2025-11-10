@@ -74,11 +74,15 @@
   <body class="{% block body_class %}{% endblock %}">
     {% cms_toolbar %}
     <header id="header" class="header sticky-top">
-      <div class="topbar d-flex align-items-center">
-        <div class="container d-flex justify-content-center justify-content-md-between">
-          {% placeholder "Top Bar" %}
-        </div>
-      </div>
+      {% placeholder "Top Bar" or %}
+        {% if request.toolbar and request.toolbar.edit_mode_active %}
+          <div class="topbar d-flex align-items-center">
+            <div class="container d-flex justify-content-center justify-content-md-between">
+              <span class="text-muted small">Добавьте плагин Top Bar</span>
+            </div>
+          </div>
+        {% endif %}
+      {% endplaceholder %}
       <div class="branding d-flex align-items-center">
         <div class="container position-relative d-flex align-items-center justify-content-between">
           {% placeholder "Header" %}
