@@ -13,6 +13,7 @@ from django.views import View
 
 from cms.models import PageContent
 from djangocms_versioning.constants import PUBLISHED
+from djangocms_versioning.models import Version
 
 from .models import DocumentItemPluginModel
 
@@ -46,22 +47,26 @@ class GlobalSearchView(View):
 
     def _search_pages(self, request, query: str, language: str, site_id: int) -> List[dict]:
         pagecontent_ct = ContentType.objects.get_for_model(PageContent)
+        base_qs = PageContent.objects.filter(
+            language=language,
+            page__site_id=site_id,
+            page__is_page_type=False,
+        ).select_related("page")
+
+        published_ids = Version.objects.filter(
+            content_type=pagecontent_ct,
+            state=PUBLISHED,
+            object_id__in=base_qs.values_list("pk", flat=True),
+        ).values_list("object_id", flat=True)
+
         contents = (
-            PageContent.objects.filter(
-                language=language,
-                page__site_id=site_id,
-                page__is_page_type=False,
-                versions__state=PUBLISHED,
-                versions__content_type=pagecontent_ct,
-            )
+            base_qs.filter(pk__in=published_ids)
             .filter(
                 Q(title__icontains=query)
                 | Q(page_title__icontains=query)
                 | Q(menu_title__icontains=query)
                 | Q(meta_description__icontains=query)
             )
-            .select_related("page")
-            .distinct()
             .order_by("title")[: self.page_limit]
         )
 
@@ -82,19 +87,25 @@ class GlobalSearchView(View):
         return results
 
     def _search_documents(self, request, query: str) -> List[dict]:
+        term = query
         documents = (
             DocumentItemPluginModel.objects.filter(
-                Q(name__icontains=query) | Q(description__icontains=query)
+                Q(name__icontains=term) | Q(description__icontains=term)
             )
             .select_related("cmsplugin_ptr")
-            .order_by("name")[: self.document_limit]
+            .order_by("name", "pk")[: self.document_limit * 3]
         )
 
+        seen = set()
         results = []
         for document in documents:
             normalized_url = self._build_absolute_document_url(request, document.url)
             if not normalized_url:
                 continue
+            key = normalized_url
+            if key in seen:
+                continue
+            seen.add(key)
             results.append(
                 {
                     "type": "document",
