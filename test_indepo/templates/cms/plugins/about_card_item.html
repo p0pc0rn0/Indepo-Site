@@ -39,18 +39,32 @@
 {% addtoblock "css" %}
 <style>
   .about-card {
-    border: 1px solid rgba(33, 37, 41, 0.1);
+    border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 0.9rem;
     padding: 1.35rem 1.65rem;
-    background: rgba(248, 249, 252, 0.9);
+    background: rgba(248, 249, 252, 0.95);
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     position: relative;
+  }
+  .about-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(13, 110, 253, 0.08), rgba(13, 110, 253, 0));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
   }
   .about-card:hover,
   .about-card:focus-within {
     border-color: rgba(13, 110, 253, 0.25);
     box-shadow: 0 1.25rem 2.2rem rgba(15, 23, 42, 0.12);
     transform: translateY(-2px);
+  }
+  .about-card:hover::before,
+  .about-card:focus-within::before {
+    opacity: 1;
   }
   .about-card__header {
     display: flex;
@@ -109,6 +123,19 @@
   }
   .about-card__body {
     margin-top: 1rem;
+    position: relative;
+    padding-top: 1.1rem;
+  }
+  .about-card__body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.6);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.22);
   }
   .about-card__content :where(p, ul, ol) {
     margin: 0 0 0.65rem;

@@ -146,6 +146,19 @@
   }
   .documents-subsection__body {
     margin-top: 1rem;
+    position: relative;
+    padding-top: 1.1rem;
+  }
+  .documents-subsection__body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.6);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.22);
   }
   .documents-subsection__description {
     color: rgba(33, 37, 41, 0.75);
