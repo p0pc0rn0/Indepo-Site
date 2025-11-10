@@ -13,20 +13,20 @@
    * Apply .scrolled class to the body as the page is scrolled down
    */
   let lastScrollY = window.scrollY;
-  let snapping = false;
+  let isSnapping = false;
+  let snapTimeout;
 
-  function snapTo(target) {
-    if (snapping) return;
-    snapping = true;
-    window.requestAnimationFrame(() => {
-      window.scrollTo({
-        top: target,
-        behavior: 'smooth'
-      });
-      setTimeout(() => {
-        snapping = false;
-      }, 300);
+  function triggerSnap(target) {
+    if (isSnapping) return;
+    isSnapping = true;
+    window.scrollTo({
+      top: target,
+      behavior: 'smooth'
     });
+    clearTimeout(snapTimeout);
+    snapTimeout = setTimeout(() => {
+      isSnapping = false;
+    }, 350);
   }
 
   function toggleScrolled() {
@@ -34,28 +34,25 @@
     const selectHeader = document.querySelector('#header');
     if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
 
-    const threshold = 100;
-    const snapRange = 20;
+    const hideThreshold = 120;
+    const showThreshold = 80;
+    const snapWindow = 15;
     const isApplied = selectBody.classList.contains('scrolled');
     const currentY = window.scrollY;
     const goingDown = currentY > lastScrollY;
     lastScrollY = currentY;
 
-    if (currentY > threshold && !isApplied) {
+    if (currentY >= hideThreshold && !isApplied) {
       selectBody.classList.add('scrolled');
-    } else if (currentY <= threshold && isApplied) {
+    } else if (currentY <= showThreshold && isApplied) {
       selectBody.classList.remove('scrolled');
     }
 
-    if (
-      !snapping &&
-      currentY > threshold - snapRange &&
-      currentY < threshold + snapRange
-    ) {
-      if (goingDown || currentY > threshold) {
-        snapTo(threshold + snapRange);
-      } else {
-        snapTo(Math.max(threshold - snapRange, 0));
+    if (!isSnapping) {
+      if (currentY > showThreshold && currentY < showThreshold + snapWindow && !goingDown) {
+        triggerSnap(Math.max(showThreshold - 5, 0));
+      } else if (currentY < hideThreshold && currentY > hideThreshold - snapWindow && goingDown) {
+        triggerSnap(hideThreshold + 5);
       }
     }
   }
