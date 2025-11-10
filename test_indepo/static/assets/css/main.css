@@ -239,6 +239,8 @@ h6 {
   color: var(--heading-color);
   font-size: 1.2rem;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .branding__accessibility:hover,
 .branding__accessibility:focus-visible,
@@ -252,13 +254,14 @@ h6 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(15, 23, 42, 0.03);
+  background: rgba(15, 23, 42, 0.05);
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 999px;
   padding: 0.4rem 0.6rem 0.4rem 1rem;
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s ease;
   position: relative;
   z-index: 1500;
+  min-height: 52px;
 }
 .branding__search-input {
   flex: 1;
@@ -267,9 +270,23 @@ h6 {
   font-size: 0.95rem;
   color: var(--heading-color);
   cursor: text;
+  line-height: 1.4;
+  padding: 0;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .branding__search-input:focus {
   outline: none;
+}
+.branding__search-input::-webkit-search-decoration,
+.branding__search-input::-webkit-search-cancel-button,
+.branding__search-input::-webkit-search-results-button,
+.branding__search-input::-webkit-search-results-decoration {
+  display: none;
+}
+.branding__search-input::placeholder {
+  color: rgba(15, 23, 42, 0.55);
 }
 .branding__search-button {
   border: none;
@@ -283,6 +300,9 @@ h6 {
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .branding__search-button:hover,
 .branding__search-button:focus-visible {
