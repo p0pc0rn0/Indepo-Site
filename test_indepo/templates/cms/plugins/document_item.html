@@ -5,14 +5,21 @@
   data-document-item
   data-document-title="{{ instance.name|lower }}"
 >
-  <a
-    class="document-item__link"
-    href="{{ instance.url }}"
-    target="_blank"
-    rel="noopener"
-  >
-    {{ instance.name }}
-  </a>
+  {% with doc_url=instance.get_link %}
+    {% if doc_url %}
+      <a
+        class="document-item__link"
+        href="{{ doc_url }}"
+        {% if instance.file_id %}download{% else %}target="_blank" rel="noopener"{% endif %}
+      >
+        {{ instance.name }}
+      </a>
+    {% else %}
+      <span class="document-item__link document-item__link--disabled">
+        {{ instance.name }}
+      </span>
+    {% endif %}
+  {% endwith %}
   {% if instance.description %}
     <p class="document-item__description">
       {{ instance.description|linebreaksbr }}
@@ -39,6 +46,10 @@
     font-weight: 600;
     text-decoration: none;
     color: var(--bs-primary, #0d6efd);
+  }
+  .document-item__link--disabled {
+    cursor: not-allowed;
+    color: rgba(33, 37, 41, 0.45);
   }
   .document-item__link:hover,
   .document-item__link:focus-visible {

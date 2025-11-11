@@ -7,6 +7,7 @@ from .models import (
     AboutItemPluginModel,
     AboutSectionPluginModel,
     ContactInfoPluginModel,
+    DocumentItemPluginModel,
     FaqItemPluginModel,
     FaqSectionPluginModel,
     FeaturedServiceItem,
@@ -111,6 +112,24 @@ class FooterPluginForm(TranslatableModelForm):
     class Meta:
         model = FooterPluginModel
         fields = "__all__"
+
+
+class DocumentItemPluginForm(forms.ModelForm):
+    class Meta:
+        model = DocumentItemPluginModel
+        fields = "__all__"
+
+    def clean(self):
+        cleaned = super().clean()
+        file = cleaned.get("file")
+        url = (cleaned.get("url") or "").strip()
+        if not file and not url:
+            raise forms.ValidationError(_("Загрузите файл или укажите ссылку на документ."))
+        if file:
+            cleaned["url"] = ""
+        else:
+            cleaned["url"] = url
+        return cleaned
 
 
 class FeaturedServicesSectionPluginForm(TranslatableModelForm):

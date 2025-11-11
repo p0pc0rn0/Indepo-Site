@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
+from filer.fields.file import FilerFileField
 from parler.models import TranslatableModelMixin, TranslatedFields
 
 
@@ -404,11 +405,47 @@ class DocumentSubsectionPluginModel(CMSPlugin):
 
 class DocumentItemPluginModel(CMSPlugin):
     name = models.CharField(_("Document name"), max_length=255)
-    url = models.URLField(_("Document URL"))
+    url = models.URLField(_("Document URL"), blank=True, default="")
+    file = FilerFileField(
+        verbose_name=_("Document file"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     description = models.TextField(_("Short description"), blank=True, default="")
 
     def __str__(self):
         return self.name
+
+    def get_link(self):
+        if self.file_id and self.file:
+            return self.file.url
+        return self.url or ""
+
+    def save(self, *args, **kwargs):
+        if self.file_id:
+            self.url = ""
+        super().save(*args, **kwargs)
+
+    def get_absolute_link(self, request=None):
+        link = self.get_link()
+        if not link:
+            return ""
+        if request is None:
+            return link
+        if link.startswith(("http://", "https://", "mailto:", "tel:")):
+            return link
+        if link.startswith("//"):
+            scheme = "https:" if request.is_secure() else "http:"
+            return f"{scheme}{link}"
+        if not link.startswith("/"):
+            link = f"/{link}"
+        return request.build_absolute_uri(link)
+
+    @property
+    def is_external(self):
+        return bool(self.url and not self.file_id and self.url.startswith(("http://", "https://", "//")))
 
 
 class TablePluginModel(CMSPlugin):

@@ -17,6 +17,7 @@ from .forms import (
     FeaturedServiceItemPluginForm,
     FeaturedServicesSectionPluginForm,
     FooterPluginForm,
+    DocumentItemPluginForm,
     HeroSectionPluginForm,
     HeaderPluginForm,
     AboutCardsSectionPluginForm,
@@ -307,6 +308,7 @@ class DocumentItemPlugin(CMSPluginBase):
     model = DocumentItemPluginModel
     name = _("Document Item")
     render_template = "cms/plugins/document_item.html"
+    form = DocumentItemPluginForm
     cache = False
     require_parent = True
     parent_classes = ["DocumentSubsectionPlugin"]

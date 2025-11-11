@@ -11,7 +11,7 @@ from django.utils.text import Truncator
 from django.utils.translation import gettext as _
 from django.views import View
 
-from cms.models import PageContent
+from cms.models import PageContent, CMSPlugin
 from djangocms_versioning.constants import PUBLISHED
 from djangocms_versioning.models import Version
 
@@ -90,22 +90,53 @@ class GlobalSearchView(View):
         term = query.casefold()
         seen = set()
         results = []
+
+        language = getattr(request, "LANGUAGE_CODE", settings.LANGUAGE_CODE)
+
+        pagecontent_ct = ContentType.objects.get_for_model(PageContent)
+        published_pagecontent_ids = set(
+            Version.objects.filter(content_type=pagecontent_ct, state=PUBLISHED).values_list("object_id", flat=True)
+        )
+
         documents = (
-            DocumentItemPluginModel.objects.select_related("cmsplugin_ptr")
+            DocumentItemPluginModel.objects.select_related(
+                "cmsplugin_ptr",
+                "cmsplugin_ptr__placeholder",
+                "cmsplugin_ptr__placeholder__page",
+            )
+            .filter(cmsplugin_ptr__language=language)
             .order_by("-cmsplugin_ptr__changed_date", "-pk")
             .iterator()
         )
 
+        latest_by_plugin = {}
+        for document in documents:
+            plugin = document.cmsplugin_ptr
+            # ensure placeholder's page (if any) is published
+            placeholder = getattr(plugin, "placeholder", None)
+            if placeholder is None:
+                continue
+            page = getattr(placeholder, "page", None)
+            if page and getattr(page, "publisher_is_draft", False):
+                continue
+            source = getattr(placeholder, "source", None)
+            if source and source.pk not in published_pagecontent_ids:
+                continue
+            key = getattr(plugin, "publisher_public_id", None) or plugin.pk
+            current = latest_by_plugin.get(key)
+            if not current or document.cmsplugin_ptr.changed_date > current.cmsplugin_ptr.changed_date:
+                latest_by_plugin[key] = document
+
         seen_names = set()
 
-        for document in documents:
+        for document in latest_by_plugin.values():
             normalized_name = (document.name or "").strip().casefold()
             if normalized_name in seen_names:
                 continue
             haystack = " ".join(filter(None, [document.name, document.description])).casefold()
             if term not in haystack:
                 continue
-            normalized_url = self._build_absolute_document_url(request, document.url)
+            normalized_url = document.get_absolute_link(request)
             if not normalized_url:
                 continue
             key = normalized_url
@@ -121,21 +152,9 @@ class GlobalSearchView(View):
                     "label": _("Документ"),
                     "description": Truncator(document.description or "").chars(160),
                     "icon": "bi bi-file-earmark-text",
-                    "external": normalized_url.startswith(("http://", "https://")),
+                    "external": document.is_external,
                 }
             )
             if len(results) >= self.document_limit * 2:
                 break
         return results
-
-    def _build_absolute_document_url(self, request, url: str) -> str:
-        if not url:
-            return ""
-        if url.startswith(("http://", "https://", "mailto:", "tel:")):
-            return url
-        if url.startswith("//"):
-            scheme = "https:" if request.is_secure() else "http:"
-            return f"{scheme}{url}"
-        if not url.startswith("/"):
-            url = f"/{url}"
-        return request.build_absolute_uri(url)
