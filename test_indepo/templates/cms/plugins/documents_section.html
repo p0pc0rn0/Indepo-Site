@@ -102,6 +102,23 @@
 {% addtoblock "js" %}
 <script>
   (function () {
+    function scrollSectionIntoView(element) {
+      if (!element) return;
+      var rect = element.getBoundingClientRect();
+      var header = document.querySelector("#header");
+      var headerOffset = header ? header.offsetHeight : 0;
+      var offset = headerOffset + 16;
+      var fullyVisible = rect.top >= offset && rect.bottom <= window.innerHeight;
+      if (fullyVisible) return;
+      var targetY = rect.top + window.scrollY - offset;
+      window.requestAnimationFrame(function () {
+        window.scrollTo({
+          top: Math.max(targetY, 0),
+          behavior: "smooth",
+        });
+      });
+    }
+
     function toggleAccordion(control, expand, root) {
       var targetId = control.getAttribute("data-target");
       if (!targetId) return;
@@ -122,6 +139,9 @@
       }
       control.setAttribute("aria-expanded", String(nextState));
       panel.hidden = !nextState;
+      if (nextState) {
+        scrollSectionIntoView(control);
+      }
     }
 
     function initDocumentsSection(section) {

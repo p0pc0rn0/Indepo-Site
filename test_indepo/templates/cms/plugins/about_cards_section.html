@@ -73,6 +73,25 @@
 {% addtoblock "js" %}
 <script>
   (function () {
+    function scrollCardIntoView(element) {
+      if (!element) return;
+      var rect = element.getBoundingClientRect();
+      var header = document.querySelector("#header");
+      var headerOffset = header ? header.offsetHeight : 0;
+      var offset = headerOffset + 16;
+      var isFullyVisible = rect.top >= offset && rect.bottom <= window.innerHeight;
+      if (isFullyVisible) {
+        return;
+      }
+      var targetY = rect.top + window.scrollY - offset;
+      window.requestAnimationFrame(function () {
+        window.scrollTo({
+          top: Math.max(targetY, 0),
+          behavior: "smooth",
+        });
+      });
+    }
+
     function toggleCard(control, expand, root) {
       var targetId = control.getAttribute("data-target");
       if (!targetId) return;
@@ -93,6 +112,9 @@
       }
       control.setAttribute("aria-expanded", String(nextState));
       panel.hidden = !nextState;
+      if (nextState) {
+        scrollCardIntoView(control);
+      }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
