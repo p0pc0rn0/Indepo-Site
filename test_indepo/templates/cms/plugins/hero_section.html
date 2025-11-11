@@ -1,10 +1,10 @@
-{% load cms_tags static %}
+{% load cms_tags static sekizai_tags %}
 
 <section
   id="hero"
-  class="hero section light-background"
+  class="hero section hero--expanded light-background"
   {% if instance.background_image %}
-    style="background: url('{{ instance.background_image.url }}') top left; background-size: cover;"
+    style="background-image: url('{{ instance.background_image.url }}');"
   {% endif %}
 >
   <div class="container">
@@ -16,8 +16,8 @@
         {% endif %}
       >
         <h1>
-          {{ instance.title_part1 }}<br />
-          <span>{{ instance.title_part2 }}</span>
+          <span class="hero__title-line hero__title-line--primary">{{ instance.title_part1 }}</span>
+          <span class="hero__title-line hero__title-line--accent">{{ instance.title_part2 }}</span>
         </h1>
 
         {% if instance.description %}
@@ -35,3 +35,68 @@
     </div>
   </div>
 </section>
+
+{% addtoblock "css" %}
+<style>
+  .hero.hero--expanded {
+    min-height: calc(100vh - 120px);
+    padding: clamp(3rem, 6vw, 5rem) 0;
+    display: flex;
+    align-items: center;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .hero.hero--expanded::before {
+    content: "";
+    position: absolute;
+    inset: clamp(1.5rem, 3vw, 2.5rem);
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.84);
+    z-index: 0;
+  }
+  .hero.hero--expanded .container {
+    position: relative;
+    z-index: 1;
+  }
+  .hero.hero--expanded h1 {
+    font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+    line-height: 1.1;
+    font-weight: 750;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .hero__title-line {
+    display: block;
+    white-space: nowrap;
+  }
+  .hero.hero--expanded .hero__title-line--primary {
+    color: var(--heading-color);
+  }
+  .hero__title-line--accent {
+    color: var(--accent-color);
+  }
+  .hero.hero--expanded p {
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    line-height: 1.5;
+    color: rgba(15, 23, 42, 0.75);
+    margin-bottom: clamp(1.5rem, 3vw, 2.2rem);
+  }
+  .hero.hero--expanded .btn-get-started {
+    font-size: 1rem;
+    padding: 0.85rem 2.4rem;
+    border-radius: 999px;
+  }
+  @media (max-width: 767.98px) {
+    .hero.hero--expanded {
+      min-height: auto;
+      padding: clamp(2.2rem, 10vw, 3rem) 0;
+    }
+    .hero.hero--expanded::before {
+      inset: clamp(0.75rem, 4vw, 1.2rem);
+      border-radius: 20px;
+    }
+  }
+</style>
+{% endaddtoblock %}
