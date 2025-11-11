@@ -120,6 +120,16 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
 }
 
+CACHE_TIMEOUT = env.int("DJANGO_CACHE_TIMEOUT", default=600)
+
+CACHES = {
+    "default": env.cache(
+        "DJANGO_CACHE_URL",
+        default="locmemcache://",
+    )
+}
+CACHES["default"]["TIMEOUT"] = CACHE_TIMEOUT
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -163,6 +173,15 @@ CMS_LANGUAGES = {
         "hide_untranslated": False,
     },
 }
+
+CMS_CACHE_DURATIONS = {
+    "content": CACHE_TIMEOUT,
+    "menus": CACHE_TIMEOUT,
+    "permissions": CACHE_TIMEOUT,
+}
+CMS_PAGE_CACHE = True
+CMS_PLACEHOLDER_CACHE = True
+CMS_PLUGIN_CACHE = True
 
 LANGUAGES = [
     ("en", _("English")),
@@ -213,4 +232,3 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 TEXT_INLINE_EDITING = True
 DJANGOCMS_VERSIONING_ALLOW_DELETING_VERSIONS = True
 INTERNAL_IPS = ["127.0.0.1"]
-
