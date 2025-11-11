@@ -231,6 +231,12 @@ h6 {
   gap: 1rem;
   width: 100%;
   position: relative;
+  transition: transform 0.32s ease, opacity 0.32s ease;
+}
+.branding__utility.utility--hidden {
+  transform: translateY(-120%);
+  opacity: 0;
+  pointer-events: none;
 }
 .branding__cluster {
   display: flex;
