@@ -414,6 +414,25 @@
 {% addtoblock "js" %}
 <script>
   (function () {
+    function scrollIntoViewWithOffset(element) {
+      if (!element) return;
+      var rect = element.getBoundingClientRect();
+      var header = document.querySelector("#header");
+      var headerOffset = header ? header.offsetHeight : 0;
+      var offset = Math.max(headerOffset - 20, 0);
+      var isFullyVisible = rect.top >= offset && rect.bottom <= window.innerHeight;
+      if (isFullyVisible) {
+        return;
+      }
+      var targetY = rect.top + window.scrollY - offset;
+      window.requestAnimationFrame(function () {
+        window.scrollTo({
+          top: Math.max(targetY, 0),
+          behavior: "smooth",
+        });
+      });
+    }
+
     var TAB_SIZE = 3;
 
     function setPanelHeight(panel) {
@@ -437,6 +456,7 @@
       panel.hidden = false;
       setPanelHeight(panel);
       panel.style.opacity = "1";
+      scrollIntoViewWithOffset(card);
     }
 
     function setupNewsCard(card) {
@@ -449,14 +469,19 @@
       panel.style.maxHeight = "0px";
       panel.hidden = true;
 
-      function collapse() {
+      function collapse(opts) {
+        opts = opts || {};
         collapsePanel(card, toggle, panel);
+        if (opts.scroll !== false) {
+          var section = card.closest(".news-section");
+          scrollIntoViewWithOffset(section || card);
+        }
       }
 
       toggle.addEventListener("click", function () {
         var isExpanded = card.classList.contains("is-expanded");
         if (isExpanded) {
-          collapse();
+          collapse({ scroll: true });
         } else {
           expandPanel(card, toggle, panel);
         }
@@ -504,7 +529,7 @@
 
       function collapseHiddenCard(card) {
         if (card.__newsCollapse) {
-          card.__newsCollapse();
+          card.__newsCollapse({ scroll: false });
         }
       }
 
@@ -528,14 +553,17 @@
             button.addEventListener("click", function () {
               if (state.tab === tabIndex) return;
               state.tab = tabIndex;
-              applyFilters(true);
+              applyFilters({ animate: true, scroll: true });
             });
             tabsNav.appendChild(button);
           })(tab);
         }
       }
 
-      function applyFilters(animate) {
+      function applyFilters(options) {
+        options = options || {};
+        var animate = !!options.animate;
+        var shouldScroll = !!options.scroll;
         if (animate && track) {
           track.classList.add("is-transitioning");
         }
@@ -612,17 +640,21 @@
             track.classList.remove("is-transitioning");
           }
         }
+
+        if (shouldScroll) {
+          scrollIntoViewWithOffset(section);
+        }
       }
 
       if (searchInput) {
         searchInput.addEventListener("input", function (event) {
           state.search = event.target.value || "";
           state.tab = 1;
-          applyFilters(true);
+          applyFilters({ animate: true, scroll: true });
         });
       }
 
-      applyFilters(false);
+      applyFilters({ animate: false, scroll: false });
     }
 
     function refreshExpandedHeights() {
