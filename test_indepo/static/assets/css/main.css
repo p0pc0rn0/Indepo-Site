@@ -400,8 +400,9 @@ body.site-search-open .branding__search-button:focus-visible {
   white-space: nowrap;
   box-shadow: 0 15px 30px rgba(15, 23, 42, 0.18);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 .branding-chip__tooltip::after {
   content: "";
@@ -417,6 +418,7 @@ body.site-search-open .branding__search-button:focus-visible {
 .branding-chip:hover .branding-chip__tooltip,
 .branding-chip:focus-visible .branding-chip__tooltip {
   opacity: 1;
+  visibility: visible;
   transform: translate(-50%, 0) scale(1);
 }
 .branding-chip--copy {
@@ -458,12 +460,14 @@ body.site-search-open .branding__search-button:focus-visible {
   white-space: nowrap;
   box-shadow: 0 12px 22px rgba(15, 23, 42, 0.2);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
 .branding__accessibility:hover .branding__accessibility-tooltip,
 .branding__accessibility:focus-visible .branding__accessibility-tooltip {
   opacity: 1;
+  visibility: visible;
   transform: translate(-50%, calc(100% + 6px)) scale(1);
 }
 .branding-chip--emphasis {
