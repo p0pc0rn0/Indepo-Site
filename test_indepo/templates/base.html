@@ -43,7 +43,6 @@
       }
       html.accessibility-mode body * {
         color: inherit !important;
-        background-image: none !important;
         box-shadow: none !important;
         text-shadow: none !important;
         border-color: rgba(0, 0, 0, 0.4) !important;
@@ -55,7 +54,7 @@
       html.accessibility-mode svg.image,
       html.accessibility-mode [data-background],
       html.accessibility-mode [style*="background-image"] {
-        display: none !important;
+        filter: grayscale(100%) !important;
       }
       html.accessibility-mode a,
       html.accessibility-mode button,
