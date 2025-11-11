@@ -344,7 +344,7 @@ h6 {
 body.site-search-open .branding__search {
   border-color: rgba(37, 99, 235, 0.85);
   box-shadow: 0 26px 44px rgba(15, 23, 42, 0.15);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.95);
 }
 body.site-search-open .branding__search-button {
   background: var(--heading-color);
