@@ -419,7 +419,7 @@
       var rect = element.getBoundingClientRect();
       var header = document.querySelector("#header");
       var headerOffset = header ? header.offsetHeight : 0;
-      var offset = Math.max(headerOffset - 20, 0);
+      var offset = Math.max(headerOffset - 80, 20);
       var isFullyVisible = rect.top >= offset && rect.bottom <= window.innerHeight;
       if (isFullyVisible) {
         return;
