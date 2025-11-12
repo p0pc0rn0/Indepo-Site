@@ -115,6 +115,7 @@
       if (nextState) {
         scrollCardIntoView(control);
       }
+      return nextState;
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -125,7 +126,10 @@
         }
         root.querySelectorAll("[data-about-header]").forEach(function (header) {
           var handler = function () {
-            toggleCard(header, undefined, root);
+            var expanded = toggleCard(header, undefined, root);
+            if (!expanded) {
+              header.blur();
+            }
           };
           header.addEventListener("click", handler);
           header.addEventListener("keydown", function (event) {

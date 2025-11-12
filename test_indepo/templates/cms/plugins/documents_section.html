@@ -142,6 +142,7 @@
       if (nextState) {
         scrollSectionIntoView(control);
       }
+      return nextState;
     }
 
     function initDocumentsSection(section) {
@@ -155,7 +156,10 @@
           var header = subsection.querySelector("[data-document-header]");
           if (header) {
             var handler = function () {
-              toggleAccordion(header, undefined, section);
+              var expanded = toggleAccordion(header, undefined, section);
+              if (!expanded) {
+                header.blur();
+              }
             };
             header.addEventListener("click", handler);
             header.addEventListener("keydown", function (event) {
@@ -232,6 +236,7 @@
                 toggleAccordion(header, true, section);
               } else {
                 toggleAccordion(header, false, section);
+                header.blur();
               }
             }
           }
@@ -250,6 +255,18 @@
         .forEach(function (section) {
           initDocumentsSection(section);
         });
+    });
+
+    document.addEventListener("click", function (event) {
+      var docLink = event.target.closest("[data-document-item] a");
+      if (!docLink) return;
+      window.requestAnimationFrame(function () {
+        docLink.blur();
+        var item = docLink.closest("[data-document-item]");
+        if (item) {
+          item.blur();
+        }
+      });
     });
   })();
 </script>
