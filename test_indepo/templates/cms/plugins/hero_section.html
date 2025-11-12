@@ -26,7 +26,11 @@
 
         <div class="d-flex">
           {% if instance.get_started_text and instance.get_started_url %}
-            <a href="{{ instance.get_started_url }}" class="btn-get-started">
+            <a
+              href="{{ instance.get_started_url }}"
+              class="btn-get-started"
+              data-hero-scroll
+            >
               {{ instance.get_started_text }}
             </a>
           {% endif %}
@@ -99,4 +103,55 @@
     }
   }
 </style>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+  (function () {
+    function scrollToAnchor(target) {
+      var anchor = typeof target === 'string' ? document.querySelector(target) : target;
+      if (!anchor) return;
+      var header = document.querySelector('#header');
+      var offset = 72;
+      if (header) {
+        var headerHeight = header.offsetHeight || 0;
+        offset = Math.max(headerHeight - 80, 32);
+      }
+      var rect = anchor.getBoundingClientRect();
+      var top = Math.max(rect.top + window.scrollY - offset, 0);
+      if (typeof window.scrollToWithOffset === 'function') {
+        window.scrollToWithOffset(top);
+        return;
+      }
+      var docEl = document.documentElement;
+      var body = document.body;
+      var prevHtmlBehavior = docEl.style.scrollBehavior;
+      var prevBodyBehavior = body.style.scrollBehavior;
+      docEl.style.scrollBehavior = 'auto';
+      body.style.scrollBehavior = 'auto';
+      window.scrollTo({
+        top: top,
+        behavior: 'smooth',
+      });
+      window.requestAnimationFrame(function () {
+        docEl.style.scrollBehavior = prevHtmlBehavior;
+        body.style.scrollBehavior = prevBodyBehavior;
+      });
+    }
+
+    document.addEventListener("click", function (event) {
+      var trigger = event.target.closest('a[data-hero-scroll][href^="#"]');
+      if (!trigger) return;
+      var hash = trigger.getAttribute("href");
+      var target = document.querySelector(hash);
+      if (!target) return;
+      event.preventDefault();
+      if (typeof window.__disableHeaderSnap === "function") {
+        window.__disableHeaderSnap(800);
+      }
+      history.replaceState(null, "", hash);
+      scrollToAnchor(target);
+    }, { passive: false });
+  })();
+</script>
 {% endaddtoblock %}

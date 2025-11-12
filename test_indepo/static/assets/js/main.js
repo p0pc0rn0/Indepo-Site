@@ -15,9 +15,25 @@
   let lastScrollY = window.scrollY;
   let isSnapping = false;
   let snapTimeout;
+  let skipSnapUntil = 0;
+
+  window.__disableHeaderSnap = function(duration) {
+    skipSnapUntil = Date.now() + (duration || 600);
+  };
+
+  window.scrollToWithOffset = function(top) {
+    window.__disableHeaderSnap(800);
+    window.scrollTo({
+      top: top,
+      behavior: 'smooth'
+    });
+  };
 
   function triggerSnap(target) {
     if (isSnapping) return;
+    if (Date.now() < skipSnapUntil) {
+      return;
+    }
     isSnapping = true;
     window.scrollTo({
       top: target,
