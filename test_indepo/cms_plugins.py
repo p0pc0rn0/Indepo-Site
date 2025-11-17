@@ -32,6 +32,8 @@ from .forms import (
     TestimonialItemPluginForm,
     TestimonialsSectionPluginForm,
     HeaderQuickIconInlineForm,
+    SocialInitiativesSectionForm,
+    SocialInitiativeCardForm,
 )
 from .models import (
     AboutItemPluginModel,
@@ -64,6 +66,8 @@ from .models import (
     TestimonialItemPluginModel,
     TestimonialsSectionPluginModel,
     TopBarPluginModel,
+    SocialInitiativesSectionPluginModel,
+    SocialInitiativeCardPluginModel,
 )
 
 
@@ -395,6 +399,65 @@ class TablePlugin(CMSPluginBase):
 
 
 
+
+
+@plugin_pool.register_plugin
+class SocialInitiativesSectionPlugin(CMSPluginBase):
+    model = SocialInitiativesSectionPluginModel
+    name = _("Social initiatives section")
+    render_template = "cms/plugins/social_initiatives_section.html"
+    form = SocialInitiativesSectionForm
+    cache = False
+    allow_children = True
+    child_classes = ["SocialInitiativeCardPlugin"]
+    module = _("Sections")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        cards = list(getattr(instance, "child_plugin_instances", []) or [])
+        context["instance"] = instance
+        context["cards"] = cards
+        context["section_dom_id"] = f"social-initiatives-section-{instance.pk}"
+        return context
+
+
+@plugin_pool.register_plugin
+class SocialInitiativeCardPlugin(CMSPluginBase):
+    model = SocialInitiativeCardPluginModel
+    name = _("Social initiative card")
+    render_template = "cms/plugins/social_initiative_card.html"
+    form = SocialInitiativeCardForm
+    cache = False
+    require_parent = True
+    parent_classes = ["SocialInitiativesSectionPlugin"]
+    module = _("Sections")
+
+    def _assign_section(self, obj):
+        if not obj.parent_id:
+            return
+        parent_plugin = obj.parent
+        if not parent_plugin:
+            return
+        parent_instance, _plugin = parent_plugin.get_plugin_instance()
+        if isinstance(parent_instance, SocialInitiativesSectionPluginModel):
+            obj.section = parent_instance
+
+    def save_model(self, request, obj, form, change):
+        self._assign_section(obj)
+        super().save_model(request, obj, form, change)
+
+    def move_plugin(self, plugin, placeholder, target_placeholder, parent_plugin):
+        if parent_plugin:
+            parent_instance, _plugin = parent_plugin.get_plugin_instance()
+            if isinstance(parent_instance, SocialInitiativesSectionPluginModel):
+                plugin.section = parent_instance
+                plugin.save(update_fields=["section"])
+        super().move_plugin(plugin, placeholder, target_placeholder, parent_plugin)
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
+        return context
 
 
 

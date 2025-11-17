@@ -5,7 +5,6 @@ from typing import List
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.text import Truncator
 from django.utils.translation import gettext as _
@@ -59,19 +58,24 @@ class GlobalSearchView(View):
             object_id__in=base_qs.values_list("pk", flat=True),
         ).values_list("object_id", flat=True)
 
-        contents = (
-            base_qs.filter(pk__in=published_ids)
-            .filter(
-                Q(title__icontains=query)
-                | Q(page_title__icontains=query)
-                | Q(menu_title__icontains=query)
-                | Q(meta_description__icontains=query)
-            )
-            .order_by("title")[: self.page_limit]
-        )
+        contents = base_qs.filter(pk__in=published_ids).order_by("title")
 
         results = []
+        term = query.casefold()
         for content in contents:
+            haystack = " ".join(
+                filter(
+                    None,
+                    [
+                        content.title or "",
+                        content.page_title or "",
+                        content.menu_title or "",
+                        content.meta_description or "",
+                    ],
+                )
+            ).casefold()
+            if not term or term not in haystack:
+                continue
             page = content.page
             url = page.get_absolute_url(language=language)
             results.append(
@@ -84,6 +88,8 @@ class GlobalSearchView(View):
                     "icon": "bi bi-collection-play",
                 }
             )
+            if len(results) >= self.page_limit:
+                break
         return results
 
     def _search_documents(self, request, query: str) -> List[dict]:

@@ -1,0 +1,33 @@
+{% load static %}
+
+<article class="social-initiatives-card">
+  {% if instance.image %}
+    <div class="social-initiatives-card__media">
+      <img
+        src="{{ instance.image.url }}"
+        alt="{{ instance.image.default_alt_text|default:instance.title }}"
+        loading="lazy"
+      />
+    </div>
+  {% endif %}
+
+  <div class="social-initiatives-card__body">
+    <h3 class="social-initiatives-card__title">{{ instance.title }}</h3>
+    {% if instance.description %}
+      <div class="social-initiatives-card__description">
+        {{ instance.description|safe }}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if instance.button_url %}
+    <div class="social-initiatives-card__cta">
+      <a
+        class="social-initiatives-card__button"
+        href="{{ instance.button_url }}"
+      >
+        {{ instance.button_label }}
+      </a>
+    </div>
+  {% endif %}
+</article>

@@ -457,6 +457,35 @@ class TablePluginModel(CMSPlugin):
         return self.title or str(_("Table"))
 
 
+class SocialInitiativesSectionPluginModel(CMSPlugin):
+    title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
+
+    def __str__(self):
+        return self.title or str(_("Social initiatives"))
+
+
+class SocialInitiativeCardPluginModel(CMSPlugin):
+    section = models.ForeignKey(
+        SocialInitiativesSectionPluginModel,
+        related_name="cards",
+        on_delete=models.CASCADE,
+    )
+    image = FilerImageField(
+        verbose_name=_("Icon or image"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    title = models.CharField(_("Card title"), max_length=200)
+    description = HTMLField(_("Description"), blank=True, default="")
+    button_label = models.CharField(_("Button label"), max_length=120, default=_("Подробнее"))
+    button_url = models.URLField(_("Button URL"))
+
+    def __str__(self):
+        return self.title
+
+
 class AboutCardsSectionModel(CMSPlugin):
     LAYOUT_CHOICES = [
         ("list", _("List")),

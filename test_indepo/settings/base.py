@@ -1,8 +1,26 @@
 """Shared Django settings for all environments."""
 from pathlib import Path
+import time
 
-import environ
 from django.utils.translation import gettext_lazy as _
+
+# django-environ иногда подводит на нестабильных файловых системах:
+# импорт модулей может падать с TimeoutError во время чтения site-packages.
+# Добавляем пару повторов, чтобы запуск не срывался из-за единичного сбоя.
+_environ = None
+_last_import_error = None
+for _attempt in range(3):
+    try:
+        import environ as _environ  # type: ignore
+        break
+    except TimeoutError as exc:  # pragma: no cover - редкая ветка
+        _last_import_error = exc
+        time.sleep(0.2 * (_attempt + 1))
+
+if _environ is None:
+    raise _last_import_error or TimeoutError("Не удалось импортировать django-environ из-за таймаута.")
+
+environ = _environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 APPS_DIR = BASE_DIR / "test_indepo"

@@ -16,6 +16,8 @@ from .models import (
     HeroSectionPluginModel,
     HeaderPluginModel,
     HeaderQuickIcon,
+    SocialInitiativesSectionPluginModel,
+    SocialInitiativeCardPluginModel,
     AboutCardsSectionModel,
     AboutCardItemModel,
     LeadershipSectionModel,
@@ -260,3 +262,15 @@ class HeaderQuickIconInlineForm(forms.ModelForm):
             else:
                 cleaned_data["icon_class"] = custom_icon.strip()
         return cleaned_data
+
+
+class SocialInitiativesSectionForm(forms.ModelForm):
+    class Meta:
+        model = SocialInitiativesSectionPluginModel
+        fields = "__all__"
+
+
+class SocialInitiativeCardForm(forms.ModelForm):
+    class Meta:
+        model = SocialInitiativeCardPluginModel
+        exclude = ("section",)
