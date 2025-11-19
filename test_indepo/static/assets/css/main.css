@@ -357,6 +357,38 @@ body.site-search-open .branding__search-input {
   opacity: 1;
   visibility: visible;
 }
+.branding__search-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 94px;
+}
+.site-search__status {
+  flex-shrink: 0;
+}
+.site-search__results {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.site-search__empty {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 60px;
+  transform: translateY(-4px);
+}
+.site-search__empty > p {
+  margin: 0;
+  line-height: 1.2;
+}
 .branding-chip {
   --chip-bg: transparent;
   --chip-color: var(--heading-color);
