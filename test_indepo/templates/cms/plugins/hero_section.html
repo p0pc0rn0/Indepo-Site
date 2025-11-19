@@ -108,17 +108,21 @@
 {% addtoblock "js" %}
 <script>
   (function () {
-    function scrollToAnchor(target) {
-      var anchor = typeof target === 'string' ? document.querySelector(target) : target;
-      if (!anchor) return;
+    function getHeaderOffset() {
       var header = document.querySelector('#header');
-      var offset = 72;
-      if (header) {
-        var headerHeight = header.offsetHeight || 0;
-        offset = Math.max(headerHeight - 80, 32);
-      }
+      if (!header) return 64;
+      var rect = header.getBoundingClientRect();
+      var height = rect.height || header.offsetHeight || 0;
+      return Math.max(height - 28, 56);
+    }
+
+    function computeAnchorTop(anchor) {
+      if (!anchor) return 0;
       var rect = anchor.getBoundingClientRect();
-      var top = Math.max(rect.top + window.scrollY - offset, 0);
+      return Math.max(rect.top + window.scrollY - getHeaderOffset(), 0);
+    }
+
+    function performScroll(top) {
       if (typeof window.scrollToWithOffset === 'function') {
         window.scrollToWithOffset(top);
         return;
@@ -129,14 +133,24 @@
       var prevBodyBehavior = body.style.scrollBehavior;
       docEl.style.scrollBehavior = 'auto';
       body.style.scrollBehavior = 'auto';
-      window.scrollTo({
-        top: top,
-        behavior: 'smooth',
-      });
+      window.scrollTo({ top: top, behavior: 'smooth' });
       window.requestAnimationFrame(function () {
         docEl.style.scrollBehavior = prevHtmlBehavior;
         body.style.scrollBehavior = prevBodyBehavior;
       });
+    }
+
+    function scrollToAnchor(target) {
+      var anchor = typeof target === 'string' ? document.querySelector(target) : target;
+      if (!anchor) return;
+      var firstTop = computeAnchorTop(anchor);
+      performScroll(firstTop);
+      window.setTimeout(function () {
+        var settleTop = computeAnchorTop(anchor);
+        if (Math.abs(window.scrollY - settleTop) > 4) {
+          performScroll(settleTop);
+        }
+      }, 450);
     }
 
     document.addEventListener("click", function (event) {

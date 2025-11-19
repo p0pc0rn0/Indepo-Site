@@ -19,6 +19,7 @@
 
   window.__disableHeaderSnap = function(duration) {
     skipSnapUntil = Date.now() + (duration || 600);
+    isSnapping = false;
   };
 
   window.scrollToWithOffset = function(top) {
@@ -134,13 +135,31 @@
       window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
     }
   }
-  scrollTop.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
+  if (scrollTop) {
+    scrollTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof window.__disableHeaderSnap === 'function') {
+        window.__disableHeaderSnap(1600);
+      }
+      const behavior = 'smooth';
+      window.scrollTo({ top: 0, behavior });
+      let attempts = 0;
+      const maxAttempts = 6;
+      const recheck = () => {
+        attempts += 1;
+        if (window.scrollY <= 1 || attempts > maxAttempts) {
+          window.scrollTo({ top: 0, behavior });
+          return;
+        }
+        window.scrollTo({ top: 0, behavior });
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: 0 });
+        });
+        window.setTimeout(recheck, 160);
+      };
+      window.setTimeout(recheck, 140);
     });
-  });
+  }
 
   window.addEventListener('load', toggleScrollTop);
   document.addEventListener('scroll', toggleScrollTop);
