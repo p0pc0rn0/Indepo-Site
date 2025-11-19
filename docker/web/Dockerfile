@@ -27,7 +27,7 @@ COPY requirements.txt /app/requirements.txt
 # Устанавливаем зависимости Python
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY . /app
+#COPY . /app
 
 RUN mkdir -p /static /media
 
