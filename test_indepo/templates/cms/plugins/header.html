@@ -982,6 +982,7 @@
       var searchClosers = searchOverlay.querySelectorAll('[data-search-close]');
       var searchAbort = null;
       var searchDebounce = null;
+      var searchCache = Object.create(null);
       var lastQuery = '';
       var emptyDefaultMessage = searchOverlay.getAttribute('data-empty-label') || (searchEmpty ? searchEmpty.textContent.trim() : '');
       var loadingMessage = searchOverlay.getAttribute('data-loading-label') || 'Ищем…';
@@ -1126,6 +1127,25 @@
         }, 220);
       }
 
+      function getCachedResults(query) {
+        if (!query) return null;
+        var cached = searchCache[query];
+        if (!cached) return null;
+        if (Date.now() - cached.timestamp > 60 * 1000) {
+          delete searchCache[query];
+          return null;
+        }
+        return cached.items;
+      }
+
+      function rememberResults(query, items) {
+        if (!query) return;
+        searchCache[query] = {
+          items: Array.isArray(items) ? items.slice() : [],
+          timestamp: Date.now(),
+        };
+      }
+
       function performSearch(query) {
         if (!searchEndpoint || !query) {
           resetResults(emptyDefaultMessage);
@@ -1133,17 +1153,23 @@
           return;
         }
         lastQuery = query;
+        var cached = getCachedResults(query);
+        if (cached) {
+          renderResults(cached, query);
+          setStatus('');
+        } else {
+          setStatus(loadingMessage);
+          if (searchResults) {
+            searchResults.innerHTML = '';
+          }
+          if (searchEmpty) {
+            searchEmpty.classList.add('is-hidden');
+          }
+        }
         if (searchAbort) {
           searchAbort.abort();
         }
         searchAbort = new AbortController();
-        setStatus(loadingMessage);
-        if (searchResults) {
-          searchResults.innerHTML = '';
-        }
-        if (searchEmpty) {
-          searchEmpty.classList.add('is-hidden');
-        }
         fetch(searchEndpoint + '?q=' + encodeURIComponent(query), {
           headers: { Accept: 'application/json' },
           signal: searchAbort.signal,
@@ -1155,7 +1181,9 @@
             return response.json();
           })
           .then(function (payload) {
-            renderResults(payload && payload.results ? payload.results : [], query);
+            var items = payload && payload.results ? payload.results : [];
+            rememberResults(query, items);
+            renderResults(items, query);
           })
           .catch(function (error) {
             if (error.name === 'AbortError') {
@@ -1301,6 +1329,18 @@
               return;
             }
             scheduleSearch(trimmed);
+          });
+          input.addEventListener('blur', function () {
+            window.setTimeout(function () {
+              if (!searchOverlay.classList.contains('is-open')) {
+                return;
+              }
+              var active = document.activeElement;
+              if (active && searchOverlay.contains(active)) {
+                return;
+              }
+              closeSearch();
+            }, 40);
           });
         });
       }
