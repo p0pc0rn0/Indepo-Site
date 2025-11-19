@@ -138,6 +138,24 @@
               handler();
             }
           });
+          var card = header.closest("[data-about-card]");
+          if (card) {
+            card.addEventListener("click", function (event) {
+              if (event.target.closest("[data-about-header]")) {
+                return;
+              }
+              if (event.target.closest(".about-card__body")) {
+                return;
+              }
+              if (event.target.closest("a, button, input, textarea, select, label")) {
+                return;
+              }
+              if (window.getSelection && window.getSelection().toString()) {
+                return;
+              }
+              handler();
+            });
+          }
 
           var body = document.getElementById(header.getAttribute("data-target"));
           if (body && body.dataset.initiallyExpanded === "true") {

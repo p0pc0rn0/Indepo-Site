@@ -1,59 +1,75 @@
 {% load i18n sekizai_tags %}
 
-<div
-  class="document-item"
-  data-document-item
-  data-document-title="{{ instance.name|lower }}"
->
-  {% with doc_url=instance.get_link %}
-    {% if doc_url %}
-      <a
-        class="document-item__link"
-        href="{{ doc_url }}"
-        {% if instance.file_id %}download{% else %}target="_blank" rel="noopener"{% endif %}
-      >
-        {{ instance.name }}
-      </a>
-    {% else %}
-      <span class="document-item__link document-item__link--disabled">
-        {{ instance.name }}
-      </span>
-    {% endif %}
-  {% endwith %}
-  {% if instance.description %}
-    <p class="document-item__description">
-      {{ instance.description|linebreaksbr }}
-    </p>
+{% with doc_url=instance.get_link %}
+  {% if doc_url %}
+    <a
+      class="document-item document-item--link"
+      data-document-item
+      data-document-title="{{ instance.name|lower }}"
+      data-document-clickable="true"
+      href="{{ doc_url }}"
+      {% if instance.file_id %}download{% else %}target="_blank" rel="noopener"{% endif %}
+    >
+      <span class="document-item__title">{{ instance.name }}</span>
+      {% if instance.description %}
+        <p class="document-item__description">
+          {{ instance.description|linebreaksbr }}
+        </p>
+      {% endif %}
+    </a>
+  {% else %}
+    <div
+      class="document-item document-item--disabled"
+      data-document-item
+      data-document-title="{{ instance.name|lower }}"
+      data-document-clickable="false"
+    >
+      <span class="document-item__title">{{ instance.name }}</span>
+      {% if instance.description %}
+        <p class="document-item__description">
+          {{ instance.description|linebreaksbr }}
+        </p>
+      {% endif %}
+    </div>
   {% endif %}
-</div>
+{% endwith %}
 
 {% addtoblock "css" %}
 <style>
   .document-item {
+    display: block;
     padding: 0.75rem 1rem;
     border-radius: 0.75rem;
     background: #fff;
     border: 1px solid rgba(33, 37, 41, 0.08);
     box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    text-decoration: none;
   }
   .document-item:hover,
   .document-item:focus-within {
-    transform: translateY(-2px);
     box-shadow: 0 1.2rem 2.2rem rgba(15, 23, 42, 0.12);
+    border-color: rgba(13, 110, 253, 0.2);
   }
-  .document-item__link {
+  .document-item[data-document-clickable="true"] {
+    cursor: pointer;
+  }
+  .document-item__title {
     font-weight: 600;
     text-decoration: none;
     color: var(--bs-primary, #0d6efd);
   }
-  .document-item__link--disabled {
+  .document-item--disabled {
     cursor: not-allowed;
     color: rgba(33, 37, 41, 0.45);
   }
-  .document-item__link:hover,
-  .document-item__link:focus-visible {
-    text-decoration: underline;
+  .document-item--disabled .document-item__title {
+    color: rgba(33, 37, 41, 0.45);
+  }
+  .document-item--link:focus-visible {
+    outline: 2px solid rgba(13, 110, 253, 0.4);
+    outline-offset: 2px;
   }
   .document-item__description {
     margin: 0.5rem 0 0;

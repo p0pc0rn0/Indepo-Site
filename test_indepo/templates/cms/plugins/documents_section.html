@@ -168,9 +168,45 @@
                 handler();
               }
             });
+            subsection.addEventListener("click", function (event) {
+              if (!header) return;
+              if (event.target.closest("[data-document-header]")) return;
+              if (event.target.closest("[data-document-body]")) return;
+              if (event.target.closest("a, button, input, textarea, select, label")) return;
+              if (window.getSelection && window.getSelection().toString()) return;
+              handler();
+            });
           }
         });
       }
+
+      function openDocumentFromRow(row) {
+        if (!row || row.dataset.documentClickable !== "true") return;
+        var interactive = row.querySelector("a, button, input, textarea, select, label");
+        if (interactive && interactive.contains(document.activeElement)) {
+          return;
+        }
+        var link = row.querySelector(".document-item__link");
+        if (!link) return;
+        link.click();
+      }
+
+      section.addEventListener("click", function (event) {
+        var row = event.target.closest("[data-document-item]");
+        if (!row || row.dataset.documentClickable !== "true") return;
+        if (event.target.closest("a, button, input, textarea, select, label")) return;
+        if (window.getSelection && window.getSelection().toString()) return;
+        event.preventDefault();
+        openDocumentFromRow(row);
+      });
+
+      section.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        var row = document.activeElement && document.activeElement.closest("[data-document-item]");
+        if (!row || row.dataset.documentClickable !== "true") return;
+        event.preventDefault();
+        openDocumentFromRow(row);
+      });
 
       if (!searchInput) {
         return;

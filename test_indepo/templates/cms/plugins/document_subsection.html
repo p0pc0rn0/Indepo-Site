@@ -4,6 +4,7 @@
   class="documents-subsection documents-subsection--{{ layout_variant }}"
   data-document-section
   data-has-documents="{{ has_documents|yesno:'true,false' }}"
+  {% if layout_variant == "accordion" %}data-accordion-trigger="true"{% endif %}
 >
   <header
     class="documents-subsection__header"
@@ -77,11 +78,18 @@
   .documents-subsection:focus-within::before {
     opacity: 1;
   }
+  .documents-subsection[data-accordion-trigger="true"] {
+    cursor: pointer;
+  }
+  .documents-subsection[data-accordion-trigger="true"] .documents-subsection__body,
+  .documents-subsection[data-accordion-trigger="true"] .documents-subsection__body * {
+    cursor: auto;
+  }
   .documents-subsection:hover,
   .documents-subsection:focus-within {
     border-color: rgba(13, 110, 253, 0.25);
     box-shadow: 0 1.2rem 2.3rem rgba(15, 23, 42, 0.12);
-    transform: translateY(-2px);
+    transform: none;
   }
   .documents-subsection + .documents-subsection {
     margin-top: 1rem;
@@ -92,9 +100,22 @@
     justify-content: space-between;
     gap: 1rem;
     position: relative;
+    min-height: 48px;
   }
   .documents-subsection__header[data-document-header] {
     cursor: pointer;
+    padding: 0.35rem 0.35rem;
+    margin: -0.35rem;
+  }
+  .documents-subsection__header[data-document-header]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+  .documents-subsection__header[data-document-header] > * {
+    position: relative;
+    z-index: 1;
   }
   .documents-subsection__title {
     margin: 0;

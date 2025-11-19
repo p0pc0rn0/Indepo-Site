@@ -3,6 +3,7 @@
 <article
   class="about-card about-card--{{ layout_variant }}"
   data-about-card
+  {% if layout_variant == "accordion" %}data-accordion-trigger="true"{% endif %}
 >
   <header
     class="about-card__header"
@@ -60,11 +61,18 @@
   .about-card:focus-within {
     border-color: rgba(13, 110, 253, 0.25);
     box-shadow: 0 1.25rem 2.2rem rgba(15, 23, 42, 0.12);
-    transform: translateY(-2px);
+    transform: none;
   }
   .about-card:hover::before,
   .about-card:focus-within::before {
     opacity: 1;
+  }
+  .about-card[data-accordion-trigger="true"] {
+    cursor: pointer;
+  }
+  .about-card[data-accordion-trigger="true"] .about-card__body,
+  .about-card[data-accordion-trigger="true"] .about-card__body * {
+    cursor: auto;
   }
   .about-card__header {
     display: flex;
@@ -76,6 +84,19 @@
   }
   .about-card__header[data-about-header] {
     cursor: pointer;
+    padding: 0.35rem 0.35rem;
+    margin: -0.35rem;
+    min-height: 48px;
+  }
+  .about-card__header[data-about-header]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+  .about-card__header[data-about-header] > * {
+    position: relative;
+    z-index: 1;
   }
   .about-card__title {
     margin: 0;
