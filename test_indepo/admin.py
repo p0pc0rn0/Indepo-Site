@@ -68,7 +68,7 @@ class IconPickerWidget(forms.Widget):
     class Media:
         css = {
             "all": (
-                "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css",
+                "assets/vendor/bootstrap-icons/bootstrap-icons.css",
                 "test_indepo/admin/icon-picker.css",
             )
         }
