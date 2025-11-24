@@ -150,6 +150,17 @@ class HeaderPluginForm(forms.ModelForm):
     class Meta:
         model = HeaderPluginModel
         fields = "__all__"
+        widgets = {
+            "search_background": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "search_border": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "search_input_background": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "search_text_color": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "search_placeholder_color": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "accessibility_background": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "accessibility_border": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
+            "chip_opacity": forms.NumberInput(attrs={"min": 0, "max": 100, "step": 1}),
+            "chip_hover_opacity": forms.NumberInput(attrs={"min": 0, "max": 100, "step": 1}),
+        }
 
 
 class AboutCardsSectionPluginForm(forms.ModelForm):

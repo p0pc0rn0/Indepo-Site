@@ -545,6 +545,37 @@ class HeaderPluginModel(CMSPlugin):
         on_delete=models.SET_NULL,
         related_name="+",
     )
+    search_background = models.CharField(
+        _("Цвет фона поиска"), max_length=40, blank=True, default="#ffffff"
+    )
+    search_border = models.CharField(
+        _("Цвет рамки поиска"), max_length=40, blank=True, default="rgba(15, 23, 42, 0.18)"
+    )
+    search_input_background = models.CharField(
+        _("Цвет поля поиска"), max_length=40, blank=True, default="#ffffff"
+    )
+    search_text_color = models.CharField(
+        _("Цвет текста поиска"), max_length=40, blank=True, default="#0f172a"
+    )
+    search_placeholder_color = models.CharField(
+        _("Цвет плейсхолдера поиска"), max_length=40, blank=True, default="#6b7280"
+    )
+    accessibility_background = models.CharField(
+        _("Фон кнопки доступности"), max_length=40, blank=True, default="#ffffff"
+    )
+    accessibility_border = models.CharField(
+        _("Рамка кнопки доступности"), max_length=40, blank=True, default="rgba(15, 23, 42, 0.2)"
+    )
+    chip_opacity = models.PositiveIntegerField(
+        _("Прозрачность плашек (%)"), default=12, null=True, blank=True, help_text=_("0-100, фон быстрых иконок")
+    )
+    chip_hover_opacity = models.PositiveIntegerField(
+        _("Прозрачность плашек при наведении (%)"),
+        default=25,
+        null=True,
+        blank=True,
+        help_text=_("0-100, фон при hover"),
+    )
 
     def __str__(self):
         return "Header navigation"
