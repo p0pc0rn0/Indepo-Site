@@ -291,6 +291,7 @@ h6 {
   --search-button-expanded: 42px;
   --search-expanded-width: min(clamp(420px, 60vw, 920px), 100%);
   --search-right-gap: var(--utility-gap, 0.45rem);
+  --search-button-margin: 0;
   flex: 0 0 auto;
   width: var(--search-collapsed-size);
   max-width: 100%;
@@ -303,7 +304,7 @@ h6 {
   border-radius: 999px;
   padding: 0;
   transform-origin: left center;
-  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease, border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
+  transition: width 0.58s cubic-bezier(0.33, 1, 0.68, 1), padding 0.58s cubic-bezier(0.33, 1, 0.68, 1), border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.25s ease, transform 0.2s ease;
   position: relative;
   z-index: 1500;
   min-height: var(--search-collapsed-size);
@@ -352,14 +353,12 @@ h6 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.2s ease, width 0.25s ease, height 0.25s ease, left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s ease, width 0.25s ease, height 0.25s ease, margin 0.58s cubic-bezier(0.33, 1, 0.68, 1);
   flex-shrink: 0;
   -webkit-appearance: none;
   appearance: none;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  margin-left: var(--search-button-margin, 0);
 }
 .branding__search-button:hover,
 .branding__search-button:focus-visible {
@@ -374,8 +373,9 @@ body.site-search-open .branding__search {
   min-width: 0;
   justify-content: flex-start;
   gap: 0.5rem;
-  padding: 0.35rem calc(var(--search-button-expanded) + var(--search-right-gap)) 0.35rem 1rem;
+  padding: 0.35rem var(--search-right-gap) 0.35rem 1.1rem;
   min-height: 52px;
+  --search-button-margin: auto;
 }
 .branding__search:hover .branding__search-button,
 .branding__search:focus-within .branding__search-button,
@@ -384,7 +384,6 @@ body.site-search-open .branding__search .branding__search-button {
   width: var(--search-button-expanded);
   height: var(--search-button-expanded);
   border-radius: 50%;
-  left: calc(100% - var(--search-right-gap) - var(--search-button-expanded) / 2);
 }
 .branding__search:hover .branding__search-input,
 .branding__search:focus-within .branding__search-input,
