@@ -50,50 +50,50 @@
       <span class="branding__accessibility-tooltip">{% trans "Режим для слабовидящих" %}</span>
     </button>
   </div>
-  <div
-    class="branding__search"
-    role="search"
-    data-utility-search
-    style="--search-bg: {{ instance.search_background }}; --search-border: {{ instance.search_border }}; --search-input-bg: {{ instance.search_input_background }}; --search-text: {{ instance.search_text_color }}; --search-placeholder: {{ instance.search_placeholder_color }}; --search-opacity: {{ instance.chip_opacity|default:12 }}%; --search-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
-  >
-    <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
-    <input
-      id="branding-search-input"
-      type="search"
-      class="branding__search-input"
-      placeholder="{% trans 'Поиск по сайту…' %}"
-      autocomplete="off"
-      spellcheck="false"
-      data-search-input
-      aria-controls="site-search-overlay"
-      aria-haspopup="dialog"
-    />
-    <button
-      type="button"
-      class="branding__search-button"
-      data-search-button
-      data-search-open
-      aria-label="{% trans 'Открыть поиск' %}"
-      aria-controls="site-search-overlay"
-      aria-expanded="false"
-    >
-      <i class="bi bi-search" aria-hidden="true"></i>
-    </button>
+  <div class="branding__cluster branding__cluster--right" data-utility-cluster="socials">
     <div
-      class="branding__search-panel site-search__panel"
-      data-search-panel
-      role="region"
-      aria-live="polite"
-      hidden
+      class="branding__search"
+      role="search"
+      data-utility-search
+      style="--search-bg: {{ instance.search_background }}; --search-border: {{ instance.search_border }}; --search-input-bg: {{ instance.search_input_background }}; --search-text: {{ instance.search_text_color }}; --search-placeholder: {{ instance.search_placeholder_color }}; --search-opacity: {{ instance.chip_opacity|default:12 }}%; --search-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
     >
-      <div class="site-search__status is-hidden" data-search-status></div>
-      <div class="site-search__results" data-search-results></div>
-      <div class="site-search__empty" data-search-empty>
-        <p>{% trans "Введите запрос, чтобы увидеть результаты" %}</p>
+      <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
+      <input
+        id="branding-search-input"
+        type="search"
+        class="branding__search-input"
+        placeholder="{% trans 'Поиск по сайту…' %}"
+        autocomplete="off"
+        spellcheck="false"
+        data-search-input
+        aria-controls="site-search-overlay"
+        aria-haspopup="dialog"
+      />
+      <button
+        type="button"
+        class="branding__search-button"
+        data-search-button
+        data-search-open
+        aria-label="{% trans 'Открыть поиск' %}"
+        aria-controls="site-search-overlay"
+        aria-expanded="false"
+      >
+        <i class="bi bi-search" aria-hidden="true"></i>
+      </button>
+      <div
+        class="branding__search-panel site-search__panel"
+        data-search-panel
+        role="region"
+        aria-live="polite"
+        hidden
+      >
+        <div class="site-search__status is-hidden" data-search-status></div>
+        <div class="site-search__results" data-search-results></div>
+        <div class="site-search__empty" data-search-empty>
+          <p>{% trans "Введите запрос, чтобы увидеть результаты" %}</p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="branding__cluster branding__cluster--right" data-utility-cluster="socials">
     {% for icon in header_social_icons %}
       {% if icon.url %}
         <a
@@ -608,9 +608,25 @@
       border-top: 1px solid rgba(37, 99, 235, 0.18);
     }
     .fly-nav__mobile-search .branding__search {
+      flex: 1 1 auto;
       width: 100%;
       margin: 0;
+      min-height: 52px;
+      padding: 0.4rem 0.6rem 0.4rem 1rem;
+      gap: 0.5rem;
+      justify-content: flex-start;
       box-shadow: 0 18px 36px rgba(15, 23, 42, 0.14);
+    }
+    .fly-nav__mobile-search .branding__search .branding__search-input {
+      width: 100%;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .fly-nav__mobile-search .branding__search .branding__search-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
     }
     .fly-nav__mobile-tools {
       display: flex;
@@ -720,6 +736,8 @@
 
     var copyToast = document.querySelector('[data-copy-toast]');
     var brandingUtility = document.querySelector('#header .branding__utility');
+    var searchShell = document.querySelector('[data-utility-search]');
+    var searchChipController = null;
     var copyToastTimer = null;
 
     function showCopyToast() {
@@ -791,7 +809,6 @@
     })();
 
     (function handleMobileUtilityRelocation() {
-      var searchShell = document.querySelector('[data-utility-search]');
       var contactsCluster = document.querySelector('[data-utility-cluster="contacts"]');
       var socialsCluster = document.querySelector('[data-utility-cluster="socials"]');
       var mobileSearchSlot = document.querySelector('[data-mobile-search-slot]');
@@ -840,6 +857,41 @@
 
       handlePlacement();
       window.addEventListener('resize', handlePlacement);
+    })();
+
+    searchChipController = (function () {
+      if (!searchShell) return null;
+      var collapseTimer = null;
+
+      function expandChip() {
+        window.clearTimeout(collapseTimer);
+        searchShell.classList.add('is-expanded');
+      }
+
+      function collapseChip() {
+        window.clearTimeout(collapseTimer);
+        collapseTimer = window.setTimeout(function () {
+          if (document.body.classList.contains('site-search-open')) return;
+          if (searchShell.matches(':hover')) return;
+          if (searchShell.contains(document.activeElement)) return;
+          searchShell.classList.remove('is-expanded');
+        }, 140);
+      }
+
+      searchShell.addEventListener('mouseenter', expandChip);
+      searchShell.addEventListener('mouseleave', collapseChip);
+      searchShell.addEventListener('focusin', expandChip);
+      searchShell.addEventListener('focusout', function (event) {
+        if (event.relatedTarget && searchShell.contains(event.relatedTarget)) {
+          return;
+        }
+        collapseChip();
+      });
+
+      return {
+        expand: expandChip,
+        collapse: collapseChip,
+      };
     })();
 
     var lastScrollY = window.scrollY;
@@ -1108,6 +1160,9 @@
             searchPanel.classList.add('is-open');
           });
         }
+        if (searchChipController && searchChipController.expand) {
+          searchChipController.expand();
+        }
         focusSearchInput(focusTarget);
       }
 
@@ -1126,6 +1181,9 @@
         }
         if (searchPanel) {
           searchPanel.classList.remove('is-open');
+        }
+        if (searchChipController && searchChipController.collapse) {
+          searchChipController.collapse();
         }
         window.setTimeout(function () {
           searchOverlay.setAttribute('hidden', '');
