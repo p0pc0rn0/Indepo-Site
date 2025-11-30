@@ -55,24 +55,11 @@
       class="branding__search"
       role="search"
       data-utility-search
-      style="--search-bg: {{ instance.search_background }}; --search-border: {{ instance.search_border }}; --search-input-bg: {{ instance.search_input_background }}; --search-text: {{ instance.search_text_color }}; --search-placeholder: {{ instance.search_placeholder_color }}; --search-opacity: {{ instance.chip_opacity|default:12 }}%; --search-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
+      style="--search-bg: {{ instance.search_background }}; --search-border: {{ instance.search_border }}; --search-input-bg: {{ instance.search_input_background }}; --search-text: {{ instance.search_text_color }}; --search-placeholder: {{ instance.search_placeholder_color }};"
     >
-      <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
-      <input
-        id="branding-search-input"
-        type="search"
-        class="branding__search-input"
-        placeholder="{% trans 'Поиск по сайту…' %}"
-        autocomplete="off"
-        spellcheck="false"
-        data-search-input
-        aria-controls="site-search-overlay"
-        aria-haspopup="dialog"
-      />
       <button
         type="button"
-        class="branding__search-button"
-        data-search-button
+        class="branding__search-trigger"
         data-search-open
         aria-label="{% trans 'Открыть поиск' %}"
         aria-controls="site-search-overlay"
@@ -80,6 +67,20 @@
       >
         <i class="bi bi-search" aria-hidden="true"></i>
       </button>
+      <div class="branding__search-track">
+        <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
+        <input
+          id="branding-search-input"
+          type="search"
+          class="branding__search-input"
+          placeholder="{% trans 'Поиск по сайту…' %}"
+          autocomplete="off"
+          spellcheck="false"
+          data-search-input
+          aria-controls="site-search-overlay"
+          aria-haspopup="dialog"
+        />
+      </div>
       <div
         class="branding__search-panel site-search__panel"
         data-search-panel
@@ -359,45 +360,28 @@
   .site-search {
     position: fixed;
     inset: 0;
-    z-index: 1300;
+    z-index: 1200;
+    pointer-events: none;
   }
   .site-search[hidden] {
     display: none;
   }
-  .site-search:not(.is-open) {
-    pointer-events: none;
-  }
   .site-search__backdrop {
     position: absolute;
     inset: 0;
-    backdrop-filter: blur(18px);
     background: rgba(15, 23, 42, 0.45);
-    pointer-events: auto;
-  }
-  .site-search__panel {
-    position: absolute;
-    top: calc(100% + 0.75rem);
-    left: 0;
-    width: 100%;
-    max-height: min(70vh, 520px);
-    background: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-    border: 1px solid rgba(37, 99, 235, 0.12);
-    padding: 1.1rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    pointer-events: none;
+    backdrop-filter: blur(18px);
     opacity: 0;
-    transform: translateY(-8px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 50;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
   }
-  [data-search-panel].is-open {
-    opacity: 1;
-    transform: translateY(0);
+  body.site-search-open .site-search {
     pointer-events: auto;
+  }
+  body.site-search-open .site-search__backdrop {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
   }
   .site-search__status {
     font-size: 0.92rem;
@@ -861,40 +845,16 @@
       window.addEventListener('resize', handlePlacement);
     })();
 
-    searchChipController = (function () {
-      if (!searchShell) return null;
-      var collapseTimer = null;
-
-      function expandChip() {
-        window.clearTimeout(collapseTimer);
-        searchShell.classList.add('is-expanded');
-      }
-
-      function collapseChip() {
-        window.clearTimeout(collapseTimer);
-        collapseTimer = window.setTimeout(function () {
-          if (document.body.classList.contains('site-search-open')) return;
-          if (searchShell.matches(':hover')) return;
-          if (searchShell.contains(document.activeElement)) return;
-          searchShell.classList.remove('is-expanded');
-        }, 140);
-      }
-
-      searchShell.addEventListener('mouseenter', expandChip);
-      searchShell.addEventListener('mouseleave', collapseChip);
-      searchShell.addEventListener('focusin', expandChip);
-      searchShell.addEventListener('focusout', function (event) {
-        if (event.relatedTarget && searchShell.contains(event.relatedTarget)) {
-          return;
-        }
-        collapseChip();
-      });
-
-      return {
-        expand: expandChip,
-        collapse: collapseChip,
+    if (searchShell) {
+      searchChipController = {
+        expand: function () {
+          searchShell.classList.add('is-active');
+        },
+        collapse: function () {
+          searchShell.classList.remove('is-active');
+        },
       };
-    })();
+    }
 
     var lastScrollY = window.scrollY;
     var hideThreshold = 140;
@@ -1041,7 +1001,7 @@
       var searchResults = document.querySelector('[data-search-results]');
       var searchEmpty = document.querySelector('[data-search-empty]');
       var searchStatus = document.querySelector('[data-search-status]');
-      var searchClosers = searchOverlay.querySelectorAll('[data-search-close]');
+      var searchClosers = document.querySelectorAll('[data-search-close]');
       var searchAbort = null;
       var searchDebounce = null;
       var searchCache = Object.create(null);
@@ -1141,12 +1101,14 @@
         if (brandingUtility) {
           brandingUtility.classList.remove('utility--hidden');
         }
-        if (searchOverlay.hasAttribute('hidden')) {
+        if (searchOverlay && searchOverlay.hasAttribute('hidden')) {
           searchOverlay.removeAttribute('hidden');
         }
-        var wasClosed = !searchOverlay.classList.contains('is-open');
-        if (wasClosed) {
+        if (searchOverlay) {
           searchOverlay.classList.add('is-open');
+        }
+        var wasClosed = !document.body.classList.contains('site-search-open');
+        if (wasClosed) {
           document.body.classList.add('site-search-open');
           setSearchButtonsExpanded(true);
           if (!lastQuery) {
@@ -1155,9 +1117,7 @@
           }
         }
         if (searchPanel) {
-          if (searchPanel.hasAttribute('hidden')) {
-            searchPanel.removeAttribute('hidden');
-          }
+          searchPanel.removeAttribute('hidden');
           window.requestAnimationFrame(function () {
             searchPanel.classList.add('is-open');
           });
@@ -1169,10 +1129,9 @@
       }
 
       function closeSearch() {
-        if (!searchOverlay.classList.contains('is-open')) {
+        if (!document.body.classList.contains('site-search-open')) {
           return;
         }
-        searchOverlay.classList.remove('is-open');
         document.body.classList.remove('site-search-open');
         setSearchButtonsExpanded(false);
         resetSearchUI(true);
@@ -1183,16 +1142,17 @@
         }
         if (searchPanel) {
           searchPanel.classList.remove('is-open');
+          searchPanel.setAttribute('hidden', '');
+        }
+        if (searchOverlay) {
+          searchOverlay.classList.remove('is-open');
+          window.setTimeout(function () {
+            searchOverlay.setAttribute('hidden', '');
+          }, 220);
         }
         if (searchChipController && searchChipController.collapse) {
           searchChipController.collapse();
         }
-        window.setTimeout(function () {
-          searchOverlay.setAttribute('hidden', '');
-          if (searchPanel) {
-            searchPanel.setAttribute('hidden', '');
-          }
-        }, 220);
       }
 
       function getCachedResults(query) {
@@ -1367,8 +1327,13 @@
 
       if (searchOpeners.length) {
         Array.prototype.forEach.call(searchOpeners, function (btn) {
-          btn.addEventListener('click', function () {
-            openSearch({ focusTarget: resolveInputForOpener(btn) });
+          btn.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (document.body.classList.contains('site-search-open')) {
+              closeSearch();
+            } else {
+              openSearch({ focusTarget: resolveInputForOpener(btn) });
+            }
           });
         });
       }
@@ -1400,11 +1365,15 @@
           });
           input.addEventListener('blur', function () {
             window.setTimeout(function () {
-              if (!searchOverlay.classList.contains('is-open')) {
+              if (!document.body.classList.contains('site-search-open')) {
                 return;
               }
               var active = document.activeElement;
-              if (active && searchOverlay.contains(active)) {
+              if (
+                active &&
+                ((searchPanel && searchPanel.contains(active)) ||
+                  (searchShell && searchShell.contains(active)))
+              ) {
                 return;
               }
               closeSearch();
@@ -1425,17 +1394,16 @@
         });
       }
 
-      searchOverlay.addEventListener('click', function (event) {
-        if (
-          event.target === searchOverlay ||
-          event.target.classList.contains('site-search__backdrop')
-        ) {
-          closeSearch();
-        }
-      });
+      if (searchOverlay) {
+        searchOverlay.addEventListener('click', function (event) {
+          if (event.target === searchOverlay || event.target.classList.contains('site-search__backdrop')) {
+            closeSearch();
+          }
+        });
+      }
 
       closeSearchIfOpen = function () {
-        if (searchOverlay.classList.contains('is-open')) {
+        if (document.body.classList.contains('site-search-open')) {
           closeSearch();
           return true;
         }
