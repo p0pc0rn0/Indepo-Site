@@ -67,7 +67,7 @@
       >
         <i class="bi bi-search" aria-hidden="true"></i>
       </button>
-      <div class="branding__search-track">
+      <div class="branding__search-track" role="button" tabindex="0" data-search-track>
         <label class="visually-hidden" for="branding-search-input">{% trans "Поиск по сайту" %}</label>
         <input
           id="branding-search-input"
@@ -1368,6 +1368,33 @@
               closeSearch();
             } else {
               openSearch({ focusTarget: resolveInputForOpener(btn) });
+            }
+          });
+        });
+      }
+
+      var searchTracks = document.querySelectorAll('[data-search-track]');
+      if (searchTracks.length) {
+        Array.prototype.forEach.call(searchTracks, function (track) {
+          function activateTrack(event) {
+            if (event) {
+              event.preventDefault();
+            }
+            var scopedInput = track.querySelector('[data-search-input]');
+            openSearch({ focusTarget: scopedInput || resolveInputForOpener(null) });
+          }
+          track.addEventListener('click', function (event) {
+            if (event.target.closest('[data-search-input]')) {
+              return;
+            }
+            activateTrack(event);
+          });
+          track.addEventListener('keydown', function (event) {
+            if (event.target.closest('[data-search-input]')) {
+              return;
+            }
+            if (event.key === 'Enter' || event.key === ' ') {
+              activateTrack(event);
             }
           });
         });
