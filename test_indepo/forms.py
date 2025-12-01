@@ -18,6 +18,8 @@ from .models import (
     HeaderQuickIcon,
     SocialInitiativesSectionPluginModel,
     SocialInitiativeCardPluginModel,
+    DocumentsShowcaseSectionPluginModel,
+    DocumentsShowcaseCardPluginModel,
     AboutCardsSectionModel,
     AboutCardItemModel,
     LeadershipSectionModel,
@@ -284,4 +286,16 @@ class SocialInitiativesSectionForm(forms.ModelForm):
 class SocialInitiativeCardForm(forms.ModelForm):
     class Meta:
         model = SocialInitiativeCardPluginModel
+        exclude = ("section",)
+
+
+class DocumentsShowcaseSectionForm(forms.ModelForm):
+    class Meta:
+        model = DocumentsShowcaseSectionPluginModel
+        fields = "__all__"
+
+
+class DocumentsShowcaseCardForm(forms.ModelForm):
+    class Meta:
+        model = DocumentsShowcaseCardPluginModel
         exclude = ("section",)

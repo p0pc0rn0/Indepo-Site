@@ -1,0 +1,44 @@
+{% load i18n cms_tags %}
+<article class="documents-showcase__card" data-docs-card>
+  {% if instance.image %}
+    <div class="documents-showcase__card-media">
+      <img src="{{ instance.image.url }}" alt="{{ instance.title }}" loading="lazy" />
+    </div>
+  {% endif %}
+  <div class="documents-showcase__card-body">
+    <h3 class="documents-showcase__card-title">{{ instance.title }}</h3>
+    {% if instance.teaser %}
+      <div class="documents-showcase__card-teaser" data-docs-summary>
+        {{ instance.teaser|safe }}
+      </div>
+    {% endif %}
+    {% if has_details %}
+      <div class="documents-showcase__card-details" data-docs-details hidden>
+        {% if instance.full_text %}
+          <div class="documents-showcase__card-text">
+            {{ instance.full_text|safe }}
+          </div>
+        {% endif %}
+        {% if instance.child_plugin_instances %}
+          <div class="documents-showcase__card-inline">
+            {% for child in instance.child_plugin_instances %}
+              {% render_plugin child %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      <div class="documents-showcase__card-actions">
+        <button
+          type="button"
+          class="documents-showcase__card-toggle"
+          data-docs-toggle
+          data-label-show="{{ instance.button_label }}"
+          data-label-hide="{% trans 'Свернуть' %}"
+          aria-expanded="false"
+        >
+          {{ instance.button_label }}
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</article>

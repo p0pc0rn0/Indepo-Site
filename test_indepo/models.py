@@ -486,6 +486,36 @@ class SocialInitiativeCardPluginModel(CMSPlugin):
         return self.title
 
 
+class DocumentsShowcaseSectionPluginModel(CMSPlugin):
+    title = models.CharField(_("Section title"), max_length=200, blank=True, default="")
+    subtitle = models.CharField(_("Section subtitle"), max_length=255, blank=True, default="")
+
+    def __str__(self):
+        return self.title or str(_("Documents showcase"))
+
+
+class DocumentsShowcaseCardPluginModel(CMSPlugin):
+    section = models.ForeignKey(
+        DocumentsShowcaseSectionPluginModel,
+        related_name="cards",
+        on_delete=models.CASCADE,
+    )
+    image = FilerImageField(
+        verbose_name=_("Icon or image"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    title = models.CharField(_("Card title"), max_length=200)
+    teaser = HTMLField(_("Teaser text"), blank=True, default="")
+    full_text = HTMLField(_("Full text"), blank=True, default="")
+    button_label = models.CharField(_("Button label"), max_length=120, default=_("Подробнее"))
+
+    def __str__(self):
+        return self.title
+
+
 class AboutCardsSectionModel(CMSPlugin):
     LAYOUT_CHOICES = [
         ("list", _("List")),

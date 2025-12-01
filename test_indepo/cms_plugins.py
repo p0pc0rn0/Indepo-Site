@@ -34,6 +34,8 @@ from .forms import (
     HeaderQuickIconInlineForm,
     SocialInitiativesSectionForm,
     SocialInitiativeCardForm,
+    DocumentsShowcaseSectionForm,
+    DocumentsShowcaseCardForm,
 )
 from .models import (
     AboutItemPluginModel,
@@ -68,6 +70,8 @@ from .models import (
     TopBarPluginModel,
     SocialInitiativesSectionPluginModel,
     SocialInitiativeCardPluginModel,
+    DocumentsShowcaseSectionPluginModel,
+    DocumentsShowcaseCardPluginModel,
 )
 
 
@@ -457,6 +461,70 @@ class SocialInitiativeCardPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
         context["instance"] = instance
+        return context
+
+
+@plugin_pool.register_plugin
+class DocumentsShowcaseSectionPlugin(CMSPluginBase):
+    model = DocumentsShowcaseSectionPluginModel
+    name = _("Documents showcase section")
+    render_template = "cms/plugins/documents_showcase_section.html"
+    form = DocumentsShowcaseSectionForm
+    cache = False
+    allow_children = True
+    child_classes = ["DocumentsShowcaseCardPlugin"]
+    module = _("Sections")
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        cards = list(getattr(instance, "child_plugin_instances", []) or [])
+        context["instance"] = instance
+        context["cards"] = cards
+        context["section_dom_id"] = f"expandable-highlights-{instance.pk}"
+        return context
+
+
+@plugin_pool.register_plugin
+class DocumentsShowcaseCardPlugin(CMSPluginBase):
+    model = DocumentsShowcaseCardPluginModel
+    name = _("Documents showcase card")
+    render_template = "cms/plugins/documents_showcase_card.html"
+    form = DocumentsShowcaseCardForm
+    cache = False
+    require_parent = True
+    parent_classes = ["DocumentsShowcaseSectionPlugin"]
+    allow_children = True
+    child_classes = ["TablePlugin"]
+    module = _("Sections")
+
+    def _assign_section(self, obj):
+        if not obj.parent_id:
+            return
+        parent_plugin = obj.parent
+        if not parent_plugin:
+            return
+        parent_instance, _plugin = parent_plugin.get_plugin_instance()
+        if isinstance(parent_instance, DocumentsShowcaseSectionPluginModel):
+            obj.section = parent_instance
+
+    def save_model(self, request, obj, form, change):
+        self._assign_section(obj)
+        super().save_model(request, obj, form, change)
+
+    def move_plugin(self, plugin, placeholder, target_placeholder, parent_plugin):
+        if parent_plugin:
+            parent_instance, _plugin = parent_plugin.get_plugin_instance()
+            if isinstance(parent_instance, DocumentsShowcaseSectionPluginModel):
+                plugin.section = parent_instance
+                plugin.save(update_fields=["section"])
+        super().move_plugin(plugin, placeholder, target_placeholder, parent_plugin)
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        context["instance"] = instance
+        full_text = (instance.full_text or "").strip()
+        has_children = bool(getattr(instance, "child_plugin_instances", None))
+        context["has_details"] = bool(full_text) or has_children
         return context
 
 
