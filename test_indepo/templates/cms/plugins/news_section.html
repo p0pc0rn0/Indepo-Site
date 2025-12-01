@@ -540,8 +540,21 @@
           tabsNav.hidden = true;
           return;
         }
+
         tabsNav.hidden = false;
-        for (var tab = 1; tab <= totalTabs; tab += 1) {
+        var windowSize = Math.min(3, totalTabs);
+        var start = state.tab - 1;
+        var end = state.tab + 1;
+
+        if (start < 1) {
+          start = 1;
+          end = Math.min(totalTabs, start + windowSize - 1);
+        } else if (end > totalTabs) {
+          end = totalTabs;
+          start = Math.max(1, end - windowSize + 1);
+        }
+
+        for (var tab = start; tab <= end; tab += 1) {
           (function (tabIndex) {
             var button = document.createElement("button");
             button.type = "button";
@@ -549,6 +562,7 @@
             if (tabIndex === state.tab) {
               button.classList.add("is-active");
             }
+            button.dataset.page = String(tabIndex);
             button.textContent = tabIndex;
             button.addEventListener("click", function () {
               if (state.tab === tabIndex) return;
@@ -625,8 +639,9 @@
         renderTabs(totalTabs);
 
         if (tabsNav && tabsNav.children.length) {
-          Array.prototype.forEach.call(tabsNav.children, function (button, idx) {
-            button.classList.toggle("is-active", idx + 1 === state.tab);
+          Array.prototype.forEach.call(tabsNav.children, function (button) {
+            var page = parseInt(button.dataset.page, 10);
+            button.classList.toggle("is-active", page === state.tab);
           });
         }
 
