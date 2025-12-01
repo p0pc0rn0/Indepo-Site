@@ -379,8 +379,7 @@ h6 {
   background: rgba(37, 99, 235, 0.12);
   color: var(--accent-color);
 }
-.branding__search:hover,
-.branding__search:hover,
+.branding__search.is-hover,
 .branding__search:focus-within,
 .branding__search.is-active,
 body.site-search-open .branding__search {
@@ -393,8 +392,7 @@ body.site-search-open .branding__search {
   flex: 1 1 auto;
   margin-right: auto;
 }
-.branding__search:hover .branding__search-track,
-.branding__search:hover .branding__search-track,
+.branding__search.is-hover .branding__search-track,
 .branding__search:focus-within .branding__search-track,
 .branding__search.is-active .branding__search-track,
 body.site-search-open .branding__search .branding__search-track {
