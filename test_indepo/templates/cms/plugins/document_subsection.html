@@ -85,6 +85,12 @@
   .documents-subsection[data-accordion-trigger="true"] .documents-subsection__body * {
     cursor: auto;
   }
+  .documents-subsection[data-accordion-trigger="true"] .documents-subsection__body .document-item {
+    cursor: pointer;
+  }
+  .documents-subsection[data-accordion-trigger="true"] .documents-subsection__body .document-item.document-item--disabled {
+    cursor: not-allowed;
+  }
   .documents-subsection:hover,
   .documents-subsection:focus-within {
     border-color: rgba(13, 110, 253, 0.25);
