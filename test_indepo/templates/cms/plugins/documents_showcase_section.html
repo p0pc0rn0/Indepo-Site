@@ -100,13 +100,15 @@
     z-index: -1;
   }
   .documents-showcase__card:hover,
-  .documents-showcase__card:focus-within {
+  .documents-showcase__card:focus-within,
+  .documents-showcase__card.is-expanded {
     transform: translateY(-4px);
     border-color: rgba(13, 110, 253, 0.25);
     box-shadow: 0 1.75rem 3rem rgba(13, 110, 253, 0.18);
   }
   .documents-showcase__card:hover::before,
-  .documents-showcase__card:focus-within::before {
+  .documents-showcase__card:focus-within::before,
+  .documents-showcase__card.is-expanded::before {
     opacity: 1;
   }
   .documents-showcase__card-media {
@@ -278,6 +280,9 @@
                   details.style.maxHeight = details.scrollHeight + "px";
                 }
                 collapseDetails();
+                window.requestAnimationFrame(function () {
+                  toggle.blur();
+                });
               }
             });
           });
