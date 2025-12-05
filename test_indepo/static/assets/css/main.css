@@ -564,9 +564,9 @@ body.site-search-open .branding__search .branding__search-track {
   transform-origin: top center;
   background: #fff;
   color: #0f172a;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 0.35rem 0.75rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 999px;
   white-space: nowrap;
   box-shadow: 0 15px 30px rgba(15, 23, 42, 0.18);
