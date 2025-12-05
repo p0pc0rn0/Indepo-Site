@@ -99,6 +99,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "test_indepo.middleware.BrowserCacheControlMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -138,7 +139,7 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
 }
 
-CACHE_TIMEOUT = env.int("DJANGO_CACHE_TIMEOUT", default=600)
+CACHE_TIMEOUT = env.int("DJANGO_CACHE_TIMEOUT", default=300)
 
 CACHES = {
     "default": env.cache(
@@ -147,6 +148,10 @@ CACHES = {
     )
 }
 CACHES["default"]["TIMEOUT"] = CACHE_TIMEOUT
+
+CMS_CACHE_TIMEOUT_CONTENT = env.int("DJANGO_CACHE_TIMEOUT_CONTENT", default=CACHE_TIMEOUT)
+CMS_CACHE_TIMEOUT_MENUS = env.int("DJANGO_CACHE_TIMEOUT_MENUS", default=CACHE_TIMEOUT)
+CMS_CACHE_TIMEOUT_PERMISSIONS = env.int("DJANGO_CACHE_TIMEOUT_PERMISSIONS", default=CACHE_TIMEOUT)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -193,13 +198,13 @@ CMS_LANGUAGES = {
 }
 
 CMS_CACHE_DURATIONS = {
-    "content": CACHE_TIMEOUT,
-    "menus": CACHE_TIMEOUT,
-    "permissions": CACHE_TIMEOUT,
+    "content": CMS_CACHE_TIMEOUT_CONTENT,
+    "menus": CMS_CACHE_TIMEOUT_MENUS,
+    "permissions": CMS_CACHE_TIMEOUT_PERMISSIONS,
 }
-CMS_PAGE_CACHE = True
-CMS_PLACEHOLDER_CACHE = True
-CMS_PLUGIN_CACHE = True
+CMS_PAGE_CACHE = env.bool("DJANGO_CMS_PAGE_CACHE", default=True)
+CMS_PLACEHOLDER_CACHE = env.bool("DJANGO_CMS_PLACEHOLDER_CACHE", default=True)
+CMS_PLUGIN_CACHE = env.bool("DJANGO_CMS_PLUGIN_CACHE", default=True)
 
 LANGUAGES = [
     ("en", _("English")),
@@ -231,11 +236,20 @@ CSRF_COOKIE_SECURE = env.bool("DJANGO_CSRF_COOKIE_SECURE", default=not DEBUG)
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [APPS_DIR / "static"]
-STATIC_ROOT = Path(env("DJANGO_STATIC_ROOT", default=str(BASE_DIR / "staticfiles")))
+
+_static_root = env("DJANGO_STATIC_ROOT", default=str(BASE_DIR / "staticfiles"))
+STATIC_ROOT = Path(_static_root or (BASE_DIR / "staticfiles"))
+
+STATICFILES_STORAGE = (
+    env("DJANGO_STATICFILES_STORAGE", default="")
+    or "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+)
 
 #MEDIA_URL = "media/"
 MEDIA_URL = '/file/'
-MEDIA_ROOT = Path(env("DJANGO_MEDIA_ROOT", default=str(BASE_DIR.parent / "media")))
+
+_media_root = env("DJANGO_MEDIA_ROOT", default=str(BASE_DIR.parent / "media"))
+MEDIA_ROOT = Path(_media_root or (BASE_DIR.parent / "media"))
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
