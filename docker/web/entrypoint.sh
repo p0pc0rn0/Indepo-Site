@@ -18,7 +18,11 @@ PYCODE
 
 # Миграции + статика
 python manage.py migrate --noinput
-python manage.py collectstatic --noinput
+
+# Чистим устаревшие артефакты и собираем статику с хешами,
+# чтобы браузеры всегда подтягивали обновления.
+rm -rf /static/*
+python manage.py collectstatic --noinput --clear
 
 # Запускаем gunicorn
 exec gunicorn test_indepo.wsgi:application \
