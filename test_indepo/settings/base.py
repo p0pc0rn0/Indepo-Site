@@ -245,6 +245,15 @@ STATICFILES_STORAGE = (
     or "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 )
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": STATICFILES_STORAGE,
+    },
+}
+
 #MEDIA_URL = "media/"
 MEDIA_URL = '/file/'
 
