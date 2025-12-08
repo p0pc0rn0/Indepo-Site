@@ -282,7 +282,7 @@ h6 {
 .branding__accessibility:hover,
 .branding__accessibility:focus-visible,
 .branding__accessibility.is-active {
-  font-weight: var(--chip-hover-font-weight, var(--chip-font-weight, 500));
+  font-weight: var(--chip-font-weight, 500);
   border-color: color-mix(in srgb, var(--access-border, var(--accent-color)), transparent 35%);
   background: color-mix(in srgb, var(--access-bg, rgba(37, 99, 235, 0.15)), transparent 4%);
   color: var(--accent-color);
@@ -536,7 +536,7 @@ body.site-search-open .branding__search .branding__search-track {
 }
 .branding-chip:hover,
 .branding-chip:focus-visible {
-  font-weight: var(--chip-hover-font-weight, var(--chip-font-weight, 500));
+  font-weight: var(--chip-font-weight, 500);
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--chip-bg, rgba(37, 99, 235, 0.45)), transparent calc(100% - var(--chip-hover-opacity, 25%)));
   background: color-mix(in srgb, var(--chip-bg, #ffffff), transparent 4%);
@@ -544,13 +544,13 @@ body.site-search-open .branding__search .branding__search-track {
   outline: none;
 }
 .branding-chip__icon i {
-  font-weight: var(--chip-font-weight, 500);
+  font-weight: inherit;
   font-size: 1.1rem;
   line-height: 1;
   font-family: inherit;
 }
 .branding-chip__icon {
-  font-weight: var(--chip-font-weight, 500);
+  font-weight: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -558,7 +558,7 @@ body.site-search-open .branding__search .branding__search-track {
   height: 100%;
 }
 .branding-chip__icon-text {
-  font-weight: var(--chip-hover-font-weight, 700);
+  font-weight: var(--chip-font-weight, 500);
   font-size: 0.9rem;
   letter-spacing: 0.02em;
   font-family: inherit;
@@ -577,7 +577,7 @@ body.site-search-open .branding__search .branding__search-track {
   background: #fff;
   color: #0f172a;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: var(--chip-font-weight, 500);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   white-space: nowrap;
@@ -638,6 +638,7 @@ body.site-search-open .branding__search .branding__search-track {
   color: #0f172a;
   font-size: 0.78rem;
   font-weight: 600;
+  font-weight: var(--chip-font-weight, 500);
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   white-space: nowrap;
