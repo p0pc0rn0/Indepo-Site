@@ -511,6 +511,8 @@ body.site-search-open .branding__search .branding__search-track {
   --chip-color: var(--heading-color);
   --chip-opacity: var(--chip-opacity, 12%);
   --chip-hover-opacity: var(--chip-hover-opacity, 25%);
+  font-weight: 500;
+  font-family: inherit;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -536,10 +538,13 @@ body.site-search-open .branding__search .branding__search-track {
   outline: none;
 }
 .branding-chip__icon i {
+  font-weight: 500;
   font-size: 1.1rem;
   line-height: 1;
+  font-family: inherit;
 }
 .branding-chip__icon {
+  font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -550,6 +555,7 @@ body.site-search-open .branding__search .branding__search-track {
   font-weight: 700;
   font-size: 0.9rem;
   letter-spacing: 0.02em;
+  font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
