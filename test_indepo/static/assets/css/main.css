@@ -271,6 +271,8 @@ h6 {
   background: color-mix(in srgb, var(--access-bg, rgba(255, 255, 255, 0.96)), transparent 6%);
   color: var(--heading-color);
   font-size: 1.2rem;
+  font-family: inherit;
+  font-weight: var(--chip-font-weight, 500);
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
@@ -280,6 +282,7 @@ h6 {
 .branding__accessibility:hover,
 .branding__accessibility:focus-visible,
 .branding__accessibility.is-active {
+  font-weight: var(--chip-hover-font-weight, var(--chip-font-weight, 500));
   border-color: color-mix(in srgb, var(--access-border, var(--accent-color)), transparent 35%);
   background: color-mix(in srgb, var(--access-bg, rgba(37, 99, 235, 0.15)), transparent 4%);
   color: var(--accent-color);
