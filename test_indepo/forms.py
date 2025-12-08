@@ -162,6 +162,8 @@ class HeaderPluginForm(forms.ModelForm):
             "accessibility_border": forms.TextInput(attrs={"type": "color", "class": "vColorPicker"}),
             "chip_opacity": forms.NumberInput(attrs={"min": 0, "max": 100, "step": 1}),
             "chip_hover_opacity": forms.NumberInput(attrs={"min": 0, "max": 100, "step": 1}),
+            "chip_font_weight": forms.NumberInput(attrs={"min": 100, "max": 900, "step": 50}),
+            "chip_hover_font_weight": forms.NumberInput(attrs={"min": 100, "max": 900, "step": 50}),
         }
 
 

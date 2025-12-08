@@ -6,7 +6,7 @@
         <a
           href="{{ icon.url }}"
           class="branding-chip branding-chip--emphasis branding-chip--copy"
-          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%; --chip-font-weight: {{ instance.chip_font_weight|default:'500' }}; --chip-hover-font-weight: {{ instance.chip_hover_font_weight|default:instance.chip_font_weight|default:'500' }};"
           aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
           data-copy-text="{{ icon.tooltip|default:icon.label|default:''|escape }}"
           {% if icon.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
@@ -14,7 +14,7 @@
       {% else %}
         <span
           class="branding-chip branding-chip--emphasis branding-chip--copy"
-          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%; --chip-font-weight: {{ instance.chip_font_weight|default:'500' }}; --chip-hover-font-weight: {{ instance.chip_hover_font_weight|default:instance.chip_font_weight|default:'500' }};"
           role="button"
           tabindex="0"
           aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
@@ -100,14 +100,14 @@
         <a
           href="{{ icon.url }}"
           class="branding-chip branding-chip--emphasis"
-          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%; --chip-font-weight: {{ instance.chip_font_weight|default:'500' }}; --chip-hover-font-weight: {{ instance.chip_hover_font_weight|default:instance.chip_font_weight|default:'500' }};"
           aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"
           {% if icon.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
         >
       {% else %}
         <span
           class="branding-chip branding-chip--emphasis"
-          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%;"
+          style="--chip-bg: {{ icon.background_color }}; --chip-color: {{ icon.icon_color }}; --chip-opacity: {{ instance.chip_opacity|default:12 }}%; --chip-hover-opacity: {{ instance.chip_hover_opacity|default:25 }}%; --chip-font-weight: {{ instance.chip_font_weight|default:'500' }}; --chip-hover-font-weight: {{ instance.chip_hover_font_weight|default:instance.chip_font_weight|default:'500' }};"
           role="button"
           tabindex="0"
           aria-label="{{ icon.label }}{% if icon.tooltip %}: {{ icon.tooltip }}{% endif %}"

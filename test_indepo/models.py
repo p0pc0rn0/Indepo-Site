@@ -606,6 +606,20 @@ class HeaderPluginModel(CMSPlugin):
         blank=True,
         help_text=_("0-100, фон при hover"),
     )
+    chip_font_weight = models.CharField(
+        _("Толщина шрифта плашек"),
+        max_length=10,
+        blank=True,
+        default="500",
+        help_text=_("Например: 400, 500, 600"),
+    )
+    chip_hover_font_weight = models.CharField(
+        _("Толщина шрифта при наведении"),
+        max_length=10,
+        blank=True,
+        default="600",
+        help_text=_("Например: 500 или 600"),
+    )
 
     def __str__(self):
         return "Header navigation"
