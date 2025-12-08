@@ -2437,6 +2437,55 @@ section,
   }
 }
 
+@media (max-width: 991.98px) {
+  /* Чёткое выравнивание поисковой плашки и иконок в мобильном меню */
+  .fly-nav__mobile-search .branding__search {
+    --search-width: 100%;
+    --search-knob-size: 46px;
+    --search-track-scale: 1;
+    --search-track-opacity: 1;
+    --search-track-pointer: auto;
+    padding-right: 0;
+    gap: 0.45rem;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.16);
+  }
+  .fly-nav__mobile-search .branding__search-track {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 0.45rem 0.9rem 0.45rem calc(var(--search-knob-size) + 0.75rem);
+  }
+  .fly-nav__mobile-search .branding__search-trigger {
+    position: absolute;
+    left: 12px;
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .fly-nav__mobile-search .branding__search-input {
+    min-width: 0;
+  }
+  .fly-nav__mobile-panel [data-utility-cluster] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+  }
+  .fly-nav__mobile-panel .branding-chip,
+  .fly-nav__mobile-panel .branding__accessibility {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+  }
+}
+
 /* Горизонтальное меню */
 #navmenu ul {
   display: flex;
